@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-app_2_4.xsd">
 	
 	<display-name>recommend</display-name>
-	<!--为了在jetty里面可以直接修改js里面的值，部署tomcat时需删除start-->
+	<!--为了在jetty里面可以直接修改js里面的值，部署tomcat时需删除start
 	<servlet>
 	    <servlet-name>default</servlet-name>
 	    <servlet-class>org.mortbay.jetty.servlet.DefaultServlet</servlet-class>
@@ -13,6 +13,10 @@
 	    </init-param>
 	    <load-on-startup>0</load-on-startup>
 	</servlet>
+	-->
+    <!--为了在jetty里面可以直接修改js里面的值，部署tomcat时需删除end-->
+    
+    <!--国际化需要 start-->
 	<context-param>
 		<param-name>javax.servlet.jsp.jstl.fmt.localizationContext</param-name>
 		<param-value>ApplicationResources</param-value>
@@ -21,7 +25,7 @@
     	<param-name>javax.servlet.jsp.jstl.fmt.fallbackLocale</param-name>
     	<param-value>en</param-value>
   	</context-param>
-    <!--为了在jetty里面可以直接修改js里面的值，部署tomcat时需删除end-->
+  	<!--国际化需要 end-->
   	<context-param>
     	<param-name>contextConfigLocation</param-name>
     	<param-value>
@@ -36,6 +40,10 @@
 		</param-value>
   	</context-param>
   	<!-- =============sso config start================ -->
+  	<context-param>
+    	<param-name>use_sso</param-name>
+    	<param-value>true</param-value>
+  	</context-param>
   	<filter>
     	<filter-name>CAS Single Sign Out Filter</filter-name>
     	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
