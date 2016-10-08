@@ -1,0 +1,52 @@
+body
+{
+}
+.autoSearchText{
+	border:solid 1px #CFCFCF;  
+	height:20px; 
+	color:Gray;
+}
+.menu_v{
+	margin:0;
+	padding:0;
+	line-height:20px;
+	font-size:12px;
+	list-style-type:none;
+}
+.menu_v li{
+	margin:0;
+	padding:0;
+	line-height:20px;
+	font-size:14px;
+	list-style-type:none;
+	float:none;
+	padding:2px;
+}
+.menu_v li span{
+	color:Red;
+}
+#autoSearchItemcpd,#autoSearchItem{
+	border:solid 1px #CFCFCF;  
+	display:none;
+	position:absolute; 
+	background-color:white; 
+	overflow-y:auto;
+}
+
+#autosearchitem1 .menu_v label,
+#autoassetitem .menu_v label,
+#autoSearchItemcpd .menu_v label,
+#autoSearchItem .menu_v label,
+#autosearchitem .menu_v label {
+	background:#e54724 none repeat scroll 0 0;
+	width:14px;
+	font-size:10px;
+	height:14px;
+	line-height:14px;
+	margin:0 8px 3px 4px;
+	text-align:center;
+	display:inline-block;
+	font-weight:normal;
+	vertical-align:middle;
+	color:#fff;
+}

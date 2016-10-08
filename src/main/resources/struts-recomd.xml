@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 推荐管理 -->
+<struts>
+	<package name="recomd" extends="default" namespace="/recomd">
+		<result-types>
+			<result-type name="json" class="org.apache.struts2.json.JSONResult" />
+		</result-types>
+		<interceptors>
+			<interceptor name="json"
+				class="org.apache.struts2.json.JSONInterceptor" />
+		</interceptors>
+		<!-- 系统参数 -->
+		<action name="artificialInfo" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommendInfoAction" method="getPage">
+			<result name="success">/pages/recomd/artificialInfo.jsp</result>
+		</action>
+		
+		<action name="listArtificialInfo" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommendInfoAction" method="list">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="delArtificialInfo" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommendInfoAction" method="delete">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="addArtificialInfo" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommendInfoAction" method="addSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="editArtificialInfo" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommendInfoAction" method="editSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+	</package>
+</struts>	
+

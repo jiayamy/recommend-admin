@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+	<!-- Constants -->
+	<constant name="struts.devMode" value="false" />
+	<constant name="struts.i18n.encoding" value="UTF-8" />
+	<constant name="struts.action.extension" value="htm,msp" />
+	<constant name="struts.objectFactory" value="spring" />
+	<constant name="struts.custom.i18n.resources" value="ApplicationResources,errors" />
+	<constant name="struts.multipart.maxSize" value="2097152000" />
+	<constant name="struts.ui.theme" value="css_xhtml" />
+	<constant name="struts.codebehind.pathPrefix" value="/WEB-INF/pages/" />
+	<constant name="struts.enable.SlashesInActionNames" value="false" />
+	<constant name="struts.convention.action.disableScanning" value="true" />
+	<constant name="struts.serve.static" value="true" />
+	<constant name="struts.serve.static.browserCache" value="true" />
+	<constant name="struts.configuration.xml.reload" value="true" />
+	<constant name="struts.action.excludePattern" value="/scripts/ckfinder/connector" />
+	
+	<!-- Configuration for the default package. -->
+	<package name="default" extends="struts-default">
+		<interceptors>
+			<!-- Copied from struts-default.xml and changed validation exclude methods -->
+			<interceptor-stack name="defaultStack">
+				<interceptor-ref name="exception" />
+				<interceptor-ref name="alias" />
+				<interceptor-ref name="servletConfig" />
+				<interceptor-ref name="prepare" />
+				<interceptor-ref name="i18n" />
+				<interceptor-ref name="chain" />
+				<interceptor-ref name="debugging" />
+				<interceptor-ref name="profiling" />
+				<interceptor-ref name="scopedModelDriven" />
+				<interceptor-ref name="modelDriven" />
+				<interceptor-ref name="fileUpload" />
+				<interceptor-ref name="checkbox" />
+				<interceptor-ref name="staticParams" />
+				<interceptor-ref name="params">
+					<param name="excludeParams">dojo\..*</param>
+					<param name="excludeParams">.*\\u0023.*</param>
+					<param name="excludeParams">.*\\43.*</param>
+				</interceptor-ref>
+				<interceptor-ref name="conversionError" />
+				<interceptor-ref name="validation">
+					<param name="excludeMethods">cancel,execute,delete,edit,list</param>
+				</interceptor-ref>
+				<interceptor-ref name="workflow">
+					<param name="excludeMethods">input,back,cancel,browse</param>
+				</interceptor-ref>
+			</interceptor-stack>
+			<interceptor-stack name="fileUploadStack">
+				<interceptor-ref name="fileUpload" />
+				<interceptor-ref name="defaultStack" />
+			</interceptor-stack>
+		</interceptors>
+
+		<global-results>
+			<result name="main">/pages/main.jsp</result>
+			<result name="dataAccessFailure">/error.jsp</result>
+		</global-results>
+
+		<global-exception-mappings>
+			<exception-mapping exception="org.springframework.dao.DataAccessException"
+				result="dataAccessFailure" />
+		</global-exception-mappings>
+
+		<action name="main" class="com.wondertek.mobilevideo.recommend.webapp.action.BaseAction" method="getMainPage">
+			<result>/pages/main.jsp</result>
+		</action>
+		<action name="checkSession" class="com.wondertek.mobilevideo.recommend.webapp.action.BaseAction" method="checkSession">
+		</action>
+	</package>
+	<include file="struts-sys.xml"></include>
+	<include file="struts-req.xml"></include>
+	<include file="struts-recomd.xml"></include>
+</struts>	
+

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 外部接口请求 -->
+<struts>
+	<package name="req" extends="default" namespace="/req">
+		<result-types>
+			<result-type name="json" class="org.apache.struts2.json.JSONResult" />
+		</result-types>
+		<interceptors>
+			<interceptor name="json"
+				class="org.apache.struts2.json.JSONInterceptor" />
+		</interceptors>
+		<action name="search" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="list">
+			<result name="success" type="json">
+				<param name="root">resultMap</param>
+			</result>
+		</action>
+		<action name="queryTag" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="queryTag">
+		</action>
+		
+		<action name="addTag" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="addTag">
+			<result name="success" type="json">
+				<param name="root">resultMap</param>
+			</result>
+		</action>
+		
+		<action name="delTag" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="delTag">
+			<result name="success" type="json">
+				<param name="root">resultMap</param>
+			</result>
+		</action>
+	</package>
+</struts>	
+

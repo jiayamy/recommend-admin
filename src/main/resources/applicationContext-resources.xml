@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jee="http://www.springframework.org/schema/jee"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+            http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd">
+
+	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:jdbc.properties</value>
+				<value>classpath:config.properties</value>
+				<value>classpath:cas.properties</value>
+			</list>
+		</property>
+	</bean>
+	<!-- JNDI DataSource for J2EE environments -->
+    <!--<jee:jndi-lookup id="dataSource" jndi-name="java:comp/env/jdbc/mam"/>-->
+    
+    <!-- context.xml -->
+    <!-- 
+	    <Resource name="jdbc/mam"   
+	    type="com.mchange.v2.c3p0.ComboPooledDataSource"  
+	    minPoolSize="2"  
+	    maxPoolSize="150" 
+	    maxIdleTime="300" 
+	    factory="org.apache.naming.factory.BeanFactory"  
+	    user="oms_source" 
+	    password="oms_source"  
+	    driverClass="oracle.jdbc.driver.OracleDriver"  
+	    jdbcUrl="jdbc:oracle:thin:@192.168.1.132:1521:oms"  
+		/>  
+     -->
+	<bean id="dataSource_recommend" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driverClassName}"/>
+        <property name="jdbcUrl" value="${jdbc.url.recommend}"/>
+        <property name="user" value="${jdbc.username.recommend}"/>
+        <property name="password" value="${jdbc.password.recommend}"/>
+        <property name="maxPoolSize" value="100"/>
+        <property name="maxIdleTime" value="300"/>
+        <property name="checkoutTimeout" value="2000"/>
+        <property name="minPoolSize" value="1"/>
+        <property name="initialPoolSize" value="5"/>
+        <property name="acquireIncrement" value="5"/>
+        <property name="maxStatements" value="200"/>
+        <property name="maxStatementsPerConnection" value="200"/>
+        <property name="idleConnectionTestPeriod" value="120"/>
+	    <property name="preferredTestQuery" value="select sysdate from dual"/>
+    </bean>
+</beans>

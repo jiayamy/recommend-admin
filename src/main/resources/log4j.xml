@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/">
+	<appender name="LOG_FILE" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/logs/recommend-admin.log"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<param name="Append" value="true"/>
+		<param name="encoding" value="UTF-8"/>
+
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="[RECOMMEND-ADMIN][%d{yyyy-MM-dd HH:mm:ss SSS}] %p [%t] %c{1}.%M(%L) | %m%n"/>
+        </layout>        
+    </appender>
+    <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+    	<param name="Target" value="System.out"/>
+        <param name="Threshold" value="info" />
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="[RECOMMEND-ADMIN][%d{yyyy-MM-dd HH:mm:ss SSS}] %p [%t] %c{1}.%M(%L) | %m%n"/>
+        </layout>
+    </appender>
+
+    <logger name="com.opensymphony.xwork2.util.OgnlValueStack">
+        <level value="ERROR"/>
+    </logger>
+    
+    <logger name="net.sf.ehcache">
+        <level value="ERROR"/>
+    </logger>
+
+    <logger name="org.apache">
+        <level value="ERROR"/>
+    </logger>
+
+    <logger name="org.apache.velocity">
+        <level value="FATAL"/>
+    </logger>
+
+    <logger name="org.hibernate">
+        <level value="WARN"/>
+    </logger>
+  
+    <!--logger name="org.hibernate.SQL">
+        <level value="DEBUG"/>
+    </logger-->
+
+    <logger name="org.springframework">
+        <level value="WARN"/>
+    </logger>
+
+    <!-- http://issues.appfuse.org/browse/APF-736#action_11786 -->
+    <logger name="com.opensymphony.xwork2.util.XWorkConverter">
+        <level value="FATAL"/>
+    </logger>
+
+    <!-- http://issues.appfuse.org/browse/APF-852 -->
+    <logger name="com.opensymphony.xwork2.util.OgnlUtil">
+        <level value="ERROR"/>
+    </logger>
+
+    <!-- Turn off warnings from messages.jsp -->
+    <logger name="com.opensymphony.xwork2">
+        <level value="ERROR"/>
+    </logger>
+    
+    <logger name="org.appfuse">
+        <level value="ERROR"/>
+    </logger>
+    
+    <logger name="com.wondertek.mobilevideo">
+        <level value="DEBUG"/>
+        <appender-ref ref="LOG_FILE"/>
+    </logger>
+    <root>
+        <level value="ERROR"/>
+        <appender-ref ref="CONSOLE"/>
+    </root>
+
+</log4j:configuration>

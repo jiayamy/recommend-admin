@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+	"http://struts.apache.org/dtds/struts-2.0.dtd">
+<!-- 系统管理 -->
+<struts>
+	<package name="sys" extends="default" namespace="/sys">
+		<result-types>
+		    <result-type name = "json" class = "org.apache.struts2.json.JSONResult" />
+		</result-types>	 
+		<interceptors>
+			<interceptor name="json"
+				class="org.apache.struts2.json.JSONInterceptor" />
+		</interceptors>
+		
+		<!-- 系统参数 -->
+		<action name="sysParmsManage" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="getPage">
+			<result name="success">/pages/sys/sysParam.jsp</result>
+		</action>
+		
+		<action name="listParam" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="list">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="delConfig" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="delConfig">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="addConfig" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="addSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="editConfig" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="editSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		<action name="sysConfigExportExcel" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="exportExcel">
+			<result type="stream">
+				<param name="contentType">application/vnd.ms-excel</param>
+				<param name="contentDisposition">attachment;filename="SYSTEM_CONFIG.xls"</param>
+				<param name="inputName">inputStream</param>
+			</result>
+		</action>
+	</package>
+</struts>	
+

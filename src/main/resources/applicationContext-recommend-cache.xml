@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:tx="http://www.springframework.org/schema/tx"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
+
+	<!--redis集群配置，未使用 start
+	<bean name="genericObjectPoolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
+		<property name="maxWaitMillis" value="${genericObjectPoolConfig.maxWaitMillis}" />
+		<property name="maxTotal" value="${genericObjectPoolConfig.maxTotal}" />
+		<property name="minIdle" value="${genericObjectPoolConfig.minIdle}" />
+		<property name="maxIdle" value="${genericObjectPoolConfig.maxIdle}" />
+	</bean>
+	<bean id="jedisClusterFactory" class="com.wondertek.mobilevideo.core.recommend.cache.redis.commons.BinaryJedisClusterFactory" init-method="init">
+			<property name="genericObjectPoolConfig" ref="genericObjectPoolConfig" />
+			<property name="timeout" value="${redisConnectFactory.timeout}" />
+			<property name="maxRedirections" value="${redisConnectFactory.maxRedirections}" />
+			<property name="address" value="${redisConnectFactory.address}" />
+	</bean>
+	-->
+	<!--redis集群配置，未使用 end-->
+	<!--
+	<bean id="starCacheClusterManager" class="com.wondertek.mam.cache.redis.service.impl.StarCacheClusterManagerImpl">
+		<property name="jedisClusterFactory" ref="jedisClusterFactory" />
+		<property name="starService" ref="starService" />
+        <property name="expireTime" value="2592000" />
+	</bean>
+	-->
+	<!--单个redis配置，start-->
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property  name="maxTotal" value="${jedisPoolConfig.maxTotal}" /><!-- 控制一个pool可分配多少个jedis实例 -->
+		<property  name="maxIdle" value="${jedisPoolConfig.maxIdle}" /> <!-- 控制一个pool最多有多少个状态为idle(空闲)的jedis实例 -->
+		<property  name="maxWaitMillis" value="${jedisPoolConfig.maxWaitMillis}" /><!-- 表示当borrow一个jedis实例时，最大的等待时间，如果超过等待时间，则直接抛出JedisConnectionException -->
+		<property  name="testOnBorrow" value="true" /><!-- 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的 -->
+	</bean>
+
+	<bean id="redisConnectFactory" class="com.wondertek.mobilevideo.core.recommend.cache.redis.commons.RedisConnectFactory"  init-method="init">
+		<property name="config" ref="jedisPoolConfig" />
+		<property name="serverIp" value="${redis.server.ip}" />
+		<property name="port" value="${redis.server.port}" />
+	</bean>
+	<bean id="redisManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.commons.RedisManager">
+		<property  name="redisConnectFactory" ref="redisConnectFactory" />
+	</bean>
+	<!--单个redis配置，end-->
+	
+	<!--推荐信息缓存 -->
+	<bean id="recommendInfoCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.RecommendInfoCacheManagerImpl">
+		<property name="redisManager" ref="redisManager" />
+		<property name="recommendInfoService" ref="recommendInfoService" />
+		<property name="expireTime" value="720" /><!--12分 失效-->
+	</bean>
+	<bean id="userTagCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.UserTagCacheManagerImpl">
+		<property name="redisManager" ref="redisManager" />
+		<property name="userTagService" ref="userTagService" />
+		<property name="expireTime" value="180" /><!--3分 失效-->
+	</bean>
+	<bean id="searchCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.SearchCacheManagerImpl">
+		<property name="redisManager" ref="redisManager" />
+		<property name="expireTime" value="180" /><!--3分 失效-->
+	</bean>
+	
+</beans>

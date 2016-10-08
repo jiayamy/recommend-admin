@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<context:component-scan base-package="com.wondertek.mobilevideo.recommend.webapp.job"/>
+	
+	<bean id="schedulerTasks1"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+		 		<ref bean="systemRefreshJob" />
+		 		<ref bean="redisRefreshJob" />
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="systemRefreshBean"
+		class="com.wondertek.mobilevideo.recommend.webapp.job.SystemRefreshJob">
+	</bean>
+	<bean id="systemRefreshJob"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="systemRefreshBean"></property>
+                <property name="targetMethod" value="refresh"></property>
+            </bean>
+        </property>
+		<property name="cronExpression" value="0 0 0/1 * * ?" />
+	</bean>
+	
+	<bean id="redisRefreshBean"
+		class="com.wondertek.mobilevideo.recommend.webapp.job.RedisRefreshJob">
+	</bean>
+	<bean id="redisRefreshJob"
+		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+		<property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+                <property name="targetObject" ref="redisRefreshBean"></property>
+                <property name="targetMethod" value="refresh"></property>
+            </bean>
+        </property>
+		<property name="cronExpression" value="0 */10 * * * ?" />
+	</bean>
+</beans>
