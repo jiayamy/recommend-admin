@@ -161,7 +161,7 @@ public class RequestAction extends BaseAction {
 			return SUCCESS;
 		}
 		PrdTypeRelation prdTypeRelation = PrdTypeRelationCache.PRDTYPE_RELATIONS.get(reqUserTag.getPrdType());
-		if(StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
+		if(prdTypeRelation == null || StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120001);
 			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.prdtypenotfound"));
@@ -251,19 +251,22 @@ public class RequestAction extends BaseAction {
 			}
 			end2 = System.currentTimeMillis();
 			//获取用户的标签分数
-			Map<String,Double> userTagScoreMap = new HashMap<String,Double>();
+			Map<String,Double> userTagScoreMap = new HashMap<String,Double>();	//用户标签中的分数，用于填充用户请求的标签分数
+			Map<String,CatInfo> dbCatInfos = new HashMap<String,CatInfo>();		//一级分类下的标签，用于填充没有携带标签的请求
 			Map<String, String> catIds = EnumsInfoCache.VAL_ENUMSINFO.get(EnumsInfoCache.TYPE_CAT);
 			Map<String, String> labelIds = EnumsInfoCache.VAL_ENUMSINFO.get(EnumsInfoCache.TYPE_LABEL);
 			if(dbUserTag != null){
-				getUserTagScore(dbUserTag,userTagScoreMap,catIds,labelIds);
+				getUserTagScore(dbUserTag,userTagScoreMap,catIds,labelIds,dbCatInfos);
 			}
 			end3 = System.currentTimeMillis();
 			//填充分数并排序
-			fillSortScore(reqUserTag,userTagScoreMap,catIds,labelIds,defaultScore);
+			fillSortScore(reqUserTag,userTagScoreMap,catIds,labelIds,dbCatInfos,defaultScore);
 			end4 = System.currentTimeMillis();
 			//清空不需要的对象
 			userTagScoreMap.clear();
 			userTagScoreMap = null;
+			dbCatInfos.clear();
+			dbCatInfos = null;
 			
 			//每个一级分类都找下对应的人工推荐和搜索引擎搜索数据
 			List<RecommendInfoVo> firstRst = new ArrayList<RecommendInfoVo>();//搜索引擎单个一级分类下的最高标签搜索结果
@@ -427,7 +430,7 @@ public class RequestAction extends BaseAction {
 		return SUCCESS;
 	}
 	private void getUserTagScore(UserTag dbUserTag, Map<String, Double> userTagScoreMap, Map<String, String> catIds,
-			Map<String, String> labelIds) {
+			Map<String, String> labelIds, Map<String, CatInfo> dbCatInfos) {
 		if(dbUserTag.getCats() != null && dbUserTag.getCats().size() > 0){//一级分类及标签
 			String catId = null;
 			String labelId = null;
@@ -440,6 +443,8 @@ public class RequestAction extends BaseAction {
 				if(catId == null){//一级标签必须存在
 					continue;
 				}
+				dbCatInfos.put(catId, catInfo);
+				
 				if(catInfo.getScore() != null){
 					userTagScoreMap.put(getCatMapKey(catId), catInfo.getScore());
 				}
@@ -447,7 +452,7 @@ public class RequestAction extends BaseAction {
 				if(catInfo.getRecommendation() != null){
 					for(RecomdItem recomdItem : catInfo.getRecommendation()){
 						if(recomdItem.getScore() != null){
-							userTagScoreMap.put(getRecommendMapKey(recomdItem.getLabel()), recomdItem.getScore());
+							userTagScoreMap.put(getRecommendMapKey(catId,recomdItem.getLabel()), recomdItem.getScore());
 						}
 					}
 				}
@@ -475,7 +480,7 @@ public class RequestAction extends BaseAction {
 	 * @param defaultScore
 	 */
 	private void fillSortScore(UserTag userTag, Map<String, Double> userTagScoreMap, Map<String, String> catIds,
-			Map<String, String> labelIds, Double defaultScore) {
+			Map<String, String> labelIds, Map<String,CatInfo> dbCatInfos, Double defaultScore) {
 		if(userTag.getCats() != null && userTag.getCats().size() > 0){
 			Double score = null;
 			String catId = null;
@@ -499,12 +504,22 @@ public class RequestAction extends BaseAction {
 						catInfo.setScore(score);
 					}
 				}
+				//一级分类下没有标签的，获取一级分类下默认的用户标签
+				if((catInfo.getRecommendation() == null || catInfo.getRecommendation().isEmpty())
+					&& (catInfo.getItems() == null || catInfo.getItems().isEmpty())){
+					CatInfo dbcatInfo = dbCatInfos.get(catId);
+					if(dbcatInfo != null){
+						catInfo.setRecommendation(dbcatInfo.getRecommendation());
+						catInfo.setItems(dbcatInfo.getItems());
+					}
+				}
+				
 				//一级分类下推荐标签分数
 				if(catInfo.getRecommendation() != null){
 					for(RecomdItem recomdItem : catInfo.getRecommendation()){
 						score = null;
 						if(recomdItem.getScore() == null){
-							score = userTagScoreMap.get(getRecommendMapKey(recomdItem.getLabel()));
+							score = userTagScoreMap.get(getRecommendMapKey(catId,recomdItem.getLabel()));
 							if(score == null){
 								recomdItem.setScore(defaultScore);
 							}else{
@@ -607,8 +622,8 @@ public class RequestAction extends BaseAction {
 	 * @param catId
 	 * @return
 	 */
-	private String getRecommendMapKey(String recommendLabel) {
-		return RequestConstants.MAP_KEY_PREFIX_RECOMMEND + recommendLabel;
+	private String getRecommendMapKey(String catId, String recommendLabel) {
+		return RequestConstants.MAP_KEY_PREFIX_RECOMMEND + catId + "_" + recommendLabel;
 	}
 	/**
 	 * 获取初始化分数中一级分类下的标签KEY

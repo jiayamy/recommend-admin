@@ -37,34 +37,36 @@ public class UpdateCacheServlet extends HttpServlet {
 		String type = StringUtil.null2Str(req.getParameter("type"));
 		String isRefresh = req.getParameter("isRefresh");
 		String otherParameter = null;
-		if(type.equalsIgnoreCase("1")){//刷新所有缓存
-			log.debug("========Handler RefreshCache is start========");
-			try{
-				ServletContext context = ServletActionContext.getServletContext();
-				//刷新所有缓存
-				RecommendUtil.init();
-				
-				BaseAction.setupContext(context);
-			}catch(Exception e){
+		if(isRefresh != null && "NO".equalsIgnoreCase(isRefresh.trim())){
+			if(type.equalsIgnoreCase("1")){//刷新所有缓存
+				log.debug("========Handler RefreshCache is start========");
+				try{
+					ServletContext context = ServletActionContext.getServletContext();
+					//刷新所有缓存
+					RecommendUtil.init();
+					
+					BaseAction.setupContext(context);
+				}catch(Exception e){
+					StringBuilder sb = new StringBuilder();
+					sb.append("{success:false}");
+					resp.setContentType("text/html");    
+					resp.setCharacterEncoding("UTF-8");    
+					PrintWriter out = resp.getWriter();    
+					out.println(sb);    
+					out.close(); 
+					return ;
+				}
+				log.debug("========Handler RefreshCache is end==========");
+			}else{
 				StringBuilder sb = new StringBuilder();
 				sb.append("{success:false}");
 				resp.setContentType("text/html");    
 				resp.setCharacterEncoding("UTF-8");    
 				PrintWriter out = resp.getWriter();    
 				out.println(sb);    
-				out.close(); 
-				return ;
+				out.close();  
+				return;
 			}
-			log.debug("========Handler RefreshCache is end==========");
-		}else{
-			StringBuilder sb = new StringBuilder();
-			sb.append("{success:false}");
-			resp.setContentType("text/html");    
-			resp.setCharacterEncoding("UTF-8");    
-			PrintWriter out = resp.getWriter();    
-			out.println(sb);    
-			out.close();  
-			return;
 		}
 		
 		// 刷新其他服务器缓存
