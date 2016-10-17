@@ -100,7 +100,8 @@ public class RequestAction extends BaseAction {
 		long end = start;
 		UserTag userTag;
 		try {
-			userTag = userTagCacheManager.queryById(userId);
+//			userTag = userTagCacheManager.queryById(userId);
+			userTag = userTagCacheManager.queryCutById(userId);
 			if(userTag == null || userTag.getId() == null){
 				userTag = null;
 			}
