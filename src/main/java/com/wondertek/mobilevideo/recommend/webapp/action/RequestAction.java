@@ -21,7 +21,6 @@ import com.wondertek.mobilevideo.core.recommend.util.RecomdItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
-import com.wondertek.mobilevideo.core.recommend.util.ST;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatInfo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
@@ -86,8 +85,11 @@ public class RequestAction extends BaseAction {
 	public String queryTag(){
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		if(log.isInfoEnabled())
-			log.info("queryTagIp:" + ip);
+			log.info("queryTag Ip:" + ip);
 		String userId = this.getParam("userId");
+		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
+			log.debug("queryTag userId:" + userId);
+		}
 		if(StringUtil.isNullStr(userId)){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
@@ -127,15 +129,18 @@ public class RequestAction extends BaseAction {
 	/**
 	 * 查询推荐列表
 	 * 请求参数为一个json数据
-	 * {"_id":"100033899","prdType":"MIGUSHIPIN","cats":[{"catName":"电视剧","items":[{"labelName":"播出年代","labelValue":"2015"},{"labelName":"首播时间","labelValue":"2015-05-03"},{"labelName":"内容类型","labelValue":"都市"},{"labelName":"内容类型","labelValue":"言情"}]},{"catName":"电影","items":[{"labelName":"内容类型","labelValue":"冒险"}]},{"catName":"原创","items":[{"labelName":"国家及地区","labelValue":"内地"},{"labelName":"播出年代","labelValue":"2016"},{"labelName":"内容形态","labelValue":"全片"}]}],"recommendation":{"items":[{"label":"影视资讯"},{"label":"社会"}]},"keywords":{"items":[{"keyword":" 保健秘籍"},{"keyword":" 时尚女性"}]}}
+	 * {"id":"681274129","prdType":"MIGUVIDEO","start":"0","limit":"10","ctVer":"v1.0","cats":[{"catName":"电影","score":1.03,"recommendation":[{"label":"影视1","score":100}],"items":[{"labelName":"播出年代","labelValue":"2016","score":100}]},{"catName":"电视剧","score":1.03,"recommendation":[{"label":"影视2","score":100}],"items":[{"labelName":"播出年代","labelValue":"2016","score":100}]}]}
 	 * @return
 	 */
 	public String list() {
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		if(log.isInfoEnabled())
-			log.info("listIp:" + ip);
+			log.info("list Ip:" + ip);
 		//首先流中获取请求体
 		String reqJson = RequestUtil.receiveReq(this.getRequest());
+		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
+			log.debug("list reqJson:" + reqJson);
+		}
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
@@ -205,7 +210,8 @@ public class RequestAction extends BaseAction {
 			resultMap.put(RequestConstants.R_TOTAL, searchMaxCount);
 			return SUCCESS;
 		}
-		List<RecommendInfoVo> allList = new ArrayList<RecommendInfoVo>();
+		List<RecommendInfoVo> recomdList = new ArrayList<RecommendInfoVo>();
+		List<RecommendInfoVo> searchList = new ArrayList<RecommendInfoVo>();
 		long s = System.currentTimeMillis();
 		long end1 = s;
 		long end2 = s;
@@ -214,6 +220,7 @@ public class RequestAction extends BaseAction {
 		long end5 = s;
 		long end6 = s;
 		long end7 = s;
+		long end8 = s;
 		try {
 			//从redis或mongo中获取该用户的标签
 			UserTag dbUserTag = null;
@@ -270,23 +277,45 @@ public class RequestAction extends BaseAction {
 			dbCatInfos = null;
 			
 			//每个一级分类都找下对应的人工推荐和搜索引擎搜索数据
-			List<RecommendInfoVo> firstRst = new ArrayList<RecommendInfoVo>();//搜索引擎单个一级分类下的最高标签搜索结果
-			List<RecommendInfoVo> secondRst = new ArrayList<RecommendInfoVo>();//搜索引擎单个一级分类下的所有标签搜索结果
 			if(reqUserTag.getCats() != null && reqUserTag.getCats().size() > 0){
 				int searchCatCount = 1;		//一级分类下搜索查找次数
 				int recomdCatCount = 1;		//一级分类下推荐标签查找次数
 				int catItemCount = 1;		//一级分类下的标签查找次数
 				String recomdLabels = null;	//搜索的标签，最后搜索引擎需要使用
-				for(CatInfo catInfo : reqUserTag.getCats()){//一个一级分类查找N次。。最高分的查N-1次，所有的再查一次
+				for(CatInfo catInfo : reqUserTag.getCats()){//一个一级分类查找N次
 					if(StringUtil.isNullStr(catInfo.getCatId())){//如果一级标签不存在，则不查找
 						continue;
 					}
 					if(recomdCatCount > recomdCatMax && searchCatCount > searchCatMax){//超过了人工推荐和搜索引擎最多的一级分类搜索次数
 						break;
 					}
+					//查找内容形态
+					String mediaShape = null;//多个逗号分隔
+					boolean isAllMediaShape = true;
+					if(catInfo.getItems() != null 
+							&& searchCatCount <= searchCatMax){
+						for(CatItem catItem : catInfo.getItems()){
+							if(StringUtil.isNullStr(catItem.getLabelId()) 
+									|| StringUtil.isNullStr(catItem.getLabelValue())){//搜索的ID必须要有，搜索的值必须要有
+								continue;
+							}
+							if(RequestConstants.SEARCH_KEY_MEDIASHAPE.equals(catItem.getLabelId())){
+								if(mediaShape == null){
+									mediaShape = catItem.getLabelValue();
+								}else{
+									mediaShape = mediaShape + RecommendConstants.SPLIT_COMMA + catItem.getLabelValue();
+								}
+							}else{
+								isAllMediaShape = false;
+							}
+						}
+					}
+					
 					recomdLabels = null;
+					boolean isSearchCat = false;
 					//搜索推荐标签，推荐标签除了人工推荐需要，搜索引擎也需要
-					if(catInfo.getRecommendation() != null && (recomdCatCount <= recomdCatMax || searchCatCount <= searchCatMax)){
+					if(catInfo.getRecommendation() != null 
+							&& (recomdCatCount <= recomdCatMax || searchCatCount <= searchCatMax)){
 						catItemCount = 1;
 						for(RecomdItem recomdItem : catInfo.getRecommendation()){
 							if(catItemCount > recomdCatItemMax){//每个一级分类下的推荐标签最多取多少个
@@ -300,8 +329,16 @@ public class RequestAction extends BaseAction {
 							}else{
 								recomdLabels = recomdLabels + RecommendConstants.SPLIT_COMMA + recomdItem.getLabel();
 							}
+							//调用搜索引擎查找推荐标签(如果一级分类下的普通标签也可以带着推荐标签查询的话，这边就不用查，否则一个个推荐标签的查)
+							if(searchCatCount <= searchCatMax && !RequestConstants.V_SEARCH_RECOMD_ENABLE){
+								SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
+										prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
+										RequestConstants.SEARCH_KEY_RECOMMD,recomdItem.getLabel(),mediaShape);
+								isSearchCat = true;
+							}
 							catItemCount ++;
 						}
+						//调用个性化推荐平台人工推荐数据
 						if(recomdCatCount <= recomdCatMax && recomdLabels != null){
 							Long rstart = System.currentTimeMillis();
 							//从平台搜索数据
@@ -310,7 +347,10 @@ public class RequestAction extends BaseAction {
 							if(log.isDebugEnabled())
 								log.debug("search from system,duration:" + (rend - rstart));
 							if(list != null){//已去重
-								allList.addAll(list);
+								if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
+									log.debug("list recmdRsts:" + list.size());
+								}
+								recomdList.addAll(list);
 								//清空不需要的对象
 								list.clear();
 								list = null;
@@ -319,69 +359,70 @@ public class RequestAction extends BaseAction {
 						}
 					}
 					//分类可能为空,要考虑，直接不传一级分类给搜索引擎
-					if(catInfo.getItems() != null && searchCatCount <= searchCatMax){
+					if(catInfo.getItems() != null 
+							&& searchCatCount <= searchCatMax){
 						catItemCount = 1;						//刚开始默认第一次
-						StringBuffer fields = new StringBuffer();
-						StringBuffer keyword = new StringBuffer();
 						String tmpFields = null;
 						String tmpKeyword = null;
 						for(CatItem catItem : catInfo.getItems()){
-							if(StringUtil.isNullStr(catItem.getLabelId())){//搜索的ID必须要有
+							if(StringUtil.isNullStr(catItem.getLabelId()) 
+									|| StringUtil.isNullStr(catItem.getLabelValue())){//搜索的ID必须要有，搜索的值必须要有
 								continue;
 							}
 							if(catItemCount > searchCatItemMax){//每个一级分类最多搜索多少个标签
 								break;
 							}
-							if(searchCatPerMax > 1 && catItemCount < searchCatPerMax){
-								//搜索一级分类下的某一个评分高的对象。这个默认搜索（searchCatItemMax - 1 ）次
-								tmpFields = catItem.getLabelId();
-								tmpKeyword = catItem.getLabelValue();
-								if(!StringUtil.isNullStr(recomdLabels) && RequestConstants.V_SEARCH_RECOMD_ENABLE){
-									tmpFields = tmpFields + RecommendConstants.SPLIT_COMMA + RequestConstants.SEARCH_KEY_RECOMMD;
-									tmpKeyword = tmpKeyword + RecommendConstants.SPLIT_COMMA + recomdLabels;
-									
-									SearchRequest(firstRst,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
-											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword);
-								}else{
-									SearchRequest(firstRst,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
-											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword);
-								}
+							if(!isAllMediaShape && RequestConstants.SEARCH_KEY_MEDIASHAPE.equals(catItem.getLabelId())){//给出来的不都是内容形态，此时内容形态不单独查询
+								continue;
 							}
-							fields.append(catItem.getLabelId()).append(RecommendConstants.SPLIT_COMMA);
-							keyword.append(catItem.getLabelValue()).append(RecommendConstants.SPLIT_COMMA);
+							//搜索一级分类下的某一个评分高的对象。这个默认搜索（searchCatItemMax - 1 ）次
+							tmpFields = catItem.getLabelId();
+							tmpKeyword = catItem.getLabelValue();
+							
+							if(isAllMediaShape){//全部都是内容形态，则一个个内容形态查询
+								SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
+										prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
+										tmpFields,tmpKeyword,null);
+							}else if(!StringUtil.isNullStr(recomdLabels) && RequestConstants.V_SEARCH_RECOMD_ENABLE){//普通标签查询时附带推荐标签
+								tmpFields = tmpFields + RecommendConstants.SPLIT_COMMA + RequestConstants.SEARCH_KEY_RECOMMD;
+								tmpKeyword = tmpKeyword + RecommendConstants.SPLIT_COMMA + recomdLabels;
+								
+								SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
+										prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
+										tmpFields,tmpKeyword,mediaShape);
+							}else{//普通标签查询
+								SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
+										prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
+										tmpFields,tmpKeyword,mediaShape);
+							}
 							catItemCount ++;
 						}
-						//搜索一级分类下的所有
-						if(!StringUtil.isNullStr(recomdLabels) && RequestConstants.V_SEARCH_RECOMD_ENABLE){
-							fields.append(RequestConstants.SEARCH_KEY_RECOMMD);
-							keyword.append(recomdLabels);
-							SearchRequest(secondRst,searchUrl,order,RecommendConstants.S_BLANK+searchLimit,catInfo.getCatId(),
-									prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-									fields.toString(),keyword.toString());
-						}else{
-							SearchRequest(secondRst,searchUrl,order,RecommendConstants.S_BLANK+searchLimit,catInfo.getCatId(),
-									prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-									ST.cutStringComma(fields.toString()),ST.cutStringComma(keyword.toString()));
-						}
+						isSearchCat = true;
+					}
+					if(isSearchCat){
 						searchCatCount ++;
 					}
 				}
 			}
 			end5 = System.currentTimeMillis();
-			//添加搜索结果
-			allList.addAll(firstRst);
-			allList.addAll(secondRst);
-			
-			firstRst.clear();//清空不需要的对象
-			firstRst = null;
-			secondRst.clear();
-			secondRst = null;
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}
-		
+		//添加经过过滤去重排序的队列
+		List<RecommendInfoVo> allList = new ArrayList<RecommendInfoVo>();
+		allList.addAll(filterAndSort(recomdList));
+		allList.addAll(filterAndSort(searchList));
+		end6 = System.currentTimeMillis();
+
+		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
+			log.debug("list recomdList:" + recomdList.size());
+			log.debug("list searchList:" + searchList.size());
+			log.debug("list allList:" + allList.size());
+		}
+		recomdList.clear();//清空不需要的对象
+		recomdList = null;
+		searchList.clear();
+		searchList = null;
 		//过滤去重
 		int count = 1;
 		List<RecommendInfoVo> uniqList = new ArrayList<RecommendInfoVo>();//去重后的对象
@@ -397,7 +438,8 @@ public class RequestAction extends BaseAction {
 			uniqList.add(vo);
 			count ++;
 		}
-		end6 = System.currentTimeMillis();
+		end7 = System.currentTimeMillis();
+		
 		allList.clear();//清空不需要的对象
 		allList = null;
 		contIdMap.clear();
@@ -414,7 +456,7 @@ public class RequestAction extends BaseAction {
 				returnList.add(uniqList.get(i));
 			}
 		}
-		end7 = System.currentTimeMillis();
+		end8 = System.currentTimeMillis();
 		
 		uniqList.clear();//清空不需要的对象
 		uniqList = null;
@@ -426,9 +468,76 @@ public class RequestAction extends BaseAction {
 		resultMap.put(RequestConstants.R_ROOT, returnList);
 		resultMap.put(RequestConstants.R_TOTAL, total);
 		if(log.isDebugEnabled())
-			log.debug("list end,duration:" + (end7 -s) + "|" + (end1 - s) + "|" + (end2 - end1) + "|" + (end3 - end2) + "|" + (end4 - end3) + "|" + (end5 - end4)
-				 + "|" + (end6 - end5) + "|" + (end7 - end6));
+			log.debug("list end,duration:" + (end8 -s) + "|" + (end1 - s) + "|" + (end2 - end1) + "|" + (end3 - end2) + "|" + (end4 - end3) + "|" + (end5 - end4)
+				 + "|" + (end6 - end5) + "|" + (end7 - end6) + "|" + (end8 - end7));
 		return SUCCESS;
+	}
+	/**
+	 * 过滤去重，按出现次数由高到低排序
+	 * @param recomdList
+	 * @return
+	 */
+	private List<RecommendInfoVo> filterAndSort(List<RecommendInfoVo> recomdList) {
+		List<RecommendInfoVo> returnList = new ArrayList<RecommendInfoVo>();
+		
+		Map<Integer,List<Long>> checkMap1 = new HashMap<Integer,List<Long>>();//次数里面的所有内容
+		Map<Long,Integer> checkMap2 = new HashMap<Long,Integer>();//内容所在次数
+		Map<Long,RecommendInfoVo> dataMap = new HashMap<Long,RecommendInfoVo>();//内容map
+		
+		if(recomdList != null && !recomdList.isEmpty()){
+			for(RecommendInfoVo tmp : recomdList){
+				Integer times = checkMap2.get(tmp.getPrdContId());
+				if(times == null){//没添加过
+					times = 1;
+					
+					dataMap.put(tmp.getPrdContId(), tmp);
+					
+					if(checkMap1.get(times) == null){
+						checkMap1.put(times, new ArrayList<Long>());
+					}
+					checkMap1.get(times).add(tmp.getPrdContId());
+					checkMap2.put(tmp.getPrdContId(), times);
+				}else{//已经添加过
+					//先从数字小的map中删除掉
+					checkMap1.get(times).remove(tmp.getPrdContId());
+					
+					//再在高一个数字里面的map中添加
+					if(checkMap1.get(times + 1) == null){
+						checkMap1.put(times + 1, new ArrayList<Long>());
+					}
+					checkMap1.get(times + 1).add(tmp.getPrdContId());
+					//最后更改节目所在数字的map
+					checkMap2.put(tmp.getPrdContId(), times + 1);
+				}
+			}
+			//查找所有的KEY，并按照次数由高到低排序
+			List<Integer> keys = new ArrayList<Integer>();
+			for(Integer key : checkMap1.keySet()){
+				keys.add(key);
+			}
+			Collections.sort(keys);
+			//由次数最高到底添加数据
+			for(int i = keys.size() - 1; i >= 0; i--){
+				List<Long> prdContIds = checkMap1.get(keys.get(i));
+				for(Long prdContId : prdContIds){
+					RecommendInfoVo vo = dataMap.get(prdContId);
+					if(vo != null){
+						returnList.add(vo);
+					}
+				}
+			}
+			keys.clear();
+			keys = null;
+			
+		}
+		checkMap1.clear();
+		checkMap1 = null;
+		checkMap2.clear();
+		checkMap2 = null;
+		dataMap.clear();
+		dataMap = null;
+		
+		return returnList;
 	}
 	private void getUserTagScore(UserTag dbUserTag, Map<String, Double> userTagScoreMap, Map<String, String> catIds,
 			Map<String, String> labelIds, Map<String, CatInfo> dbCatInfos) {
@@ -579,9 +688,10 @@ public class RequestAction extends BaseAction {
 	 * @param ct
 	 * @param fields
 	 * @param keyword
+	 * @param mediaShape 内容形态
 	 */
 	public void SearchRequest(List<RecommendInfoVo> returnList,String searchUrl,String order,String pageSize,
-			String contDisplayType,String packId,String ctVer,String ct,String fields,String keyword){
+			String contDisplayType,String packId,String ctVer,String ct,String fields,String keyword,String mediaShape){
 		if(!RequestConstants.V_DEFAULT_SEARCH_ENABLE){
 			return;
 		}
@@ -595,7 +705,8 @@ public class RequestAction extends BaseAction {
 			searchRequest.setCt(ct);
 			searchRequest.setCtVer(ctVer);
 			searchRequest.setPackId(packId);
-			searchRequest.setContDisplayType(contDisplayType);
+			searchRequest.setContDisplayType(contDisplayType);	//一级分类
+			searchRequest.setMediaShape(mediaShape);			//内容形态
 			
 			searchRequest.setPageSize(""+pageSize);
 			searchRequest.setPageStart("0");
@@ -603,8 +714,11 @@ public class RequestAction extends BaseAction {
 			
 			List<SearchResult> searchRsts = searchCacheManager.queryByParam(searchUrl, searchRequest);
 			if(searchRsts != null){
+				if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
+					log.debug("list searchRsts:" + searchRsts.size());
+				}
 				for(SearchResult searchRst : searchRsts){
-					if(searchRst.getContentId() == null){
+					if(searchRst.getContentId() != null){
 						RecommendInfoVo vo = new RecommendInfoVo();
 						vo.setPrdContId(StringUtil.nullToCloneLong(searchRst.getContentId()));
 //						vo.setContName(contName);
@@ -612,6 +726,7 @@ public class RequestAction extends BaseAction {
 					}
 				}
 			}
+			send = System.currentTimeMillis();
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 		}
