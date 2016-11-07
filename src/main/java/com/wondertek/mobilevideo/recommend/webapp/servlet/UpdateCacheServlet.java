@@ -34,7 +34,7 @@ public class UpdateCacheServlet extends HttpServlet {
 		log.info("UpdateCacheServlet---[RemoteAddr=" + req.getRemoteAddr() + "],RequestURL=" + req.getRequestURL() + "],RequestURI=" 
 				+ req.getRequestURI() + "],RequestQuery="+req.getQueryString());
 		
-		String type = StringUtil.null2Str(req.getParameter("type"));
+		String type = StringUtil.null2Str(req.getParameter("cacheType"));
 		String isRefresh = req.getParameter("isRefresh");
 		String otherParameter = null;
 		if(isRefresh != null && "NO".equalsIgnoreCase(isRefresh.trim())){
