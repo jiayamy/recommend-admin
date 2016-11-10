@@ -468,7 +468,7 @@ function exportSysParms() {
 function refreshAllCache() {
 	$.ajax({
 		type:"post",
-		url:webroot + "updateCache?type=1",
+		url:webroot + "updateCache?cacheType=1",
 		success:function(data){
 			alertmsg("success", "缓存刷新成功");
 		}

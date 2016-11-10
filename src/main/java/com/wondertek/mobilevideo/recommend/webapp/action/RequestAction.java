@@ -82,7 +82,7 @@ public class RequestAction extends BaseAction {
 	 * 查询用户标签
 	 * @return
 	 */
-	public String queryTag(){
+	public void queryTag(){
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		if(log.isInfoEnabled())
 			log.info("queryTag Ip:" + ip);
@@ -96,7 +96,7 @@ public class RequestAction extends BaseAction {
 			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
 			
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
-			return SUCCESS;
+			return;
 		}
 		long start = System.currentTimeMillis();
 		long end = start;
@@ -124,7 +124,7 @@ public class RequestAction extends BaseAction {
 		end = System.currentTimeMillis();
 		if(log.isDebugEnabled())
 			log.debug("queryTag end,duration:" + (end - start));
-		return SUCCESS;
+		return;
 	}
 	/**
 	 * 查询推荐列表
