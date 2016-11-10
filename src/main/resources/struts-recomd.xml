@@ -39,6 +39,12 @@
 			    <param name = "root"> resultMap</param>
 			</result>
 		</action>
+		<!-- 20161109 -->
+		<action name="addVomsArtificialInfo" class="com.wondertek.mobilevideo.recommend.webapp.action.VomsRecommendAction" method="addVomsRecommend">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
 	</package>
 </struts>	
 

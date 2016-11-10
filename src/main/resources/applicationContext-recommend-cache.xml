@@ -8,7 +8,7 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
 	http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-	<!--redis集群配置，未使用 start
+	<!--redis集群配置，未使用 start-->
 	<bean name="genericObjectPoolConfig" class="org.apache.commons.pool2.impl.GenericObjectPoolConfig">
 		<property name="maxWaitMillis" value="${genericObjectPoolConfig.maxWaitMillis}" />
 		<property name="maxTotal" value="${genericObjectPoolConfig.maxTotal}" />
@@ -21,15 +21,26 @@
 			<property name="maxRedirections" value="${redisConnectFactory.maxRedirections}" />
 			<property name="address" value="${redisConnectFactory.address}" />
 	</bean>
-	-->
-	<!--redis集群配置，未使用 end-->
-	<!--
-	<bean id="starCacheClusterManager" class="com.wondertek.mam.cache.redis.service.impl.StarCacheClusterManagerImpl">
+	
+	<bean id="userTagCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.UserTagCacheClusterManagerImpl">
 		<property name="jedisClusterFactory" ref="jedisClusterFactory" />
-		<property name="starService" ref="starService" />
-        <property name="expireTime" value="2592000" />
+		<property name="userTagService" ref="userTagService" />
+        <property name="expireTime" value="180" />
 	</bean>
-	-->
+	
+	<bean id="searchCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.SearchCacheClusterManagerImpl">
+		<property name="jedisClusterFactory" ref="jedisClusterFactory" />
+		<property name="searchService" ref="searchService" />
+        <property name="expireTime" value="180" />      
+	</bean>
+	
+	<bean id="recommendInfoCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.RecommendInfoCacheClusterManagerImpl">
+		<property name="jedisClusterFactory" ref="jedisClusterFactory" />
+		<property name="recommendInfoService" ref="recommendInfoService" />
+        <property name="expireTime" value="720" />      
+	</bean>
+	
+	<!--redis集群配置，未使用 end-->
 	<!--单个redis配置，start-->
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
 		<property  name="maxTotal" value="${jedisPoolConfig.maxTotal}" /><!-- 控制一个pool可分配多少个jedis实例 -->
@@ -37,7 +48,7 @@
 		<property  name="maxWaitMillis" value="${jedisPoolConfig.maxWaitMillis}" /><!-- 表示当borrow一个jedis实例时，最大的等待时间，如果超过等待时间，则直接抛出JedisConnectionException -->
 		<property  name="testOnBorrow" value="true" /><!-- 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的 -->
 	</bean>
-
+	
 	<bean id="redisConnectFactory" class="com.wondertek.mobilevideo.core.recommend.cache.redis.commons.RedisConnectFactory"  init-method="init">
 		<property name="config" ref="jedisPoolConfig" />
 		<property name="serverIp" value="${redis.server.ip}" />
@@ -52,15 +63,22 @@
 	<bean id="recommendInfoCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.RecommendInfoCacheManagerImpl">
 		<property name="redisManager" ref="redisManager" />
 		<property name="recommendInfoService" ref="recommendInfoService" />
+		<property name="recommendInfoCacheClusterManager" ref="recommendInfoCacheClusterManager" />
+		<property name="isCluster" value="true" />
 		<property name="expireTime" value="720" /><!--12分 失效-->
 	</bean>
 	<bean id="userTagCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.UserTagCacheManagerImpl">
 		<property name="redisManager" ref="redisManager" />
 		<property name="userTagService" ref="userTagService" />
+		<property name="userTagCacheClusterManager" ref="userTagCacheClusterManager" />
+		<property name="isCluster" value="true" />
 		<property name="expireTime" value="180" /><!--3分 失效-->
 	</bean>
 	<bean id="searchCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.SearchCacheManagerImpl">
 		<property name="redisManager" ref="redisManager" />
+		<property name="searchService" ref="searchService" />
+		<property name="searchCacheClusterManager" ref="userTagCacheClusterManager" />
+		<property name="isCluster" value="true" />
 		<property name="expireTime" value="180" /><!--3分 失效-->
 	</bean>
 	
