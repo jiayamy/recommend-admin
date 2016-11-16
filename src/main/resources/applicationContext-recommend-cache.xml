@@ -63,20 +63,20 @@
 		<property name="redisManager" ref="redisManager" />
 		<property name="recommendInfoService" ref="recommendInfoService" />
 		<property name="recommendInfoCacheClusterManager" ref="recommendInfoCacheClusterManager" />
-		<property name="isCluster" value="true" />
+		<property name="isCluster" value="false" />
 		<property name="expireTime" value="720" /><!--12分 失效-->
 	</bean>
 	<bean id="userTagCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.UserTagCacheManagerImpl">
 		<property name="redisManager" ref="redisManager" />
 		<property name="userTagService" ref="userTagService" />
 		<property name="userTagCacheClusterManager" ref="userTagCacheClusterManager" />
-		<property name="isCluster" value="true" />
+		<property name="isCluster" value="false" />
 		<property name="expireTime" value="180" /><!--3分 失效-->
 	</bean>
 	<bean id="searchCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.SearchCacheManagerImpl">
 		<property name="redisManager" ref="redisManager" />
-		<property name="searchCacheClusterManager" ref="userTagCacheClusterManager" />
-		<property name="isCluster" value="true" />
+		<property name="searchCacheClusterManager" ref="searchCacheClusterManager" />
+		<property name="isCluster" value="false" />
 		<property name="expireTime" value="180" /><!--3分 失效-->
 	</bean>
 	

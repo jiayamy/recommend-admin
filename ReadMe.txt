@@ -53,6 +53,7 @@ version/!QASW@#ED        root/3edc#EDC或root/6yhn^YHN
  ctrl+c
  /apache2/bin/apachectl start
  
- 
+ --20161108
+ 推荐系统按照标签的权重来确定 每个标签都要设置一个权重，搜索出来以后按照权重*标签的分数
  
  
