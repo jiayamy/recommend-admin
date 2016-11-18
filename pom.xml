@@ -24,7 +24,7 @@
                 <configuration>
 				    <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
 					<webAppConfig>
-						<contextPath>/recommend-admin</contextPath>
+						<contextPath>/recommend</contextPath>
 						<baseResource implementation="org.mortbay.resource.ResourceCollection">
 								 <resourcesAsCSV>src/main/webapp</resourcesAsCSV>
 						</baseResource>

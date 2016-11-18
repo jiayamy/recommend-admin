@@ -30,7 +30,7 @@
 	
 	<bean id="searchCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.SearchCacheClusterManagerImpl">
 		<property name="jedisClusterFactory" ref="jedisClusterFactory" />
-        <property name="expireTime" value="180" />      
+        <property name="expireTime" value="600" />      
 	</bean>
 	
 	<bean id="recommendInfoCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.RecommendInfoCacheClusterManagerImpl">
@@ -77,7 +77,7 @@
 		<property name="redisManager" ref="redisManager" />
 		<property name="searchCacheClusterManager" ref="searchCacheClusterManager" />
 		<property name="isCluster" value="false" />
-		<property name="expireTime" value="180" /><!--3分 失效-->
+		<property name="expireTime" value="600" /><!--10分 失效-->
 	</bean>
 	
 </beans>
