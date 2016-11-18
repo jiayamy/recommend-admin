@@ -45,6 +45,12 @@
 			    <param name = "root"> resultMap</param>
 			</result>
 		</action>
+		
+		<!-- 20161117 -->
+		<action name="testQueryTag" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testQueryTag">
+		</action>
+		<action name="testSearch" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testSearch">
+		</action>
 	</package>
 </struts>	
 
