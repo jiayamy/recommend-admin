@@ -8,10 +8,10 @@ import org.apache.commons.httpclient.NameValuePair;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
-import com.wondertek.mobilevideo.core.recommend.search.HttpClientUtil;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.UserTag;
 import com.wondertek.mobilevideo.core.util.StringUtil;
+import com.wondertek.mobilevideo.recommend.webapp.util.HttpClientUtil;
 
 /**
  * @author madongwei
@@ -92,7 +92,7 @@ public class TestAction extends BaseAction {
 			}
 			catsInfoJson = StringUtil.null2Str(catsInfoJson);
 			UserTag oldUserTag = null;
-			if(StringUtil.isNullStr(catsInfoJson)) {
+			if(!StringUtil.isNullStr(catsInfoJson)) {
 				try {
 					oldUserTag = JSON.parseObject(catsInfoJson, UserTag.class);
 				} catch (Exception e) {
