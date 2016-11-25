@@ -26,10 +26,10 @@ version/!QASW@#ED        root/3edc#EDC或root/6yhn^YHN
  cd /nas/nas_log/app_bak/rcmd/
  rz -be
  cd /usr/local/tomcat/webapps/
- cp /nas/nas_log/app_bak/rcmd/recommend_zl201611071700* ./
- tar -zcvf recommend_bak20161026.tar.gz ./recommend
+ cp /nas/nas_log/app_bak/rcmd/recommend_zl201611251400* ./
+ tar -zcvf recommend_bak20161125.tar.gz ./recommend
  
- unzip recommend_zl201611071700.zip
+ unzip recommend_zl201611251400.zip
  cd ..
  ps axu | grep httpd
  /apache2/bin/apachectl stop

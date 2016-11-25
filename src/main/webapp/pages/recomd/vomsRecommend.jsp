@@ -32,7 +32,28 @@
 					<form class="form-horizontal" role="form">
 						<!-- #section:elements.form -->
 						<div class="form-group">
-							<div class = "col-md-3">
+							<div class = "col-md-4">
+								<label class="col-sm-3 control-label" for="s_objId"><fmt:message key="voms.recomd.objId"/></label>
+								<div class="col-sm-9">
+									<input type="text" id="s_objId" class="form-control" />
+								</div>
+							</div>
+							<div class = "col-md-4">
+								<label class="col-sm-3 control-label" for="s_name"><fmt:message key="voms.recomd.name"/></label>
+								<div class="col-sm-9">
+									<input type="text" id="s_ame" class="form-control" />
+								</div>
+							</div>
+							<div class = "col-md-4">
+							    <label class="col-sm-3 control-label" for="s_labelInfo"><fmt:message key="voms.recomd.lableInfo"/></label>
+								<div class="col-sm-9">
+									<input type="text" id="s_labelInfo" class="form-control" />
+								</div>
+							</div>
+							
+						</div>
+						<div class="form-group">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_PrdType"><fmt:message key="voms.recomd.prdType"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_prdType" data-default="">
@@ -43,29 +64,32 @@
 									</select>
 								</div>
 							</div>
-							<div class = "col-md-3">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_objType"><fmt:message key="voms.recomd.objType"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_objType" data-default="">
 										<option value=""><fmt:message key="common.pleaseselect"/></option>
-										<c:forEach var="type" varStatus="vs" items="">
-											<option value=""></option>
-										</c:forEach>
+										<option value="0">栏目</option>
+										<option value="1">展现对象</option>
+										<option value="101">页面对象</option>
 									</select>
 								</div>
 							</div>
-							<div class = "col-md-3">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_type"><fmt:message key="voms.recomd.type"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_type" data-default="">
 										<option value=""><fmt:message key="common.pleaseselect"/></option>
-										<c:forEach var="type" varStatus="vs" items="${typeInfo}">
-											<option value="${type.key}">${type.val}</option>
-										</c:forEach>
+										<option value="10">专题</option>
+										<option value="11">内容组合</option>
+										<option value="20">大图内容</option>
+										<option value="21">多图内容</option>
 									</select>
 								</div>
-							</div>							
-							<div class = "col-md-3">
+							</div>	
+						</div>
+						<div class="form-group">						
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_isRecommend"><fmt:message key="common.status"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_isRecommend" data-default="">
@@ -75,29 +99,9 @@
 									</select>
 								</div>
 							</div>
-						</div>
-						<div class="form-group">
-							<div class = "col-md-3">
-							    <label class="col-sm-3 control-label" for="s_labelInfo"><fmt:message key="voms.recomd.lableInfo"/></label>
-								<div class="col-sm-9">
-									<input type="text" id="s_labelInfo" class="form-control" />
-								</div>
+							<div class = "col-md-4">
 							</div>
-							<div class = "col-md-3">
-								<label class="col-sm-3 control-label" for="s_objId"><fmt:message key="voms.recomd.objId"/></label>
-								<div class="col-sm-9">
-									<input type="text" id="s_objId" class="form-control" />
-								</div>
-							</div>
-							<div class = "col-md-3">
-								<label class="col-sm-3 control-label" for="s_name"><fmt:message key="voms.recomd.name"/></label>
-								<div class="col-sm-9">
-									<input type="text" id="s_ame" class="form-control" />
-								</div>
-							</div>
-							<div class = "col-md-3">
-							</div>
-							<div class = "col-md-3 text-right">
+							<div class = "col-md-4 text-right">
 							    <button type="button" class="btn  btn-md" onclick="listVomsRecommend(event)">
 							    	<i class="ace-icon fa fa-search orange"></i><fmt:message key="button.search"/>
 							    </button>
@@ -128,11 +132,6 @@
 	<div id="prdType_vals">
 	<c:forEach var="type" varStatus="vs" items="${prdTypeRelations}">
 		<input type="hidden" id="prdType_${type.prdType}" value="${type.name}">
-	</c:forEach>
-	</div>
-	<div id="catInfo_vals"> 
-	<c:forEach var="type" varStatus="vs" items="${typeInfos}">
-		<input type="hidden" id="typeInfo_${type.key}" value="${type.val}">
 	</c:forEach>
 	</div>
 </div>

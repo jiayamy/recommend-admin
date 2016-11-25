@@ -14,8 +14,9 @@ import com.wondertek.mobilevideo.core.recommend.service.VomsRecommendService;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
 import com.wondertek.mobilevideo.core.recommend.util.ST;
 import com.wondertek.mobilevideo.core.util.StringUtil;
-
 /**
+ * VOMS推荐相关
+ * @author lvliuzhong
  *
  */
 public class VomsRecommendAction extends BaseAction {
@@ -23,18 +24,24 @@ public class VomsRecommendAction extends BaseAction {
 
 	private VomsRecommendService vomsRecommendService;
 	private List<PrdTypeRelation> prdTypeRelations;
-	
+	/**
+	 * 获取页面
+	 * @return
+	 */
 	public String getPage(){
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		if(log.isInfoEnabled())
 			log.info("getPage:" + ip);
-		
 		prdTypeRelations = new ArrayList<PrdTypeRelation>();
 		for(String key : PrdTypeRelationCache.PRDTYPE_RELATIONS.keySet()){
 			prdTypeRelations.add(PrdTypeRelationCache.PRDTYPE_RELATIONS.get(key));
 		}
 		return SUCCESS;
 	}
+	/**
+	 * 与VOMS接口，推荐或者撤回VOMS数据
+	 * @return
+	 */
 	public String addVomsRecommend(){
 		try {
 			resultMap.put("success", true);
@@ -47,21 +54,21 @@ public class VomsRecommendAction extends BaseAction {
 			String prdType = this.getParam("prdType");
 			String typeStr = this.getParam("type");
 			String name = this.getParam("name");
-			String isRecommendStr = this.getParam("isRecommend");
+			String isRecommendStr = this.getParam("isRecomd");
 			String labelInfo = this.getParam("labelInfo");
 			//校验参数
 			Long objId = StringUtil.nullToCloneLong(objIdStr);
-			String type = StringUtil.nullToString(typeStr);
-			String objType = StringUtil.nullToString(objTypeStr);
+			String type = StringUtil.null2Str(typeStr);
+			String objType = StringUtil.null2Str(objTypeStr);
 			
-			if(objId == null || StringUtil.isNullStr(isRecommendStr) || StringUtil.isNullStr(objTypeStr)){//类型校验
+			if(objId == null || StringUtil.isNullStr(isRecommendStr) || StringUtil.isNullStr(objType)){//类型校验
 				resultMap.put("error", true);
 				resultMap.put("message", this.getText("voms.recomd.param.error"));
 				return SUCCESS;
 			}
 			Boolean isRecommend = StringUtil.nullToBoolean(isRecommendStr);
 			if(isRecommend){//推荐校验
-				if(StringUtil.isNullStr(prdType) || StringUtil.isNullStr(typeStr) || StringUtil.isNullStr(name) || StringUtil.isNullStr(labelInfo)){
+				if(StringUtil.isNullStr(prdType) || StringUtil.isNullStr(type) || StringUtil.isNullStr(name) || StringUtil.isNullStr(labelInfo)){
 					resultMap.put("error", true);
 					resultMap.put("message", this.getText("voms.recomd.param.none"));
 					return SUCCESS;
@@ -123,6 +130,10 @@ public class VomsRecommendAction extends BaseAction {
 		}
 		return SUCCESS;
 	}
+	/**
+	 * 获取列表
+	 * @return
+	 */
 	public String list() {
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		if(log.isInfoEnabled())
@@ -176,6 +187,10 @@ public class VomsRecommendAction extends BaseAction {
 		if(!StringUtil.isNullStr(prdType)){
 			paramsMap.put("prdType", prdType);
 		}
+		String type = getParam("type");
+		if(!StringUtil.isNullStr(type)){
+			paramsMap.put("type", type);
+		}
 		String objType = getParam("objType");
 		if(!StringUtil.isNullStr(objType)){
 			paramsMap.put("objType", objType);
@@ -190,7 +205,7 @@ public class VomsRecommendAction extends BaseAction {
 		}
 		String isRecommend = getParam("isRecommend");
 		if(!StringUtil.isNullStr(isRecommend)){
-			paramsMap.put("isRecommend", isRecommend);
+			paramsMap.put("isRecommend", StringUtil.nullToBoolean(isRecommend));
 		}
 	}
 	public VomsRecommendService getVomsRecommendService() {
@@ -198,5 +213,11 @@ public class VomsRecommendAction extends BaseAction {
 	}
 	public void setVomsRecommendService(VomsRecommendService vomsRecommendService) {
 		this.vomsRecommendService = vomsRecommendService;
+	}
+	public List<PrdTypeRelation> getPrdTypeRelations() {
+		return prdTypeRelations;
+	}
+	public void setPrdTypeRelations(List<PrdTypeRelation> prdTypeRelations) {
+		this.prdTypeRelations = prdTypeRelations;
 	}
 }

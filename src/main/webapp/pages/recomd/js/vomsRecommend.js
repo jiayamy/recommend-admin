@@ -52,66 +52,54 @@ function initGridTable() {
         url: webroot + "recomd/listVomsRecommend.msp",
 		datatype: "json",
 		/*height: 350,*/		
-		colNames:["序号", "节目ID",  "推荐对象", "类型", "产品", "标签名","状态",
+		colNames:["序号", "推荐对象ID",  "名称", "推荐对象", "类型","产品类型", "标签名","状态",
 		          "创建者", "创建时间", "修改者", "修改时间"
 		],
 		colModel:[
             {name:'id',index:'id', width:60,sortable : true},
 			{name:'objId',index:'objId', width:80, sortable : true},
+			{name:'name',index:'name', width:80, sortable : true},
 			{name:'objType',index:'objType', width:100,sortable : true,
 				formatter:function(cellvalue, options, rowObject){
-					var o = $("#objType_"+cellvalue);
-					if(o.length == 0){
-						return cellvalue;
+					if(cellvalue== '0'){
+						return "栏目";
+					}else if(cellvalue== '1'){
+						return "展现对象";
+					}else if(cellvalue== '101'){
+						return "页面对象";
 					}
-					return o.val();
-				},
-				unformat:function(cellvalue){
-					var o = $("#objType_vals input[value='"+cellvalue +"']");
-					if(o.length == 0){
-						return cellvalue;
-					}
-					if(o[0].id){
-						return o[0].id.split("_")[1]
-					}
-					return cellvalue;
 				}
 			},			
 			{name:'type',index:'type', width:100,sortable : true,
 				formatter:function(cellvalue, options, rowObject){
-					var o = $("#info_"+cellvalue);
+					if(cellvalue== '10'){
+						return "专题";
+					}else if(cellvalue== '11'){
+						return "内容组合";
+					}else if(cellvalue== '20'){
+						return "大图内容";
+					}else if(cellvalue== '21'){
+						return "多图内容";
+					}
+				}
+			},
+			{name:'prdType',index:'prdType', width:100,sortable : true,
+				formatter:function(cellvalue, options, rowObject){
+					var o = $("#prdType_"+cellvalue);
 					if(o.length == 0){
 						return cellvalue;
 					}
 					return o.val();
-				},
-				unformat:function(cellvalue){
-					var o = $("#info_vals input[value='"+cellvalue +"']");
-					if(o.length == 0){
-						return cellvalue;
-					}
-					if(o[0].id){
-						return o[0].id.split("_")[1]
-					}
-					return cellvalue;
 				}
 			},
-			
-			{name:'prdType',index:'prdType', width:150, sortable : true},
 			{name:'labelInfo',index:'labelInfo', width:200,sortable : true},
-			{name:'isRecommd',index:'isRecommd', width:100,sortable : true,
+			{name:'isRecommend',index:'isRecommend', width:100,sortable : true,
 				formatter:function(cellvalue, options, rowObject){
-					if(cellvalue == "1"){
+					console.log(cellvalue);
+					if(cellvalue == true){
 						return "推荐"
 					}else{
 						return "撤回"
-					}
-				},
-				unformat:function(cellvalue){
-					if(cellvalue == "推荐"){
-						return "1"
-					}else{
-						return "0"
 					}
 				}
 			},
@@ -159,8 +147,6 @@ function initGridTable() {
 			}
 			
 			setTimeout(function(){
-				styleCheckbox(table);				
-				updateActionIcons(table);
 				updatePagerIcons(table);
 				enableTooltips(table);
 			}, 0);
@@ -316,6 +302,4 @@ function listVomsRecommend(e) {
 		mtype: "post"
 	}).trigger("reloadGrid");
 	setBtnDisable(e)//set search button disabled and remove the disabled attribute a few seconds later
-
-
 }

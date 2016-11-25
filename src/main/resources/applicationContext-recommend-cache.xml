@@ -42,7 +42,7 @@
 	<bean id="recommendDataCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.RecommendDataCacheClusterManagerImpl">
 		<property name="jedisClusterFactory" ref="jedisClusterFactory"/>
 		<property name="vomsRecommendService" ref="vomsRecommendService"/>
-		<property name="expireTime" value="3600" /> 
+		<property name="expireTime" value="720" />
 	</bean>
 	
 	<!--redis集群配置，未使用 end-->

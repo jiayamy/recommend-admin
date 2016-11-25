@@ -46,35 +46,76 @@ public class RequestAction extends BaseAction {
 	 * @return
 	 */
 	public String searchVomsData() {
+		String ip = RequestUtil.getIpAddr(this.getRequest());
+		// 获取参数
+		String id = this.getParam("id");
+		String type = this.getParam("type");
+		String prdType = this.getParam("prdType");
+		String labelInfo = this.getParam("labelInfo");
+		String startStr = this.getParam("start");
+		String limitStr = this.getParam("limit");
+		if (log.isDebugEnabled()) {	
+			log.info("searchVomsData ip:" + ip + "," + id +"|" + type +"|" + prdType +"|" + startStr +"|" + limitStr +"|" + labelInfo);
+		}
+		// 校验参数
+		if (StringUtil.isNullStr(labelInfo) || StringUtil.isNullStr(prdType) 
+				|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr) ) {
+			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
+			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			return SUCCESS;
+		}
+		// 处理参数
+		int start = StringUtil.nullToInteger(startStr);
+		int limit = StringUtil.nullToInteger(limitStr);
+		
+		List<String> types = new ArrayList<String>();
+		if(!StringUtil.isNullStr(type)){
+			for(String tmp : type.split(",")){
+				if(!StringUtil.isNullStr(tmp)){
+					types.add(StringUtil.null2Str(tmp));
+				}
+			}
+		}
+		List<RecommendDataVo> returnList = new ArrayList<RecommendDataVo>();
+		int total = 0;
+		
+		long s = System.currentTimeMillis();
+		long end1 = s;
+		long end2 = s;
 		try {
-			String ip = RequestUtil.getIpAddr(this.getRequest());
-			if (log.isDebugEnabled()) {	
-				log.info("showDataRecommemd :" + ip);
-			}
-			// 获取参数
-			String type = this.getParam("type");
-			String prdType = this.getParam("prdType");
-			String labelInfo = this.getParam("labelInfo");
-
-			// 校验参数
-			if (StringUtil.isNullStr(labelInfo) ||StringUtil.isNullStr(type) || StringUtil.isNullStr(prdType) ) {
-				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
-				resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-				return SUCCESS;
-			}
+			//获取数据
+			List<RecommendDataVo> allList = recommendDataCacheManager.queryByLabelInfo(types, prdType, labelInfo);
+			end1 = System.currentTimeMillis();
 			
-			// 得到list recommendDataVos
-			List<RecommendDataVo> recommendDataVos = recommendDataCacheManager.queryByLabelInfo(type, prdType, labelInfo);
+			//数据分页
+			total = allList.size();
+			int requestTotal = (start + limit);
+			int end = requestTotal > total ? total : requestTotal;
+			if(start < total){
+				for(int i = start; i < end ; i++){
+					returnList.add(allList.get(i));
+				}
+			}
+			end2 = System.currentTimeMillis();
 			
+			//返回结果
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
-			resultMap.put(RequestConstants.R_ROOT, recommendDataVos);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
+			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_ROOT, returnList);
+			resultMap.put(RequestConstants.R_TOTAL, total);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
-
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
+			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.system"));
+			end2 = System.currentTimeMillis();
 		}
+		
+		if(log.isDebugEnabled())
+			log.debug("searchVomsData end,duration:" + (end2 -s) + "|" + (end1 - s) + "|" + (end2 - end1));
+		
 		return SUCCESS;
 
 	}
