@@ -30,6 +30,12 @@
 				<param name="root">resultMap</param>
 			</result>
 		</action>
+		<!-- 20161123 -->
+		<action name="searchVomsData" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="searchVomsData">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
 	</package>
 </struts>	
 

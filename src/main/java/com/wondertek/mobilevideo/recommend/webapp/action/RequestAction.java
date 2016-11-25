@@ -9,6 +9,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
+import com.wondertek.mobilevideo.core.recommend.cache.redis.service.RecommendDataCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.RecommendInfoCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.SearchCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
@@ -21,6 +22,7 @@ import com.wondertek.mobilevideo.core.recommend.util.RecomdItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
+import com.wondertek.mobilevideo.core.recommend.vo.RecommendDataVo;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatInfo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
@@ -38,6 +40,44 @@ public class RequestAction extends BaseAction {
 	private RecommendInfoCacheManager recommendInfoCacheManager;
 	private UserTagCacheManager userTagCacheManager;
 	private SearchCacheManager searchCacheManager;
+	private RecommendDataCacheManager recommendDataCacheManager;
+	/**
+	 * 获取VOMS数据
+	 * @return
+	 */
+	public String searchVomsData() {
+		try {
+			String ip = RequestUtil.getIpAddr(this.getRequest());
+			if (log.isDebugEnabled()) {	
+				log.info("showDataRecommemd :" + ip);
+			}
+			// 获取参数
+			String type = this.getParam("type");
+			String prdType = this.getParam("prdType");
+			String labelInfo = this.getParam("labelInfo");
+
+			// 校验参数
+			if (StringUtil.isNullStr(labelInfo) ||StringUtil.isNullStr(type) || StringUtil.isNullStr(prdType) ) {
+				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+				resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
+				return SUCCESS;
+			}
+			
+			// 得到list recommendDataVos
+			List<RecommendDataVo> recommendDataVos = recommendDataCacheManager.queryByLabelInfo(type, prdType, labelInfo);
+			
+			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
+			resultMap.put(RequestConstants.R_ROOT, recommendDataVos);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+
+			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
+		}
+		return SUCCESS;
+
+	}
 	/**
 	 * 添加用户标签
 	 * @return
@@ -792,4 +832,11 @@ public class RequestAction extends BaseAction {
 	public void setSearchCacheManager(SearchCacheManager searchCacheManager) {
 		this.searchCacheManager = searchCacheManager;
 	}
+	public RecommendDataCacheManager getRecommendDataCacheManager() {
+		return recommendDataCacheManager;
+	}
+	public void setRecommendDataCacheManager(RecommendDataCacheManager recommendDataCacheManager) {
+		this.recommendDataCacheManager = recommendDataCacheManager;
+	}
+	
 }
