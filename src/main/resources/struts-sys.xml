@@ -17,6 +17,7 @@
 			<result name="success">/pages/sys/sysParam.jsp</result>
 		</action>
 		
+		
 		<action name="listParam" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="list">
 			<result type="json">
 			    <param name = "root"> resultMap</param>
@@ -40,6 +41,8 @@
 			    <param name = "root"> resultMap</param>
 			</result>
 		</action>
+		
+		
 		<action name="sysConfigExportExcel" class="com.wondertek.mobilevideo.recommend.webapp.action.SystemConfigAction" method="exportExcel">
 			<result type="stream">
 				<param name="contentType">application/vnd.ms-excel</param>
@@ -47,6 +50,18 @@
 				<param name="inputName">inputStream</param>
 			</result>
 		</action>
+		
+		<!-- 推荐标签权重管理 -->
+		<action name="recommondParmsManage" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="getPage">
+			<result name="success">/pages/sys/recomdParam.jsp</result>
+		</action>
+		
+		<action name="listRecommondParam" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="list">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
 	</package>
 </struts>	
 
