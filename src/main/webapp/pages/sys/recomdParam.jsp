@@ -3,11 +3,14 @@
 <%@ include file="/common/taglibs.jsp"%>
 <style type="text/css">
 		.tree .tree-selected {
-		  background-color: rgba(16, 17, 21, 0.1);
+		  background-color: rgba(255,215,100, 0.5);
 		  color: #6398B0;
 		}
 		.tree .tree-selected:hover {
-		  background-color: rgba(16, 17, 21, 0.1);
+		  background-color: rgba(255,215,100, 0.5);
+		}
+		.tree .tree-item:hover {
+		    background-color: #ffebb2;
 		}
 	</style>
 <div class="breadcrumbs" id="breadcrumbs">
@@ -132,6 +135,16 @@
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" id="addForm" onsubmit="return false;">
+					<div class="form-group" style="display:none">
+						<div class="col-md-12">
+							<label for="addLabelParentType"
+								class="col-sm-2 control-label no-padding-right">上级标签类型</label>
+							<div class="col-sm-10">
+								<input type="text" class="form-control" id="addLabelParentType" readonly="readonly"/>
+							</div>
+						</div>
+					</div>
+					
 					<div class="form-group">
 						<div class="col-md-12">
 							<label for="addLabelParent"
@@ -146,7 +159,11 @@
 							<label for="addLabelName"
 								class="col-sm-2 control-label no-padding-right">标签名</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="addLabelName" />
+								<select class="form-control addLabelName" id="form-field-select-1">
+									<option value=""></option>
+
+									 
+								</select>
 							</div>
 						</div>
 					</div>
@@ -160,7 +177,7 @@
 	
 								<select class="form-control addLabelType" id="form-field-select-1">
 									<option value=""></option>
-									<option value="0">一级标签</option>
+<!-- 									<option value="0">一级标签</option> -->
 									<option value="1">二级标签</option>
 									
 									

@@ -2,13 +2,15 @@ var $laberName = $('#laberName'),
      	$laberType = $('#laberType'),
      	$laberQ = $('#laberQ'),
      	$addLabelParent = $('#addLabelParent'),
-     	$addLabelName = $('#addLabelName'),
+     	$addLabelName = $('.addLabelName'),
      	$addLabelWeight = $('#addLabelWeight'),
      	$addLabelType = $('.addLabelType'),
+     	$addLabelParentType = $('#addLabelParentType'),
      	$editLabelParent = $('#editLabelParent'),
      	$editLabelName = $('#editLabelName'),
      	$editLabelType = $('#editLabelType'),
      	$editLabelWeight = $('#editLabelWeight');
+
 
 jQuery(function($) {
 	
@@ -28,13 +30,14 @@ jQuery(function($) {
          if (parent_id !== null) {  
             $.ajax({  
                  url: remoteUrl,  
-                 data: 'id=' +parent_id,  
+                 data: 'skey=' +parent_id,  
                  type: 'POST' ,  
                  dataType: 'json' ,  
                  success : function (response) {  
                       
-                    	 console.log(response);
-                         callback({ data: response.data.data })  
+                    	 
+                         callback({ data: response.data.data });
+                         console.log(response.data.data)
                  },  
                  error: function (response) {  
                       //console.log(response);  
@@ -50,13 +53,30 @@ jQuery(function($) {
 //    	 var myData = [ ... ];//set of data
 //    	 callback({ data: myData });
 //    }
-	
+   $.ajax({  
+       url: 'sys/addLabelNameList.msp',  
+       type: 'POST' ,  
+       dataType: 'json' ,  
+       success : function (response) {  
+            
+          	 
+              var $addLabelList = response.data;
+               
+               var max = $addLabelList.length;
+               for(var i =0;i<max; i++){
+               	$addLabelName.append('<option value="'+$addLabelList[i].key+'">'+$addLabelList[i].val+'</option>');
+               }
+       },  
+       error: function (response) {  
+            //console.log(response);  
+       }  
+  }) ;
    
 	$('#tree1')
 			.ace_tree(
 					{
 						dataSource: remoteDateSource ,  
-	                      multiSelect: false ,  
+	                      multiSelect: true ,  
 	                      loadingHTML: '<div class="tree-loading"><i class="ace-icon fa fa-refresh fa-spin blue"></i></div>',  
 	                       'open-icon' : 'ace-icon tree-minus',  
 	                       'close-icon' : 'ace-icon tree-plus',  
@@ -74,7 +94,8 @@ jQuery(function($) {
 		//result.item
 		//result.eventType >> (selected or unselected)
 	}).on('selected', function(e) {
-	}).on('unselected', function(e) {
+	}).on('deselected', function(e) {
+	}).on('loaded', function(e) {	
 	}).on('opened', function(e) {
 	}).on('closed', function(e) {
 	});
@@ -90,18 +111,29 @@ jQuery(function($) {
 	});*/
 
 	$('#tree1').on('selected.fu.tree', function (evt, data) {
-		console.log(data.target);
+		
 		$laberName.val(data.target.text);
 		$laberType.val(data.target.laberType);
 		$laberQ.val(data.target.weight);
 		$addLabelParent.val(data.target.text);
+		$addLabelParentType.val(data.target.laberType);
 		$editLabelParent.val(data.target.parentText);
 		$editLabelName.val(data.target.text);
 		$editLabelType.val(data.target.laberType);
 		$editLabelWeight.val(data.target.weight);
 		
 	});
-	 
+	$('#tree1').on('deselected.fu.tree', function (evt, data) {
+		
+		
+		$addLabelParent.val("");
+		$addLabelParentType.val("");
+		$editLabelParent.val("");
+		$editLabelName.val("");
+		$editLabelType.val("");
+		$editLabelWeight.val("");
+		
+	});
 	
 	//show selected items inside a modal  
     $( '#submit-button' ).on('click' , function () {  
@@ -119,15 +151,16 @@ jQuery(function($) {
 });
 
 function editRecomdParms() {
-	var selectedIds = $('#tree-selected'); //返回选中多行ids
-    if (selectedIds == '' || selectedIds == null) {
+	var selectedIds = $('.tree-selected'); //返回选中多行ids
+    if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
 	    alertmsg("warning", "请选择一条记录进行操作");
     } else if (selectedIds.length > 1) {
         alertmsg("warning", "请只选择一条记录进行操作");
     } else {
     	
         
-        $("#editSysParamsModal").modal("show"); 
+        $("#editSysParamsModal").modal("show");
+        
         
     }
     
@@ -135,10 +168,16 @@ function editRecomdParms() {
 
 function editSave() {
 	
-    if ($editLabelWeight == "") {
+    if ($editLabelWeight.val() == "") {
     	alertmsg("warning", "权重为空");
     	return;
     }
+    var reg = /^(\d{1,2}(\.\d{1,2})?|100)$/;
+    if(!reg.test($editLabelWeight.val())){
+    	alertmsg("warning","请输入0-100以内的权重数值，小数点后最多2位");
+    	return;
+    }
+    
     
 	$.ajax({
 		type:"post",
@@ -160,23 +199,46 @@ function editSave() {
 }
 
 function addSysParms() {
+	var selectedIds = $('.tree-selected'); //返回选中多行ids
+    if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
+	    alertmsg("warning", "请选择一条一级标签进行操作");
+	    return;
+    } else if (selectedIds.length > 1) {
+        alertmsg("warning", "请只选择一条一级标签进行操作");
+        return;
+    } else {
+    	if($addLabelParent.val()=="" || $addLabelParentType.val()!="一级标签"){
+    		alertmsg("warning", "请选择一级标签进行添加");
+        	return;
+    	}
     $("#addSysParmsModal").modal("show");
-    
+    }
 }
 function addSave() {
 	
-    if ($addLabelName == "") {
+	if($addLabelParent.val()=="" || $addLabelParentType.val()!="一级标签"){
+		alertmsg("warning", "请选择一级标签进行添加");
+    	return;
+	}
+	
+    if ($addLabelName.val() == "") {
     	alertmsg("warning", "标签名为空");
     	return;
     }
-    if ($addLabelType == "") {
-    	alertmsg("warning", "标签类型");
+    if ($addLabelType.val() == "") {
+    	alertmsg("warning", "标签类型为空");
     	return;
     }
-    if($addLabelWeight == ""){
+    if($addLabelWeight.val() == ""){
     	alertmsg("warning", "标签权重为空");
     	return;
     }
+    var reg = /^(\d{1,2}(\.\d{1,2})?|100)$/;
+    if(!reg.test($addLabelWeight.val())){
+    	alertmsg("warning","请输入0-100以内的权重数值，小数点后最多2位");
+    	return;
+    }
+    
     
 	$.ajax({
 		type:"post",
@@ -197,8 +259,8 @@ function addSave() {
 }
 
 function delSysParms() {
-	var selectedIds = $('#tree-selected');
-    if (selectedIds == '' || selectedIds == null) {
+	var selectedIds = $('.tree-selected');
+    if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
 	    alertmsg("warning","请至少选择一条记录进行操作");
     } else if (selectedIds.length >= 1) {
     	

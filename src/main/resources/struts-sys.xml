@@ -62,6 +62,12 @@
 			</result>
 		</action>
 		
+		<action name="addLabelNameList" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="addLabelNameList">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
 	</package>
 </struts>	
 
