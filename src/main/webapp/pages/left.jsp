@@ -49,7 +49,7 @@
 						</a> <b class="arrow"></b></li>
 					</cas:havePerm>
 					<cas:havePerm url="/menuRecommonParmsManage.htm">
-						<li><a href="#"
+						<li><a href="#" id="menuRecomdMang"
 							menu-url="<c:url value='/sys/recommondParmsManage.msp'/>"> <!-- <i class="menu-icon fa fa-caret-right"></i> -->
 								推荐标签权重管理 
 						</a> <b class="arrow"></b></li>

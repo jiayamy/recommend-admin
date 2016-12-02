@@ -1,7 +1,9 @@
 package com.wondertek.mobilevideo.recommend.webapp.action;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.wondertek.mobilevideo.core.recommend.model.AdditionalParameters;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsConfig;
@@ -29,19 +31,27 @@ public class RecommondConfigAction extends BaseAction {
 		List<EnumsConfig> items = new ArrayList<EnumsConfig>();
 		RecommondListVo result = new RecommondListVo();
 		List<RecommendParam> recommendParams = new ArrayList<RecommendParam>();
-
+		
+		List<EnumsInfo> enumsInfos = enumsInfoService.getAll();
+		Map<String, String> enumsMap = new HashMap<String, String>();
+		for(EnumsInfo enums : enumsInfos){
+			String k1 = enums.getKey() + "-" + enums.getType();
+			String v1 = enums.getVal();
+			enumsMap.put(k1, v1);
+		}
+		
 		items = enumsConfigService.findByType("0");
 		for (EnumsConfig eConfig : items) {
 
 			RecommendParam r = new RecommendParam();
 			String key = eConfig.getKey();
+			r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
+			r.setLaberType(eConfig.getType().equals("0") ? "一级标签" : "二级标签");
+			r.setId(eConfig.getId());
+			r.setWeight(eConfig.getWeight());
 			List<EnumsConfig> childs = enumsConfigService.findByParent(key);
 			if (childs != null && childs.size() > 0) {
-				r.setText(eConfig.getValue());
-				r.setLaberType(eConfig.getType().equals("0") ? "一级标签" : "二级标签");
 				r.setType("folder");
-				r.setId(eConfig.getId());
-				r.setWeight(eConfig.getWeight());
 				AdditionalParameters additionParameters = new AdditionalParameters();
 				additionParameters.setId(eConfig.getKey());
 
@@ -49,10 +59,10 @@ public class RecommondConfigAction extends BaseAction {
 					RecommendParam rs = new RecommendParam();
 					rs.setId(es.getId());
 					rs.setLaberType(es.getType().equals("0") ? "一级标签" : "二级标签");
-					rs.setText(es.getValue());
+					rs.setText(enumsMap.get(es.getKey() + "-" + es.getType()));
 					rs.setType("item");
 					rs.setWeight(es.getWeight());
-					rs.setParentText(eConfig.getValue());
+					rs.setParentText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
 					rs.setParentId(eConfig.getId().toString());
 					additionParameters.getChildren().add(rs);
 
@@ -66,11 +76,7 @@ public class RecommondConfigAction extends BaseAction {
 				r.setAdditionalParameters(additionParameters);
 
 			} else {
-				r.setText(eConfig.getValue());
-				r.setLaberType(eConfig.getType().equals("0") ? "一级标签" : "二级标签");
 				r.setType("item");
-				r.setId(eConfig.getId());
-				r.setWeight(eConfig.getWeight());
 			}
 			recommendParams.add(r);
 

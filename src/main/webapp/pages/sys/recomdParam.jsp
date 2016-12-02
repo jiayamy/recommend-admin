@@ -97,15 +97,7 @@
 								class="col-xs-10 col-sm-5" />
 						</div>
 					</div>
-					<div class="form-group">
-						<label class="col-sm-3 control-label no-padding-right"
-							for="form-field-1"> 标签类型</label>
-
-						<div class="col-sm-9">
-							<input type="text" id="laberType" placeholder="标签类型" readonly="readonly"
-								class="col-xs-10 col-sm-5" />
-						</div>
-					</div>
+					
 					<div class="form-group">
 						<label class="col-sm-3 control-label no-padding-right"
 							for="form-field-1"> 权重 </label>
@@ -229,6 +221,15 @@
 			<div class="modal-body">
 				<form class="form-horizontal" id="saveEditForm"
 					onsubmit="return false;">
+					<div class="form-group" style="display:none">
+						<div class="col-md-12">
+							<label for="editLabelId"
+								class="col-sm-2 control-label no-padding-right">标签id</label>
+							<div class="col-md-10">
+								<input type="text" class="form-control" id="editLabelId" readonly="readonly" />
+							</div>
+						</div>
+					</div>
 					<div class="form-group">
 						<div class="col-md-12">
 							<label for="editLabelParent"
