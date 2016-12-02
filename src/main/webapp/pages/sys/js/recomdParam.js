@@ -1,5 +1,6 @@
 var $laberName = $('#laberName'),$mainPage = $('#main_page'), $laberType = $('#laberType'), $laberQ = $('#laberQ'), $addLabelParent = $('#addLabelParent'), $addLabelName = $('.addLabelName'), $addLabelWeight = $('#addLabelWeight'), $addLabelType = $('.addLabelType'), $addLabelParentType = $('#addLabelParentType'), $editLabelParent = $('#editLabelParent'), $editLabelName = $('#editLabelName'), $editLabelType = $('#editLabelType'), $editLabelWeight = $('#editLabelWeight'), $editLabelId = $('#editLabelId');
 var allSelectedIds;
+var $addLabelParentId = $('#addLabelParentId');
 
 jQuery(function($) {
 
@@ -105,20 +106,24 @@ jQuery(function($) {
 		$laberQ.val(data.target.weight);
 		$addLabelParent.val(data.target.text);
 		$addLabelParentType.val(data.target.laberType);
+		$addLabelParentId.val(data.target.id);
 		$editLabelParent.val(data.target.parentText);
 		$editLabelName.val(data.target.text);
 		$editLabelType.val(data.target.laberType);
 		$editLabelWeight.val(data.target.weight);
+		$editLabelId.val(data.target.id);
 
 	});
 	$('#tree1').on('deselected.fu.tree', function(evt, data) {
 
 		$addLabelParent.val("");
 		$addLabelParentType.val("");
+		$addLabelParentId.val("");
 		$editLabelParent.val("");
 		$editLabelName.val("");
 		$editLabelType.val("");
 		$editLabelWeight.val("");
+		$editLabelId.val("");
 
 	});
 
@@ -172,7 +177,7 @@ function editSave() {
 
 	$.ajax({
 		type : "post",
-		url : webroot + "#",
+		url : webroot + "sys/editWeights.msp",
 		data : {
 			"configKey" : $editLabelId.val(),
 			"configValue" : $editLabelWeight.val()
@@ -232,9 +237,9 @@ function addSave() {
 
 	$.ajax({
 		type : "post",
-		url : webroot + "#",
+		url : webroot + "sys/editWeights.msp",
 		data : {
-			"labelName" : $addLabelName.val(),
+			"labelId" : $addLabelParentId.val(),
 			"addLabelType" : $addLabelType.val(),
 			"addLabelWeight" : $addLabelWeight.val(),
 			"addLabelParent" : $addLabelParent.val()
@@ -274,7 +279,7 @@ function delSysParms() {
 					var data = {
 						"configIds" : ids
 					};
-					$.post(webroot + "#", data, function(data) {
+					$.post(webroot + "sys/editWeights.msp", data, function(data) {
 						if (data.success == true) {
 							$mainPage.load('/recommend/sys/recommondParmsManage.msp');//重新载入 
 							alertmsg("success", "删除成功");

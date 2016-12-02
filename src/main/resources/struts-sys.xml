@@ -68,6 +68,13 @@
 			</result>
 		</action>
 		
+		<!-- 编辑一级标签权重 -->
+		<action name="editWeights" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="editLabel">
+			<result type="json">
+				<param name="root">resultMap</param>
+			</result>
+		</action>
+		
 	</package>
 </struts>	
 

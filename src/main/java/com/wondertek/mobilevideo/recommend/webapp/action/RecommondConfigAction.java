@@ -5,13 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.model.AdditionalParameters;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsConfig;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsInfo;
 import com.wondertek.mobilevideo.core.recommend.model.RecommendParam;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsConfigService;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsInfoService;
+import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommondListVo;
+import com.wondertek.mobilevideo.core.util.StringUtil;
 
 public class RecommondConfigAction extends BaseAction {
 
@@ -93,6 +96,79 @@ public class RecommondConfigAction extends BaseAction {
 		
 		List<EnumsInfo> enumsInfos = enumsInfoService.queryByType(1);
 		resultMap.put("data", enumsInfos);
+		return SUCCESS;
+	}
+	/**
+	 * 添加、删除、修改标签
+	 */
+	public String editLabel(){
+		String ip = RequestUtil.getIpAddr(this.getRequest());
+		if(log.isInfoEnabled()){
+			log.info("edit:"+ip);
+		}
+		if(isNotLogin()){
+			resultMap.put("msg", this.getText("common.isNotLogin"));
+			return SUCCESS;
+		}
+		String id = getParam("configKey");
+		String weights = getParam("configValue");
+		String addLabelName = getParam("addLabelParent");
+		String parentLabelId = getParam("labelId");
+		String addLabelType = getParam("addLabelType");
+		String addLabelWeight = getParam("addLabelWeight");
+		String ids = getParam("configIds");
+
+		try {
+			EnumsConfig enumsConfig = null; 
+			//有id：编辑
+			if(id != null && !"".equals(id)){
+				enumsConfig = enumsConfigService.get(Long.parseLong(id));
+				System.out.println("enumsConfig:"+enumsConfig);
+				enumsConfig.setWeight(weights);
+				enumsConfigService.update(enumsConfig);
+				resultMap.put("msg", this.getText("system.editTag.success"));
+			}
+			//无id：添加
+			if(parentLabelId != null && !"".equals(parentLabelId)){
+				String addLabelKey = null;
+				if(parentLabelId == null || "".equals(parentLabelId)){
+					resultMap.put("msg", this.getText("system.addTag.fail"));
+					return SUCCESS;
+				}
+				enumsConfig = enumsConfigService.get(Long.parseLong(parentLabelId));
+				Map<String,String> map = EnumsInfoCache.VAL_ENUMSINFO.get(EnumsInfoCache.TYPE_LABEL);
+				for(String str:map.keySet()){
+					if(str.equals(addLabelName)){
+						addLabelKey = map.get(str);
+						break;
+					}
+				}
+				EnumsConfig addEnumsConfig = new EnumsConfig();
+				addEnumsConfig.setKey(addLabelKey);
+				addEnumsConfig.setParent(enumsConfig.getKey());
+				addEnumsConfig.setType(addLabelType);
+				addEnumsConfig.setWeight(addLabelWeight);
+				Boolean isExist = enumsConfigService.checkExistLabel(addLabelKey,enumsConfig.getKey(),addLabelType);
+				if(!isExist){
+					enumsConfigService.save(addEnumsConfig);
+					resultMap.put("msg", this.getText("system.addSecondTag.success"));
+				}else{
+					resultMap.put("msg", this.getText("system.SecondTag.exist"));
+				}
+			}
+			//删除二级标签
+			if(ids != null && !"".equals(ids)){
+				String[] paramIds = ids.split(",");
+				for(int i=0;i<paramIds.length;i++){
+					enumsConfigService.deleteById(Long.parseLong(paramIds[i]));
+					resultMap.put("success", true);
+				}
+			}
+		} catch (Exception e) {
+			resultMap.put("msg", this.getText("system.editTag.fail"));
+			e.printStackTrace();
+		}
+
 		return SUCCESS;
 	}
 
