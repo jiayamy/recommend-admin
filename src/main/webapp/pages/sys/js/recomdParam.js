@@ -272,6 +272,10 @@ function addSave() {
 
 function delSysParms() {
 	var selectedIds = $('.tree-selected');
+	if ($addLabelParentType.val() == "0") {
+		alertmsg("warning", "请选择二级标签进行删除");
+		return;
+	}
 	if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
 		alertmsg("warning", "请至少选择一条记录进行操作");
 	} else if (selectedIds.length >= 1) {
