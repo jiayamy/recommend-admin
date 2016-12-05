@@ -3,11 +3,11 @@
 <%@ include file="/common/taglibs.jsp"%>
 <style type="text/css">
 		.tree .tree-selected {
-		  background-color: rgba(255,215,100, 0.5);
+		  background-color: rgba(255,215,100, 0.8);
 		  color: #6398B0;
 		}
 		.tree .tree-selected:hover {
-		  background-color: rgba(255,215,100, 0.5);
+		  background-color: rgba(255,215,100, 0.8);
 		}
 		.tree .tree-item:hover {
 		    background-color: #ffebb2;
@@ -133,7 +133,7 @@
 								class="col-sm-2 control-label no-padding-right">上级标签类型</label>
 							<div class="col-sm-10">
 								<input type="text" class="form-control" id="addLabelParentType" readonly="readonly"/>
-								<input type="text" class="form-control" id="addLabelParentId" readonly="readonly" style="display:none"/>
+								<input type="text" class="form-control" id="addLabelParentId" readonly="readonly"/>
 							</div>
 						</div>
 					</div>
@@ -254,7 +254,13 @@
 							<label for="editLabelType"
 								class="col-sm-2 no-padding-right control-label">标签类型</label>
 							<div class="col-sm-10">
-								<input type="text" class="form-control" id="editLabelType" readonly="readonly"/>
+								<select class="form-control editLabelType" id="editLabelType" disabled="disabled">
+									
+									<option value=""></option>
+									<option value="0">一级标签</option>
+									<option value="1">二级标签</option>
+									 
+								</select>
 							</div>
 						</div>
 					</div>

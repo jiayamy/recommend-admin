@@ -1,6 +1,5 @@
-var $laberName = $('#laberName'),$mainPage = $('#main_page'), $laberType = $('#laberType'), $laberQ = $('#laberQ'), $addLabelParent = $('#addLabelParent'), $addLabelName = $('.addLabelName'), $addLabelWeight = $('#addLabelWeight'), $addLabelType = $('.addLabelType'), $addLabelParentType = $('#addLabelParentType'), $editLabelParent = $('#editLabelParent'), $editLabelName = $('#editLabelName'), $editLabelType = $('#editLabelType'), $editLabelWeight = $('#editLabelWeight'), $editLabelId = $('#editLabelId');
+var $laberName = $('#laberName'),$addLabelParentId=$('#addLabelParentId'),$mainPage = $('#main_page'), $laberType = $('#laberType'), $laberQ = $('#laberQ'), $addLabelParent = $('#addLabelParent'), $addLabelName = $('.addLabelName'), $addLabelWeight = $('#addLabelWeight'), $addLabelType = $('.addLabelType'), $addLabelParentType = $('#addLabelParentType'), $editLabelParent = $('#editLabelParent'), $editLabelName = $('#editLabelName'), $editLabelType = $('#editLabelType'), $editLabelWeight = $('#editLabelWeight'), $editLabelId = $('#editLabelId');
 var allSelectedIds;
-var $addLabelParentId = $('#addLabelParentId');
 
 jQuery(function($) {
 
@@ -115,15 +114,31 @@ jQuery(function($) {
 
 	});
 	$('#tree1').on('deselected.fu.tree', function(evt, data) {
-
-		$addLabelParent.val("");
-		$addLabelParentType.val("");
-		$addLabelParentId.val("");
-		$editLabelParent.val("");
-		$editLabelName.val("");
-		$editLabelType.val("");
-		$editLabelWeight.val("");
-		$editLabelId.val("");
+		var selectedIds = $('.tree-selected');
+		if(selectedIds == '' || selectedIds == null || selectedIds.length < 1){
+			$addLabelParent.val("");
+			$addLabelParentType.val("");
+			$addLabelParentId.val("");
+			$editLabelParent.val("");
+			$editLabelName.val("");
+			$editLabelType.val("");
+			$editLabelWeight.val("");
+		}else{
+			var items = $('#tree1').tree('selectedItems');
+//			console.log(items);
+			for ( var i in items)
+				if (items.hasOwnProperty(i)) {
+					var item = items[i];
+					$addLabelParent.val(item.text);
+					$addLabelParentType.val(item.laberType);
+					$addLabelParentId.val(item.id);
+					$editLabelParent.val(item.parentText);
+					$editLabelName.val(item.text);
+					$editLabelType.val(item.laberType);
+					$editLabelWeight.val(item.weight);
+			}
+		}
+		
 
 	});
 
@@ -203,7 +218,7 @@ function addSysParms() {
 		alertmsg("warning", "请只选择一条一级标签进行操作");
 		return;
 	} else {
-		if ($addLabelParent.val() == "" || $addLabelParentType.val() != "一级标签") {
+		if ($addLabelParent.val() == "" || $addLabelParentType.val() != "0") {
 			alertmsg("warning", "请选择一级标签进行添加");
 			return;
 		}
@@ -212,7 +227,7 @@ function addSysParms() {
 }
 function addSave() {
 
-	if ($addLabelParent.val() == "" || $addLabelParentType.val() != "一级标签") {
+	if ($addLabelParent.val() == "" || $addLabelParentType.val() != "0") {
 		alertmsg("warning", "请选择一级标签进行添加");
 		return;
 	}
@@ -242,7 +257,7 @@ function addSave() {
 			"labelId" : $addLabelParentId.val(),
 			"addLabelType" : $addLabelType.val(),
 			"addLabelWeight" : $addLabelWeight.val(),
-			"addLabelParent" : $addLabelParent.val()
+			"addLabelName" : $addLabelName.val()
 		},
 		success : function(data) {
 			$mainPage.load('/recommend/sys/recommondParmsManage.msp');

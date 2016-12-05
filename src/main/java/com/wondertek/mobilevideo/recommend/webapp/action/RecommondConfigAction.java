@@ -49,7 +49,7 @@ public class RecommondConfigAction extends BaseAction {
 			RecommendParam r = new RecommendParam();
 			String key = eConfig.getKey();
 			r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
-			r.setLaberType(eConfig.getType().equals("0") ? "一级标签" : "二级标签");
+			r.setLaberType(eConfig.getType());
 			r.setId(eConfig.getId());
 			r.setWeight(eConfig.getWeight());
 			List<EnumsConfig> childs = enumsConfigService.findByParent(key);
@@ -61,7 +61,7 @@ public class RecommondConfigAction extends BaseAction {
 				for (EnumsConfig es : childs) {
 					RecommendParam rs = new RecommendParam();
 					rs.setId(es.getId());
-					rs.setLaberType(es.getType().equals("0") ? "一级标签" : "二级标签");
+					rs.setLaberType(es.getType());
 					rs.setText(enumsMap.get(es.getKey() + "-" + es.getType()));
 					rs.setType("item");
 					rs.setWeight(es.getWeight());
