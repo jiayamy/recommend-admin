@@ -123,7 +123,6 @@ public class RecommondConfigAction extends BaseAction {
 			//有id：编辑
 			if(id != null && !"".equals(id)){
 				enumsConfig = enumsConfigService.get(Long.parseLong(id));
-				System.out.println("enumsConfig:"+enumsConfig);
 				enumsConfig.setWeight(weights);
 				enumsConfigService.update(enumsConfig);
 				resultMap.put("msg", this.getText("system.editTag.success"));
@@ -152,6 +151,10 @@ public class RecommondConfigAction extends BaseAction {
 			if(ids != null && !"".equals(ids)){
 				String[] paramIds = ids.split(",");
 				for(int i=0;i<paramIds.length;i++){
+					enumsConfig = enumsConfigService.get(Long.parseLong(paramIds[i]));
+					if("0".equals(enumsConfig.getType())){
+						continue;
+					}
 					enumsConfigService.deleteById(Long.parseLong(paramIds[i]));
 					resultMap.put("success", true);
 				}
