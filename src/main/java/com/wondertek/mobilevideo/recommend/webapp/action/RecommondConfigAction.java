@@ -112,7 +112,7 @@ public class RecommondConfigAction extends BaseAction {
 		}
 		String id = getParam("configKey");
 		String weights = getParam("configValue");
-		String addLabelName = getParam("addLabelParent");
+		String addLabelKey = getParam("addLabelName");
 		String parentLabelId = getParam("labelId");
 		String addLabelType = getParam("addLabelType");
 		String addLabelWeight = getParam("addLabelWeight");
@@ -130,19 +130,11 @@ public class RecommondConfigAction extends BaseAction {
 			}
 			//无id：添加
 			if(parentLabelId != null && !"".equals(parentLabelId)){
-				String addLabelKey = null;
 				if(parentLabelId == null || "".equals(parentLabelId)){
 					resultMap.put("msg", this.getText("system.addTag.fail"));
 					return SUCCESS;
 				}
 				enumsConfig = enumsConfigService.get(Long.parseLong(parentLabelId));
-				Map<String,String> map = EnumsInfoCache.VAL_ENUMSINFO.get(EnumsInfoCache.TYPE_LABEL);
-				for(String str:map.keySet()){
-					if(str.equals(addLabelName)){
-						addLabelKey = map.get(str);
-						break;
-					}
-				}
 				EnumsConfig addEnumsConfig = new EnumsConfig();
 				addEnumsConfig.setKey(addLabelKey);
 				addEnumsConfig.setParent(enumsConfig.getKey());
