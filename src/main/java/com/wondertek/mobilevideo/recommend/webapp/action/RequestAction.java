@@ -9,7 +9,7 @@ import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
-import com.wondertek.mobilevideo.core.recommend.cache.redis.service.RecommendDataCacheManager;
+import com.wondertek.mobilevideo.core.recommend.cache.redis.service.VomsRecommendCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.RecommendInfoCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.SearchCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
@@ -22,7 +22,7 @@ import com.wondertek.mobilevideo.core.recommend.util.RecomdItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
-import com.wondertek.mobilevideo.core.recommend.vo.RecommendDataVo;
+import com.wondertek.mobilevideo.core.recommend.vo.VomsRecommendVo;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatInfo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
@@ -40,12 +40,12 @@ public class RequestAction extends BaseAction {
 	private RecommendInfoCacheManager recommendInfoCacheManager;
 	private UserTagCacheManager userTagCacheManager;
 	private SearchCacheManager searchCacheManager;
-	private RecommendDataCacheManager recommendDataCacheManager;
+	private VomsRecommendCacheManager vomsRecommendCacheManager;
 	/**
 	 * 获取VOMS数据
 	 * @return
 	 */
-	public String searchVomsData() {
+	public String searchVoms() {
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		// 获取参数
 		String id = this.getParam("id");
@@ -77,7 +77,7 @@ public class RequestAction extends BaseAction {
 				}
 			}
 		}
-		List<RecommendDataVo> returnList = new ArrayList<RecommendDataVo>();
+		List<VomsRecommendVo> returnList = new ArrayList<VomsRecommendVo>();
 		int total = 0;
 		
 		long s = System.currentTimeMillis();
@@ -85,7 +85,7 @@ public class RequestAction extends BaseAction {
 		long end2 = s;
 		try {
 			//获取数据
-			List<RecommendDataVo> allList = recommendDataCacheManager.queryByLabelInfo(types, prdType, labelInfo);
+			List<VomsRecommendVo> allList = vomsRecommendCacheManager.queryByLabelInfo(types, prdType, labelInfo);
 			end1 = System.currentTimeMillis();
 			
 			//数据分页
@@ -610,9 +610,7 @@ public class RequestAction extends BaseAction {
 				Integer times = checkMap2.get(tmp.getPrdContId());
 				if(times == null){//没添加过
 					times = 1;
-					
 					dataMap.put(tmp.getPrdContId(), tmp);
-					
 					if(checkMap1.get(times) == null){
 						checkMap1.put(times, new ArrayList<Long>());
 					}
@@ -913,11 +911,12 @@ public class RequestAction extends BaseAction {
 	public void setSearchCacheManager(SearchCacheManager searchCacheManager) {
 		this.searchCacheManager = searchCacheManager;
 	}
-	public RecommendDataCacheManager getRecommendDataCacheManager() {
-		return recommendDataCacheManager;
+	public VomsRecommendCacheManager getVomsRecommendCacheManager() {
+		return vomsRecommendCacheManager;
 	}
-	public void setRecommendDataCacheManager(RecommendDataCacheManager recommendDataCacheManager) {
-		this.recommendDataCacheManager = recommendDataCacheManager;
+	public void setVomsRecommendCacheManager(VomsRecommendCacheManager vomsRecommendCacheManager) {
+		this.vomsRecommendCacheManager = vomsRecommendCacheManager;
 	}
+	
 	
 }
