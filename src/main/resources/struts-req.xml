@@ -36,6 +36,12 @@
 			    <param name = "root"> resultMap</param>
 			</result>
 		</action>
+		<!-- 20161130 -->
+		<action name="searchAll" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="searchAllList">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
 	</package>
 </struts>	
 
