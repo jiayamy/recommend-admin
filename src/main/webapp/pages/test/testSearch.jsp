@@ -1,45 +1,9 @@
 <%@ page language="java" pageEncoding="UTF-8" contentType="text/html;charset=utf-8"%>
 <%@ include file="/common/taglibs.jsp" %>
-<!DOCTYPE html>
-<html>
-<head lang="en">
-<meta charset="UTF-8">
-<title></title>
-</head>
-<body style="background: white">
-	<!-- bootstrap & fontawesome -->
-	<link rel="stylesheet" href="${ctx}/ace/assets/css/bootstrap.css" />
-	<link rel="stylesheet" href="${ctx}/ace/assets/css/font-awesome.css" />
-
-	<!-- text fonts -->
-	<link rel="stylesheet" href="${ctx}/ace/assets/css/ace-fonts.css" />
-
-	<!-- ace styles -->
-	<link rel="stylesheet" href="${ctx}/ace/assets/css/ace.css" />
-
-	<!--[if lte IE 9]>
-	<link rel="stylesheet" href="${ctx}/ace/assets/css/ace-part2.css"/>
-	<![endif]-->
-	<link rel="stylesheet" href="${ctx}/ace/assets/css/ace-rtl.css" />
-
-	<!--[if lte IE 9]>
-	<link rel="stylesheet" href="${ctx}/ace/assets/css/ace-ie.css"/>
-	<![endif]-->
-
-	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
-
-	<!--[if lt IE 9]>
-	<script src="${ctx}/ace/assets/js/html5shiv.js"></script>
-	<script src="${ctx}/ace/assets/js/respond.js"></script>
-	<![endif]-->
-
-	<script src="${ctx}/ace/dist/js/jquery.min.js"></script>
-	<script src="${ctx}/ace/dist/js/jquery.validate.min.js"></script>
-
 	<div class="row col-md-12">
-		<div class="col-md-12">
+		<div class="col-md-12" id="page-content">
 			<h3 class="header smaller lighter red center-block">内容推荐接口测试</h3>
-			<form class="form-horizontal" role="form" action="${ctx}/recomd/testSearch.msp" method="post">
+			<form class="form-horizontal no-padding-bottom no-margin-bottom" role="form" action="${ctx}/recomd/testSearch.msp" method="post" id="testForm">
 				<div class="form-group">
 					<div class="col-md-6">
 						<label for="host" class="col-sm-2 control-label no-padding-right">服务器：</label>
@@ -102,7 +66,7 @@
 				<div class="clearfix form-actions center-block col-md-12">
 					<div class="col-sm-2 control-label no-padding-right"></div>
 					<div class="col-sm-10">
-						<button class="btn btn-info" type="submit">
+						<button class="btn btn-info" type="button" onclick="subm()">
 							<i class="ace-icon fa fa-check bigger-110"></i> 提交
 						</button>
 						&nbsp; &nbsp; &nbsp;
@@ -112,7 +76,118 @@
 					</div>
 				</div>
 			</form>
+			<div class="panel-body">	
+                <div class="row">
+                    <div class="col-xs-12">
+                        <table id="grid-table"></table>
+
+                        <div id="grid-pager"></div>
+                    </div>
+               </div>
+            </div>
 		</div>
+	
+		 
+	
 	</div>
+	<script type="text/javascript">
+		function subm(){
+			$.ajax({
+				url : "${ctx}/recomd/testSearch.msp",
+				type : "post",
+				data:$('#testForm').serialize(),
+				success : function(msg) {
+					pageInit(msg);
+				},
+				error : function(msg) {
+					console.log(msg);
+					alert("失败了");
+				}
+			});
+		}
+		function pageInit(msg){
+			var resultJson = eval("("+ msg +")");
+			var grid_data =resultJson.root;
+			var grid_selector = "#grid-table";
+			var pager_selector = "#grid-pager";
+			
+			//resize to fit page size
+			$(window).on('resize.jqGrid', function () {
+				$(grid_selector).jqGrid( 'setGridWidth', $("#page-content").width() );
+		    })
+			//resize on sidebar collapse/expand
+			var parent_column = $(grid_selector).closest('[class*="col-"]');
+			$(document).on('settings.ace.jqGrid' , function(ev, event_name, collapsed) {
+				if( event_name === 'sidebar_collapsed' || event_name === 'main_container_fixed' ) {
+					//setTimeout is for webkit only to give time for DOM changes and then redraw!!!
+					setTimeout(function() {
+						$(grid_selector).jqGrid( 'setGridWidth', parent_column.width() );
+					}, 0);
+				}
+		    })
+			jQuery(grid_selector).jqGrid({
+				data: grid_data,
+				datatype: "local",
+				height: 200,
+				colNames:['contName','prdContId'],
+				colModel:[
+					{name:'contName',index:'contName', width:150,editable: false,editoptions:{size:"20",maxlength:"30"}},
+					{name:'prdContId',index:'prdContId', width:150,editable: false,editoptions:{size:"20",maxlength:"30"}},
+				], 
+				viewrecords : true,
+				rowNum:10,
+				rowList:[10,20,30],
+				pager : pager_selector,
+				
+				multiselect: true,
+		        multiboxonly: true,
+		
+				loadComplete : function() {
+					var table = this;
+					setTimeout(function(){
+						updatePagerIcons(table);
+					}, 0);
+				},
+				caption: "TestResult"
+			});
+			$(window).triggerHandler('resize.jqGrid');//trigger window resize to make the grid get the correct size
+			//switch element when editing inline
+			function aceSwitch( cellvalue, options, cell ) {
+				setTimeout(function(){
+					$(cell) .find('input[type=checkbox]')
+						.addClass('ace ace-switch ace-switch-5')
+						.after('<span class="lbl"></span>');
+				}, 0);
+			}
+			//enable datepicker
+			function pickDate( cellvalue, options, cell ) {
+				setTimeout(function(){
+					$(cell) .find('input[type=text]')
+							.datepicker({format:'yyyy-mm-dd' , autoclose:true}); 
+				}, 0);
+			}
+			
+			function updatePagerIcons(table) {
+		            var replacement =
+		            {
+		                'ui-icon-seek-first' : 'ace-icon fa fa-angle-double-left bigger-140',
+		                'ui-icon-seek-prev' : 'ace-icon fa fa-angle-left bigger-140',
+		                'ui-icon-seek-next' : 'ace-icon fa fa-angle-right bigger-140',
+		                'ui-icon-seek-end' : 'ace-icon fa fa-angle-double-right bigger-140'
+		            };
+		            $('.ui-pg-table:not(.navtable) > tbody > tr > .ui-pg-button > .ui-icon').each(function(){
+		                var icon = $(this);
+		                var $class = $.trim(icon.attr('class').replace('ui-icon', ''));
+	
+		                if($class in replacement) icon.attr('class', 'ui-icon '+replacement[$class]);
+		            })
+		        }
+			$(document).one('ajaxloadstart.page', function(e) {
+	            $(grid_selector).jqGrid('GridUnload');
+	            $('.ui-jqdialog').remove();
+	        });
+			
+		}
+	</script>
 </body>
 </html>

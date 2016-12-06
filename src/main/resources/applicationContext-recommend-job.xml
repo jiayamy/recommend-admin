@@ -14,7 +14,7 @@
 			<list>
 		 		<ref bean="systemRefreshJob" />
 		 		<ref bean="redisRefreshJob" />
-		 		<ref bean="recommendDataRedisRefreshJob"/>
+		 		<ref bean="vomsRecommendRedisRefreshJob"/>
 			</list>
 		</property>
 	</bean>
@@ -48,14 +48,14 @@
 	</bean>
 	
 	<!-- 20161124 madongwei 注册定时任务-->
-	<bean id="recommendDataRedisRefreshBean"
-		class="com.wondertek.mobilevideo.recommend.webapp.job.RecommendDataRedisRefreshJob">
+	<bean id="vomsRecommendRedisRefreshBean"
+		class="com.wondertek.mobilevideo.recommend.webapp.job.VomsRecommendRedisRefreshJob">
 	</bean>
-	<bean id="recommendDataRedisRefreshJob"
+	<bean id="vomsRecommendRedisRefreshJob"
 		class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
 		<property name="jobDetail">
             <bean class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
-                <property name="targetObject" ref="recommendDataRedisRefreshBean"></property>
+                <property name="targetObject" ref="vomsRecommendRedisRefreshBean"></property>
                 <property name="targetMethod" value="refresh"></property>
             </bean>
         </property>

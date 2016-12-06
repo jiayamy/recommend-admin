@@ -31,7 +31,7 @@
 			</result>
 		</action>
 		<!-- 20161123 -->
-		<action name="searchVoms" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="searchVomsData">
+		<action name="searchVoms" class="com.wondertek.mobilevideo.recommend.webapp.action.RequestAction" method="searchVoms">
 			<result type="json">
 			    <param name = "root"> resultMap</param>
 			</result>
