@@ -38,13 +38,13 @@
 		//ACE
 		
 		//ACE
-		/**
+		
 		if( this.options.folderSelect ){
 			this.$element.off('click.fu.tree', '.tree-branch-header');
 			this.$element.on('click.fu.tree', '.icon-caret', $.proxy( function(ev) { this.openFolder($(ev.currentTarget).parent()); }, this));
 			this.$element.on('click.fu.tree', '.tree-branch-header', $.proxy( function(ev) { this.selectFolder($(ev.currentTarget)); }, this));
 		}
-		*/
+		
 
 		this.render();
 	};
@@ -90,7 +90,7 @@
 						if('icon-class' in value)
 							header.find('i').addClass(value['icon-class']);
 						
-						if('additionalParameters' in value
+						if('additionalParameters' in value && value.additionParameters!=null
 							&& 'item-selected' in value.additionalParameters 
 								&& value.additionalParameters['item-selected'] == true) {
 								setTimeout(function(){header.trigger('click')}, 0);
@@ -102,7 +102,7 @@
 						$entity.data(value);
 						
 						//ACE
-						if('additionalParameters' in value
+						if('additionalParameters' in value && value.additionParameters!=null
 							&& 'item-selected' in value.additionalParameters 
 								&& value.additionalParameters['item-selected'] == true) {
 								$entity.addClass ('tree-selected');

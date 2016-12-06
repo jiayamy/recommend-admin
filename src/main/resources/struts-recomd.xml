@@ -39,11 +39,26 @@
 			    <param name = "root"> resultMap</param>
 			</result>
 		</action>
-		<!-- 20161109 -->
-		<action name="addVomsArtificialInfo" class="com.wondertek.mobilevideo.recommend.webapp.action.VomsRecommendAction" method="addVomsRecommend">
+		
+		<action name="vomsRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.VomsRecommendAction" method="addVomsRecommend">
 			<result type="json">
 			    <param name = "root"> resultMap</param>
 			</result>
+		</action> 
+		
+		<action name="queryVomsRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.VomsRecommendAction" method="getPage">
+			<result name="success">/pages/recomd/vomsRecommend.jsp</result>
+		</action> 
+		
+		<action name="listVomsRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.VomsRecommendAction" method="list">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		<!-- 20161117 -->
+		<action name="testQueryTag" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testQueryTag">
+		</action>
+		<action name="testSearch" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testSearch">
 		</action>
 	</package>
 </struts>	

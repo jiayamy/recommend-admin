@@ -26,10 +26,10 @@ version/!QASW@#ED        root/3edc#EDC或root/6yhn^YHN
  cd /nas/nas_log/app_bak/rcmd/
  rz -be
  cd /usr/local/tomcat/webapps/
- cp /nas/nas_log/app_bak/rcmd/recommend_zl201611071700* ./
- tar -zcvf recommend_bak20161026.tar.gz ./recommend
+ cp /nas/nas_log/app_bak/rcmd/recommend_zl201611301730* ./
+ tar -zcvf recommend_bak20161130.tar.gz ./recommend
  
- unzip recommend_zl201611071700.zip
+ unzip recommend_zl201611301730.zip
  cd ..
  ps axu | grep httpd
  /apache2/bin/apachectl stop
@@ -53,6 +53,7 @@ version/!QASW@#ED        root/3edc#EDC或root/6yhn^YHN
  ctrl+c
  /apache2/bin/apachectl start
  
- 
+ --20161108
+ 推荐系统按照标签的权重来确定 每个标签都要设置一个权重，搜索出来以后按照权重*标签的分数
  
  

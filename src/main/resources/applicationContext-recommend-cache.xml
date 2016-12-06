@@ -30,13 +30,19 @@
 	
 	<bean id="searchCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.SearchCacheClusterManagerImpl">
 		<property name="jedisClusterFactory" ref="jedisClusterFactory" />
-        <property name="expireTime" value="180" />      
+        <property name="expireTime" value="600" />      
 	</bean>
 	
 	<bean id="recommendInfoCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.RecommendInfoCacheClusterManagerImpl">
 		<property name="jedisClusterFactory" ref="jedisClusterFactory" />
 		<property name="recommendInfoService" ref="recommendInfoService" />
         <property name="expireTime" value="720" />      
+	</bean>
+	<!-- 20161123 madongwei -->
+	<bean id="vomsRecommendCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.VomsRecommendCacheClusterManagerImpl">
+		<property name="jedisClusterFactory" ref="jedisClusterFactory"/>
+		<property name="vomsRecommendService" ref="vomsRecommendService"/>
+		<property name="expireTime" value="720" />
 	</bean>
 	
 	<!--redis集群配置，未使用 end-->
@@ -63,21 +69,30 @@
 		<property name="redisManager" ref="redisManager" />
 		<property name="recommendInfoService" ref="recommendInfoService" />
 		<property name="recommendInfoCacheClusterManager" ref="recommendInfoCacheClusterManager" />
-		<property name="isCluster" value="true" />
+		<property name="isCluster" value="false" />
 		<property name="expireTime" value="720" /><!--12分 失效-->
 	</bean>
 	<bean id="userTagCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.UserTagCacheManagerImpl">
 		<property name="redisManager" ref="redisManager" />
 		<property name="userTagService" ref="userTagService" />
 		<property name="userTagCacheClusterManager" ref="userTagCacheClusterManager" />
-		<property name="isCluster" value="true" />
+		<property name="isCluster" value="false" />
 		<property name="expireTime" value="180" /><!--3分 失效-->
 	</bean>
 	<bean id="searchCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.SearchCacheManagerImpl">
 		<property name="redisManager" ref="redisManager" />
-		<property name="searchCacheClusterManager" ref="userTagCacheClusterManager" />
-		<property name="isCluster" value="true" />
-		<property name="expireTime" value="180" /><!--3分 失效-->
+		<property name="searchCacheClusterManager" ref="searchCacheClusterManager" />
+		<property name="isCluster" value="false" />
+		<property name="expireTime" value="600" /><!--10分 失效-->
+	</bean>
+	<!-- 20161123 madongwei -->
+	<bean id="vomsRecommendCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.VomsRecommendCacheManagerImpl">
+		<property name="redisManager" ref="redisManager"/>
+		<property name="vomsRecommendService" ref="vomsRecommendService"/>
+		<property name="isCluster" value="false" />
+		<property name="vomsRecommendCacheClusterManager" ref="vomsRecommendCacheClusterManager"/>
+		<property name="expireTime" value="720" /><!--12分 失效-->
+		
 	</bean>
 	
 </beans>

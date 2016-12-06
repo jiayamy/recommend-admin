@@ -13,9 +13,15 @@ public class RedisRefreshJob{
 	private static final Log log = LogFactory.getLog(RedisRefreshJob.class);
 	protected void refresh() {
 		Long start = System.currentTimeMillis();
-		log.debug("RecomdRefreshJob start");
+		log.debug("initRedisCache start");
 		RecommendUtil.initRedisCache();
 		Long end = System.currentTimeMillis();
-		log.debug("RecomdRefreshJob end,duration:" + (end - start));
+		log.debug("initRedisCache end,duration:" + (end - start));
+		
+		start = System.currentTimeMillis();
+		log.debug("initVomsRecommednRedisCache start");
+		RecommendUtil.initVomsRecommednRedisCache();
+		end = System.currentTimeMillis();
+		log.debug("initVomsRecommednRedisCache end,duration:" + (end - start));
 	}
 }
