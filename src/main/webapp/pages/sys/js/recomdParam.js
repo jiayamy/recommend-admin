@@ -5,17 +5,16 @@ jQuery(function($) {
 
 	//construct the data source object to be used by tree  
 	var remoteUrl = 'sys/listRecommondParam.msp';
-	var remoteDateSource = function(options, callback) {
+	var remoteDateSource = function(options, callback,parent_id) {
 		//console.log(options);
-		var parent_id = null
+		
 		if (!('text' in options || 'type' in options)) {
 			parent_id = 0; //load first level data  
 		} else if ('type' in options && options['type'] == 'folder') { //it has children  
-			if ('additionalParameters' in options
-					&& 'children' in options.additionalParameters)
-				parent_id = options.additionalParameters['id']
+			
+				parent_id = options['id']
 		}
-
+		console.log(parent_id);
 		if (parent_id !== null) {
 			$.ajax({
 				url : remoteUrl,
@@ -272,9 +271,17 @@ function addSave() {
 
 function delSysParms() {
 	var selectedIds = $('.tree-selected');
-	if ($addLabelParentType.val() == "0") {
-		alertmsg("warning", "请选择二级标签进行删除");
-		return;
+	var addLabelType = $('#tree1').tree('selectedItems');
+	for ( var i in addLabelType){
+		if (addLabelType.hasOwnProperty(i)) {
+			var ite = addLabelType[i];
+			if(ite.laberType != "1"){
+				alertmsg("warning", "请选择二级标签进行删除");
+				return;
+			}
+			
+			
+		}
 	}
 	if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
 		alertmsg("warning", "请至少选择一条记录进行操作");
