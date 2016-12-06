@@ -68,7 +68,7 @@
    		</cas:havePerm>
    		<cas:havePerm url="/menuTestManage.htm">
         <li>
-			<a href="#" class="dropdown-toggle"><i class="menu-icon fa fa-cog"></i><span class="menu-text">测试 </span>
+			<a href="#" class="dropdown-toggle"><i class="menu-icon fa fa-cog"></i><span class="menu-text">测试管理 </span>
             	<b class="arrow fa fa-angle-down"></b>
             </a> 
             <b class="arrow"></b>
@@ -76,14 +76,14 @@
             	<cas:havePerm url="/menuTestQueryTagManage.htm">
                 <li>
 					<a href="#" menu-url="<c:url value='/pages/test/testQueryTag2.jsp'/>">
-                    	测试获取用户标签
+                    	获取用户标签
           			</a>
                     <b class="arrow"></b>
                 </li>
                 <cas:havePerm url="/menuTestSearchManage.htm">
                 <li>
                     <a href="#" menu-url="<c:url value='/pages/test/testSearch2.jsp'/>">
-                    	测试内容推荐
+                    	内容推荐
                     </a>
                     <b class="arrow"></b>
                 </li>
