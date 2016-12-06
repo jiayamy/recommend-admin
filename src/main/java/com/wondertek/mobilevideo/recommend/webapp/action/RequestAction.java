@@ -9,10 +9,10 @@ import java.util.Map;
 import com.alibaba.fastjson.JSON;
 import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
-import com.wondertek.mobilevideo.core.recommend.cache.redis.service.VomsRecommendCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.RecommendInfoCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.SearchCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
+import com.wondertek.mobilevideo.core.recommend.cache.redis.service.VomsRecommendCacheManager;
 import com.wondertek.mobilevideo.core.recommend.model.PrdTypeRelation;
 import com.wondertek.mobilevideo.core.recommend.search.SearchRequest;
 import com.wondertek.mobilevideo.core.recommend.search.SearchResult;
@@ -22,8 +22,8 @@ import com.wondertek.mobilevideo.core.recommend.util.RecomdItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
-import com.wondertek.mobilevideo.core.recommend.vo.VomsRecommendVo;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
+import com.wondertek.mobilevideo.core.recommend.vo.VomsRecommendVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatInfo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.RecomdItem;
@@ -441,13 +441,13 @@ public class RequestAction extends BaseAction {
 			log.debug("searchAllList voms lableInfo:" + labelInfo);
 		}
 		//专题
-		List<RecommendDataVo> specialTopicList = new ArrayList<RecommendDataVo>();
+		List<VomsRecommendVo> specialTopicList = new ArrayList<VomsRecommendVo>();
 		int specialTopicTotal = 0;
 		if(specialTopicRatio != 0){
 			try {
 				types.clear();
 				types.add("10");
-				List<RecommendDataVo> allList = recommendDataCacheManager.queryByLabelInfo(types, prdType, labelInfo);
+				List<VomsRecommendVo> allList = vomsRecommendCacheManager.queryByLabelInfo(types, prdType, labelInfo);
 				//每页个数
 				vomslimit = getVomsLimitByRatio(limit,specialTopicRatio);
 				vomsstart = vomslimit * (page - 1);
@@ -469,13 +469,13 @@ public class RequestAction extends BaseAction {
 		}
 		end9 = System.currentTimeMillis();
 		//组合内容
-		List<RecommendDataVo> combinedContList = new ArrayList<RecommendDataVo>();
+		List<VomsRecommendVo> combinedContList = new ArrayList<VomsRecommendVo>();
 		int combinedContTotal = 0;
 		if(combinedContRatio != 0){
 			try {
 				types.clear();
 				types.add("11");
-				List<RecommendDataVo> allList = recommendDataCacheManager.queryByLabelInfo(types, prdType, labelInfo);
+				List<VomsRecommendVo> allList = vomsRecommendCacheManager.queryByLabelInfo(types, prdType, labelInfo);
 				//每页个数
 				vomslimit = getVomsLimitByRatio(limit,combinedContRatio);
 				vomsstart = vomslimit * (page - 1);
@@ -496,13 +496,13 @@ public class RequestAction extends BaseAction {
 			}
 		}
 		end10 = System.currentTimeMillis();
-		List<RecommendDataVo> bigPicContList = new ArrayList<RecommendDataVo>();
+		List<VomsRecommendVo> bigPicContList = new ArrayList<VomsRecommendVo>();
 		int bigPicContTotal = 0;
 		if(bigPicContRatio != 0){
 			try {
 				types.clear();
 				types.add("20");
-				List<RecommendDataVo> allList = recommendDataCacheManager.queryByLabelInfo(types, prdType, labelInfo);
+				List<VomsRecommendVo> allList = vomsRecommendCacheManager.queryByLabelInfo(types, prdType, labelInfo);
 				//每页个数
 				vomslimit = getVomsLimitByRatio(limit,bigPicContRatio);
 				vomsstart = vomslimit * (page - 1);
@@ -523,13 +523,13 @@ public class RequestAction extends BaseAction {
 			}
 		}
 		end11 = System.currentTimeMillis();
-		List<RecommendDataVo> multiPicContList = new ArrayList<RecommendDataVo>();
+		List<VomsRecommendVo> multiPicContList = new ArrayList<VomsRecommendVo>();
 		int multiPicContTotal = 0;
 		if(multiPicContRatio != 0){
 			try {
 				types.clear();
 				types.add("21");
-				List<RecommendDataVo> allList = recommendDataCacheManager.queryByLabelInfo(types, prdType, labelInfo);
+				List<VomsRecommendVo> allList = vomsRecommendCacheManager.queryByLabelInfo(types, prdType, labelInfo);
 				//每页个数
 				vomslimit = getVomsLimitByRatio(limit,multiPicContRatio);
 				vomsstart = vomslimit * (page - 1);

@@ -61,8 +61,8 @@ public class HttpClientUtil {
 	/**
 	 * the timeout until a connection is etablished
 	 */
-	private static int connectionTimeOut = 300000;//TODO:数值待定
-	
+	private static int connectionTimeOut = 3000;//TODO:数值待定
+	private static int soTimeOut = 300000;//TODO:数值待定
 	
 	
 	public static HttpClient getClient(URI uri) {
@@ -85,7 +85,7 @@ public class HttpClientUtil {
 			params.setDefaultMaxConnectionsPerHost(maxHostConnections);
 			params.setMaxTotalConnections(maxTotalConnections);
 			params.setConnectionTimeout(connectionTimeOut);
-			params.setSoTimeout(connectionTimeOut);
+			params.setSoTimeout(soTimeOut);
 			connectionManager.setParams(params);
 			client = new HttpClient(connectionManager);
 			
@@ -109,7 +109,7 @@ public class HttpClientUtil {
 		params.setDefaultMaxConnectionsPerHost(maxHostConnections);
 		params.setMaxTotalConnections(maxTotalConnections);
 		params.setConnectionTimeout(connectionTimeOut);
-		params.setSoTimeout(connectionTimeOut);
+		params.setSoTimeout(soTimeOut);
 		connectionManager.setParams(params);
 		client = new HttpClient(connectionManager);
 		client.getParams().setParameter(HttpMethodParams.HTTP_CONTENT_CHARSET, "UTF-8");
