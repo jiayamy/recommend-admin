@@ -4,6 +4,7 @@
 	
 	<display-name>recommend</display-name>
 	<!--为了在jetty里面可以直接修改js里面的值，部署tomcat时需删除start
+	-->
 	<servlet>
 	    <servlet-name>default</servlet-name>
 	    <servlet-class>org.mortbay.jetty.servlet.DefaultServlet</servlet-class>
@@ -13,7 +14,6 @@
 	    </init-param>
 	    <load-on-startup>0</load-on-startup>
 	</servlet>
-	-->
     <!--为了在jetty里面可以直接修改js里面的值，部署tomcat时需删除end-->
     
     <!--国际化需要 start-->
@@ -37,9 +37,13 @@
             classpath:/applicationContext-recommend-cache.xml
             classpath*:/applicationContext-cas.xml
             classpath:/applicationContext-recommend-job.xml
+            <!-- 
+             -->
+            classpath*:/applicationContext-poms-dao.xml
+            classpath*:/applicationContext-poms-service.xml
 		</param-value>
   	</context-param>
-  	<!-- =============sso config start================ -->
+  	<!-- =============sso config start================ 
   	<context-param>
     	<param-name>use_sso</param-name>
     	<param-value>true</param-value>
@@ -143,6 +147,7 @@
   	<listener>
     	<listener-class>org.jasig.cas.client.session.SingleSignOutHttpSessionListener</listener-class>
 	</listener> 
+	-->
 	<!--===============sso config end======================--> 
 	<!-- javamelody start -->
   	<filter>

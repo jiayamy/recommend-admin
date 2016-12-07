@@ -45,4 +45,20 @@
         <property name="idleConnectionTestPeriod" value="120"/>
 	    <property name="preferredTestQuery" value="select sysdate from dual"/>
     </bean>
+    <bean id="dataSource_poms" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
+        <property name="driverClass" value="${jdbc.driverClassName}"/>
+        <property name="jdbcUrl" value="${jdbc.url.poms}"/>
+        <property name="user" value="${jdbc.username.poms}"/>
+        <property name="password" value="${jdbc.password.poms}"/>
+        <property name="maxPoolSize" value="100"/>
+        <property name="maxIdleTime" value="300"/>
+        <property name="checkoutTimeout" value="2000"/>
+        <property name="minPoolSize" value="1"/>
+        <property name="initialPoolSize" value="5"/>
+        <property name="acquireIncrement" value="5"/>
+        <property name="maxStatements" value="200"/>
+        <property name="maxStatementsPerConnection" value="200"/>
+        <property name="idleConnectionTestPeriod" value="120"/>
+	    <property name="preferredTestQuery" value="select sysdate from dual"/>
+    </bean>
 </beans>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd"
+	>
+      
+	<bean id="sessionFactory_poms"
+        class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+        <property name="dataSource" ref="dataSource_poms" />
+        <property name="configLocation" value="classpath:hibernate.poms.cfg.xml"/>
+        <property name="hibernateProperties">
+            <value>
+                hibernate.dialect=${hibernate.dialect}
+                hibernate.query.substitutions=true 'Y', false 'N'
+                hibernate.cache.use_second_level_cache=true
+                hibernate.show_sql=true
+                hibernate.cache.use_query=true
+                hibernate.cache.provider_class=org.hibernate.cache.EhCacheProvider
+                hibernate.statement_cache.size=0
+                hibernate.jdbc.fetch_size=50
+                hibernate.jdbc.batch_size=25
+                hibernate.hbm2ddl.auto=none
+                javax.persistence.validation.mode=none
+                hibernate.connection.release_mode=after_transaction
+            </value>
+        </property>
+    </bean>
+    <bean id="pomsDao" class="com.wondertek.mobilevideo.core.recommend.dao.impl.PomsDaoImpl">
+    	<property name="sessionFactory" ref="sessionFactory_poms" />
+    </bean>
+</beans>
