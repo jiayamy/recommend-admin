@@ -13,6 +13,16 @@
                 value="[RECOMMEND-ADMIN][%d{yyyy-MM-dd HH:mm:ss SSS}] %p [%t] %c{1}.%M(%L) | %m%n"/>
         </layout>        
     </appender>
+    <appender name="ACCESS_ACTION_LOG" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="/logs/access_action_records.log"/>
+		<param name="DatePattern" value="'.'yyyy-MM-dd"/>
+		<param name="Append" value="true"/>
+		<param name="encoding" value="UTF-8"/>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern"
+                value="[%d{yyyy-MM-dd HH:mm:ss}| %m%n"/>
+        </layout>        
+    </appender>
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     	<param name="Target" value="System.out"/>
         <param name="Threshold" value="info" />
@@ -72,6 +82,10 @@
     <logger name="com.wondertek.mobilevideo">
         <level value="DEBUG"/>
         <appender-ref ref="LOG_FILE"/>
+    </logger>
+    <logger name="com.wondertek.mobilevideo.recommend.webapp.filter.RequestInterceptor">
+        <level value="INFO"/>
+        <appender-ref ref="ACCESS_ACTION_LOG"/>
     </logger>
     <root>
         <level value="ERROR"/>

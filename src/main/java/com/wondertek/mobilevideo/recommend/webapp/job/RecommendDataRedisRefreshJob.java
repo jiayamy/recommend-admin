@@ -14,7 +14,7 @@ public class RecommendDataRedisRefreshJob {
 	protected void refresh() {
 		Long start = System.currentTimeMillis();
 		log.debug("RecommendDataRedisRefreshJob start");
-		RecommendUtil.initRecommednDataRedisCache();
+		RecommendUtil.initVomsRecommednRedisCache();
 		Long end = System.currentTimeMillis();
 		log.debug("RecommendDataRedisRefreshJob end,duration:"+(end-start));
 	}
