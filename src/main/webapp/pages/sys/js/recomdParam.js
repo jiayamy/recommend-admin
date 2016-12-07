@@ -1,20 +1,24 @@
-var $laberName = $('#laberName'),$addLabelParentId=$('#addLabelParentId'),$mainPage = $('#main_page'), $laberType = $('#laberType'), $laberQ = $('#laberQ'), $addLabelParent = $('#addLabelParent'), $addLabelName = $('.addLabelName'), $addLabelWeight = $('#addLabelWeight'), $addLabelType = $('.addLabelType'), $addLabelParentType = $('#addLabelParentType'), $editLabelParent = $('#editLabelParent'), $editLabelName = $('#editLabelName'), $editLabelType = $('#editLabelType'), $editLabelWeight = $('#editLabelWeight'), $editLabelId = $('#editLabelId');
-var allSelectedIds;
+var $laberName = $('#laberName'),$addLabelParentId=$('#addLabelParentId'),$mainPage = $('#main_page'), $laberType = $('#laberType'), $laberQ = $('#laberQ'), $addLabelParent = $('#addLabelParent'), $addLabelName = $('.addLabelName'), $addLabelWeight = $('#addLabelWeight'), $addLabelType = $('.addLabelType'), $addLabelParentType = $('#addLabelParentType'), $editLabelParent = $('#editLabelParent'),$editLabelParentId = $('#editLabelParentId'), $editLabelName = $('#editLabelName'), $editLabelType = $('#editLabelType'), $editLabelWeight = $('#editLabelWeight'), $editLabelId = $('#editLabelId');
+var allSelectedIds, elems;
 
 jQuery(function($) {
 
 	//construct the data source object to be used by tree  
 	var remoteUrl = 'sys/listRecommondParam.msp';
 	var remoteDateSource = function(options, callback,parent_id) {
-		//console.log(options);
-		
+		if(elems != null && elems != ''){
+			var d = elems; 
+			elems = null;
+			callback({data:d});
+			return;
+		}
 		if (!('text' in options || 'type' in options)) {
 			parent_id = 0; //load first level data  
 		} else if ('type' in options && options['type'] == 'folder') { //it has children  
 			
 				parent_id = options['id']
 		}
-		console.log(parent_id);
+//		console.log(parent_id);
 		if (parent_id !== null) {
 			$.ajax({
 				url : remoteUrl,
@@ -26,7 +30,7 @@ jQuery(function($) {
 					callback({
 						data : response.data.data
 					});
-					console.log(response.data.data)
+//					console.log(response.data.data)
 				},
 				error : function(response) {
 					//console.log(response);  
@@ -106,6 +110,7 @@ jQuery(function($) {
 		$addLabelParentType.val(data.target.laberType);
 		$addLabelParentId.val(data.target.id);
 		$editLabelParent.val(data.target.parentText);
+		$editLabelParentId.val(data.target.parentId);
 		$editLabelName.val(data.target.text);
 		$editLabelType.val(data.target.laberType);
 		$editLabelWeight.val(data.target.weight);
@@ -119,6 +124,7 @@ jQuery(function($) {
 			$addLabelParentType.val("");
 			$addLabelParentId.val("");
 			$editLabelParent.val("");
+			$editLabelParentId.val("");
 			$editLabelName.val("");
 			$editLabelType.val("");
 			$editLabelWeight.val("");
@@ -132,6 +138,7 @@ jQuery(function($) {
 					$addLabelParentType.val(item.laberType);
 					$addLabelParentId.val(item.id);
 					$editLabelParent.val(item.parentText);
+					$editLabelParentId.val(item.parentId);
 					$editLabelName.val(item.text);
 					$editLabelType.val(item.laberType);
 					$editLabelWeight.val(item.weight);
@@ -194,10 +201,15 @@ function editSave() {
 		url : webroot + "sys/editWeights.msp",
 		data : {
 			"configKey" : $editLabelId.val(),
-			"configValue" : $editLabelWeight.val()
+			"configValue" : $editLabelWeight.val(),
+			"parentId" : $editLabelParentId.val()
 		},
 		success : function(data) {
+			
+//			console.log(data.data.data);
+			elems = data.data.data;
 			$mainPage.load('/recommend/sys/recommondParmsManage.msp');
+			
 			alertmsg("warning", data.msg);
 			
 		}
@@ -259,6 +271,7 @@ function addSave() {
 			"addLabelName" : $addLabelName.val()
 		},
 		success : function(data) {
+			elems = data.data.data;
 			$mainPage.load('/recommend/sys/recommondParmsManage.msp');
 			alertmsg("warning", data.msg);
 

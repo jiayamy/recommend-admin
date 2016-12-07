@@ -86,14 +86,15 @@
 						
 						//ACE
 						var header = $entity.find('.tree-branch-header');
+						var hName = $entity.find('.tree-branch-name');
 
 						if('icon-class' in value)
 							header.find('i').addClass(value['icon-class']);
 						
-						if('additionalParameters' in value && value.additionParameters!=null
+						if('additionalParameters' in value
 							&& 'item-selected' in value.additionalParameters 
 								&& value.additionalParameters['item-selected'] == true) {
-								setTimeout(function(){header.trigger('click')}, 0);
+								setTimeout(function(){hName.trigger('click')}, 0);
 						}
 						
 					} else if (value.type === 'item') {

@@ -228,6 +228,7 @@
 								class="col-sm-2 control-label no-padding-right">标签id</label>
 							<div class="col-md-10">
 								<input type="text" class="form-control" id="editLabelId" readonly="readonly" />
+								<input type="text" class="form-control" id="editLabelParentId" readonly="readonly" />
 							</div>
 						</div>
 					</div>
