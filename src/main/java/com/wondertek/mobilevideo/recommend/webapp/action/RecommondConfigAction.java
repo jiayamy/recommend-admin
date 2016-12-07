@@ -73,11 +73,8 @@ public class RecommondConfigAction extends BaseAction {
 				recommendParams.add(r);
 			}
 		}
-		
 		result.setData(recommendParams);
-
 		resultMap.put("data", result);
-
 		return SUCCESS;
 	}
 	
@@ -125,8 +122,7 @@ public class RecommondConfigAction extends BaseAction {
 				enumsConfig = enumsConfigService.get(Long.parseLong(id));
 				enumsConfig.setWeight(weights);
 				enumsConfigService.update(enumsConfig);
-				resultMap.put("msg", this.getText("system.editTag.success"));
-				
+				resultMap.put("msg", this.getText("common.edit.success"));
 				
 				for (EnumsConfig eConfig : items) {
 					RecommendParam r = new RecommendParam();
@@ -148,7 +144,7 @@ public class RecommondConfigAction extends BaseAction {
 			//无id：添加
 			if(parentLabelId != null && !"".equals(parentLabelId)){
 				if(parentLabelId == null || "".equals(parentLabelId)){
-					resultMap.put("msg", this.getText("system.addTag.fail"));
+					resultMap.put("msg", this.getText("common.add.fail"));
 					return SUCCESS;
 				}
 				enumsConfig = enumsConfigService.get(Long.parseLong(parentLabelId));
@@ -160,11 +156,10 @@ public class RecommondConfigAction extends BaseAction {
 				Boolean isExist = enumsConfigService.checkExistLabel(addLabelKey,enumsConfig.getKey(),addLabelType);
 				if(!isExist){
 					enumsConfigService.save(addEnumsConfig);
-					resultMap.put("msg", this.getText("system.addSecondTag.success"));
+					resultMap.put("msg", this.getText("common.add.success"));
 				}else{
-					resultMap.put("msg", this.getText("system.SecondTag.exist"));
+					resultMap.put("msg", this.getText("recomd.prdContId.exist"));
 				}
-				
 				
 				for (EnumsConfig eConfig : items) {
 					RecommendParam r = new RecommendParam();
@@ -196,10 +191,9 @@ public class RecommondConfigAction extends BaseAction {
 				}
 			}
 		} catch (Exception e) {
-			resultMap.put("msg", this.getText("system.editTag.fail"));
+			resultMap.put("msg", this.getText("common.edit.fail"));
 			e.printStackTrace();
 		}
-
 		return SUCCESS;
 	}
 
@@ -218,5 +212,4 @@ public class RecommondConfigAction extends BaseAction {
 	public void setEnumsInfoService(EnumsInfoService enumsInfoService) {
 		this.enumsInfoService = enumsInfoService;
 	}
-
 }
