@@ -158,7 +158,7 @@ public class RecommondConfigAction extends BaseAction {
 					enumsConfigService.save(addEnumsConfig);
 					resultMap.put("msg", this.getText("common.add.success"));
 				}else{
-					resultMap.put("msg", this.getText("recomd.prdContId.exist"));
+					resultMap.put("msg", "您添加的二级标签已存在，不能重复添加");
 				}
 				
 				for (EnumsConfig eConfig : items) {
@@ -191,7 +191,7 @@ public class RecommondConfigAction extends BaseAction {
 				}
 			}
 		} catch (Exception e) {
-			resultMap.put("msg", this.getText("common.edit.fail"));
+			resultMap.put("msg", "操作失败");
 			e.printStackTrace();
 		}
 		return SUCCESS;
