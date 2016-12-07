@@ -62,6 +62,34 @@
 		</action>
 		<action name="testSearch" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testSearch">
 		</action>
+		<!-- 20161205 -->
+		<action name="topRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="getPage">
+			<result name="success">/pages/recomd/topRecommend.jsp</result>
+		</action>
+		
+		<action name="listTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="list">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="delTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="delete">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="addTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="addSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="editTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="editSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
 	</package>
 </struts>	
 

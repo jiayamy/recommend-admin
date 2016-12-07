@@ -37,6 +37,14 @@
 					<b class="arrow"></b>
 				</li>
 				</cas:havePerm>
+				<cas:havePerm url="/menuTopRecommend.htm">
+				<li>
+					<a href="#" menu-url="<c:url value='/recomd/topRecommend.msp'/>">
+						置顶推荐 
+					</a> 
+					<b class="arrow"></b>
+				</li>
+				</cas:havePerm>
 			</ul>
 		</li>
 		</cas:havePerm>
