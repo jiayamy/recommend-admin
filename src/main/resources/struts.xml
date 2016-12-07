@@ -23,6 +23,7 @@
 	<package name="default" extends="struts-default">
 		<interceptors>
 			<!-- Copied from struts-default.xml and changed validation exclude methods -->
+			<interceptor name="reqCheck" class="com.wondertek.mobilevideo.recommend.webapp.filter.RequestInterceptor"/>
 			<interceptor-stack name="defaultStack">
 				<interceptor-ref name="exception" />
 				<interceptor-ref name="alias" />
@@ -49,6 +50,7 @@
 				<interceptor-ref name="workflow">
 					<param name="excludeMethods">input,back,cancel,browse</param>
 				</interceptor-ref>
+				<interceptor-ref name="reqCheck"/>
 			</interceptor-stack>
 			<interceptor-stack name="fileUploadStack">
 				<interceptor-ref name="fileUpload" />

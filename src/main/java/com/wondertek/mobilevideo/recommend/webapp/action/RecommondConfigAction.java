@@ -5,16 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
-import com.wondertek.mobilevideo.core.recommend.model.AdditionalParameters;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsConfig;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsInfo;
-import com.wondertek.mobilevideo.core.recommend.model.RecommendParam;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsConfigService;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsInfoService;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
+import com.wondertek.mobilevideo.core.recommend.vo.RecommendParam;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommondListVo;
-import com.wondertek.mobilevideo.core.util.StringUtil;
 
 public class RecommondConfigAction extends BaseAction {
 
@@ -29,8 +26,8 @@ public class RecommondConfigAction extends BaseAction {
 	}
 
 	public String list() {
-		String skey = getParam("skey");
-
+		String sid = getParam("skey");
+		
 		List<EnumsConfig> items = new ArrayList<EnumsConfig>();
 		RecommondListVo result = new RecommondListVo();
 		List<RecommendParam> recommendParams = new ArrayList<RecommendParam>();
@@ -43,48 +40,33 @@ public class RecommondConfigAction extends BaseAction {
 			enumsMap.put(k1, v1);
 		}
 		
-		items = enumsConfigService.findByType("0");
-		for (EnumsConfig eConfig : items) {
+		if("0".equals(sid)){
+			items = enumsConfigService.findByType("0");
+			for (EnumsConfig eConfig : items) {
 
-			RecommendParam r = new RecommendParam();
-			String key = eConfig.getKey();
-			r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
-			r.setLaberType(eConfig.getType());
-			r.setId(eConfig.getId());
-			r.setWeight(eConfig.getWeight());
-			List<EnumsConfig> childs = enumsConfigService.findByParent(key);
-			if (childs != null && childs.size() > 0) {
+				RecommendParam r = new RecommendParam();
+				r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
+				r.setLaberType(eConfig.getType());
+				r.setId(eConfig.getId());
+				r.setWeight(eConfig.getWeight());
 				r.setType("folder");
-				AdditionalParameters additionParameters = new AdditionalParameters();
-				additionParameters.setId(eConfig.getKey());
-
-				for (EnumsConfig es : childs) {
-					RecommendParam rs = new RecommendParam();
-					rs.setId(es.getId());
-					rs.setLaberType(es.getType());
-					rs.setText(enumsMap.get(es.getKey() + "-" + es.getType()));
-					rs.setType("item");
-					rs.setWeight(es.getWeight());
-					rs.setParentText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
-					rs.setParentId(eConfig.getId().toString());
-					additionParameters.getChildren().add(rs);
-
-				}
-				if (skey.equals(eConfig.getKey())) {
-					additionParameters.isItemSelected();
-					result.setData(additionParameters.getChildren());
-					resultMap.put("data", result);
-					return SUCCESS;
-				}
-				r.setAdditionalParameters(additionParameters);
-
-			} else {
-				r.setType("item");
+				recommendParams.add(r);
 			}
-			recommendParams.add(r);
-
+		}else{
+			EnumsConfig enumsConfig = enumsConfigService.get(Long.parseLong(sid));
+			String skey = enumsConfig.getKey();
+			List<EnumsConfig> childs = enumsConfigService.findByParent(skey);
+			for(EnumsConfig eConfig : childs){
+				RecommendParam r = new RecommendParam();
+				r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
+				r.setLaberType(eConfig.getType());
+				r.setId(eConfig.getId());
+				r.setWeight(eConfig.getWeight());
+				r.setType("item");
+				recommendParams.add(r);
+			}
 		}
-
+		
 		result.setData(recommendParams);
 
 		resultMap.put("data", result);
