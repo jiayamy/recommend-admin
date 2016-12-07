@@ -5,13 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.wondertek.mobilevideo.core.recommend.model.AdditionalParameters;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsConfig;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsInfo;
-import com.wondertek.mobilevideo.core.recommend.model.RecommendParam;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsConfigService;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsInfoService;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
+import com.wondertek.mobilevideo.core.recommend.vo.RecommendParam;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommondListVo;
 
 public class RecommondConfigAction extends BaseAction {
