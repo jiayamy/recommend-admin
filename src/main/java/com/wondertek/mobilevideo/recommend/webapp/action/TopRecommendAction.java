@@ -9,12 +9,10 @@ import java.util.Map;
 import com.wondertek.mobilevideo.core.recommend.bean.PageList;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
 import com.wondertek.mobilevideo.core.recommend.model.PrdTypeRelation;
-import com.wondertek.mobilevideo.core.recommend.model.RecommendInfo;
 import com.wondertek.mobilevideo.core.recommend.model.TopRecommend;
 import com.wondertek.mobilevideo.core.recommend.service.TopRecommendService;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
-import com.wondertek.mobilevideo.core.recommend.util.ST;
 import com.wondertek.mobilevideo.core.util.StringUtil;
 /**
  * 置顶推荐相关
@@ -89,9 +87,9 @@ public class TopRecommendAction extends BaseAction {
 		if(!StringUtil.isNullStr(prdType)){
 			paramsMap.put("prdType", prdType);
 		}
-		String tId = getParam("tId");
-		if(!StringUtil.isNullStr(tId)){
-			paramsMap.put("tId", tId);
+		String topId = getParam("topId");
+		if(!StringUtil.isNullStr(topId)){
+			paramsMap.put("topId", topId);
 		}		
 		String topName = getParam("topName");
 		if(!StringUtil.isNullStr(topName)){
@@ -154,20 +152,20 @@ public class TopRecommendAction extends BaseAction {
 		}
 		
 		String prdType = getParam("prdType");
-		Long tId = StringUtil.nullToCloneLong(this.getParam("tId"));
+		Long topId = StringUtil.nullToCloneLong(this.getParam("topId"));
 		String topName = getParam("topName");
-		if(tId == null || tId <= 0){
+		if(topId == null || topId <= 0){
 			resultMap.put("msg", this.getText("top.recomd.tId.error"));
 			return SUCCESS;
 		}		
 		
-		if(StringUtil.isNullStr(prdType) || StringUtil.isNullStr(tId) || StringUtil.isNullStr(topName)){
+		if(StringUtil.isNullStr(prdType) || StringUtil.isNullStr(topId) || StringUtil.isNullStr(topName)){
 			resultMap.put("msg", this.getText("top.recomd.param.null"));
 			return SUCCESS;
 		}
 		
 		TopRecommend topRecommend = new TopRecommend();		
-		topRecommend.settId(tId);
+		topRecommend.setTopId(topId);
 		topRecommend.setPrdType(prdType);		
 		topRecommend.setTopName(topName);
 		topRecommend.setStatus(RecommendConstants.VALID);
@@ -176,8 +174,8 @@ public class TopRecommendAction extends BaseAction {
 		topRecommend.setUpdateTime(topRecommend.getCreateTime());
 		topRecommend.setUpdator(topRecommend.getCreator());
 		
-		Boolean isExist = topRecommendService.checkExist(topRecommend.gettId(),topRecommend.getPrdType(),
-				topRecommend.getTopName(),topRecommend.getId());
+		Boolean isExist = topRecommendService.checkExist(topRecommend.getTopId(),topRecommend.getPrdType(),
+				topRecommend.getTopName(),topRecommend.getTopId());
 		
 		if(isExist){
 			resultMap.put("msg", this.getText("top.recomd.tId.exist"));
@@ -213,28 +211,28 @@ public class TopRecommendAction extends BaseAction {
 			return SUCCESS;
 		}
 		String id = getParam("id");
-		Long tId = StringUtil.nullToCloneLong(this.getParam("tId"));		
+		Long topId = StringUtil.nullToCloneLong(this.getParam("topId"));		
 		String prdType = getParam("prdType");		
 		String topName = getParam("topName");
 		Integer status = StringUtil.nullToInteger(getParam("status"));
-		if(tId == null || tId <= 0){
+		if(topId == null || topId <= 0){
 			resultMap.put("msg", this.getText("top.recomd.tId.error"));
 			return SUCCESS;
 		}
 	
-		if(StringUtil.isNullStr(prdType) || StringUtil.isNullStr(tId) || StringUtil.isNullStr(topName)){
+		if(StringUtil.isNullStr(prdType) || StringUtil.isNullStr(topId) || StringUtil.isNullStr(topName)){
 			resultMap.put("msg", this.getText("top.recomd.param.null"));
 			return SUCCESS;
 		}
 		try {
-			Boolean isExist = topRecommendService.checkExist(tId, topName, topName,StringUtil.nullToLong(id));
+			Boolean isExist = topRecommendService.checkExist(topId, topName, topName,StringUtil.nullToLong(id));
 			if(isExist){
 				resultMap.put("msg", this.getText("top.recomd.tId.exist"));
 				return SUCCESS;
 			}
 			
 			TopRecommend topRecommend = topRecommendService.get(StringUtil.nullToLong(id));			
-			topRecommend.settId(tId);
+			topRecommend.setTopId(topId);
 			topRecommend.setPrdType(prdType);					
 			topRecommend.setTopName(topName);
 			topRecommend.setStatus(status);

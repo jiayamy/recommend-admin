@@ -13,6 +13,7 @@ import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.RecommendInfoCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.SearchCacheManager;
+import com.wondertek.mobilevideo.core.recommend.cache.redis.service.TopRecommendCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.VomsRecommendCacheManager;
 import com.wondertek.mobilevideo.core.recommend.model.PrdTypeRelation;
@@ -25,6 +26,7 @@ import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
+import com.wondertek.mobilevideo.core.recommend.vo.RecommendTopVo;
 import com.wondertek.mobilevideo.core.recommend.vo.VomsRecommendVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatInfo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
@@ -44,6 +46,7 @@ public class RequestAction extends BaseAction {
 	private UserTagCacheManager userTagCacheManager;
 	private SearchCacheManager searchCacheManager;
 	private VomsRecommendCacheManager vomsRecommendCacheManager;
+	private TopRecommendCacheManager topRecommendCacheManager;
 	/**
 	 * 搜索合并的返回
 	 * @return
@@ -588,7 +591,72 @@ public class RequestAction extends BaseAction {
 		}
 		return rst;
 	}
-
+	/**
+	 * 获取置顶(TOP)数据
+	 * @return
+	 */
+	public String searchTop(){
+		String ip = RequestUtil.getIpAddr(this.getRequest());
+		//获取参数		
+		String prdType = this.getParam("prdType");				
+		String startStr = this.getParam("start");
+		String limitStr = this.getParam("limit");
+		if (log.isDebugEnabled()) {	
+			log.debug("searchVomsData ip:" + ip + "," + prdType +"|" + startStr +"|" + limitStr +"|" );
+		}
+		//校验参数		
+		int start = StringUtil.nullToInteger(startStr);
+		int limit = StringUtil.nullToInteger(limitStr);
+		if(StringUtil.isNullStr(prdType)|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr)){
+			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
+			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			return SUCCESS;
+		}
+		// 处理参数		
+		List<RecommendTopVo> returnList = new ArrayList<RecommendTopVo>();
+		int total = 0;
+		
+		long s = System.currentTimeMillis();
+		long end1 = s;
+		long end2 = s;
+		try {
+			//获取数据
+			List<RecommendTopVo> aList = topRecommendCacheManager.queryTopVos(prdType);
+			end1 = System.currentTimeMillis();
+			if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
+				log.debug("searchTopData aList:" + aList.size());
+			}
+			//数据分页
+			total = aList.size();
+			int requestTotal = (start + limit);
+			int end = requestTotal > total ? total : requestTotal;
+			if(start < total){
+				for(int i = start; i < end ; i++){
+					returnList.add(aList.get(i));
+				}
+			}
+			end2 = System.currentTimeMillis();
+			
+			//返回结果
+			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
+			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_ROOT, returnList);
+			resultMap.put(RequestConstants.R_TOTAL, total);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
+			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.system"));
+			end2 = System.currentTimeMillis();
+		}
+		
+		if(log.isDebugEnabled())
+			log.debug("searchVomsData end,duration:" + (end2 -s) + "|" + (end1 - s) + "|" + (end2 - end1));
+		
+		return SUCCESS;		
+	}
 	/**
 	 * 获取VOMS数据
 	 * @return
@@ -1466,5 +1534,11 @@ public class RequestAction extends BaseAction {
 	}
 	public void setVomsRecommendCacheManager(VomsRecommendCacheManager vomsRecommendCacheManager) {
 		this.vomsRecommendCacheManager = vomsRecommendCacheManager;
+	}
+	public TopRecommendCacheManager getTopRecommendCacheManager() {
+		return topRecommendCacheManager;
+	}
+	public void setTopRecommendCacheManager(TopRecommendCacheManager topRecommendCacheManager) {
+		this.topRecommendCacheManager = topRecommendCacheManager;
 	}
 }

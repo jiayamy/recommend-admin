@@ -57,7 +57,7 @@ function initGridTable() {
 		],
 		colModel:[
             {name:'id',index:'id', width:60,sortable : true},
-			{name:'tId',index:'tId', width:80, sortable : true},
+			{name:'topId',index:'topId', width:80, sortable : true},
 			{name:'topName',index:'topName', width:200,sortable : true},
 			{name:'prdType',index:'prdType', width:100,sortable : true,
 				formatter:function(cellvalue, options, rowObject){
@@ -358,12 +358,12 @@ function initGridTable() {
 
 function listTopRecommend(e) {	
 	var prdType = $("#s_prdType").val();
-	var tId = $("#s_tId").val();	
+	var topId = $("#s_topId").val();	
 	var topName = $("#s_topName").val();
 	var status = $("#s_status").val();
 	var jsonData = {		
 		'prdType':prdType,
-		'tId':tId,		
+		'topId':topId,		
 		'topName':topName,
 		'status':status
 	};
@@ -425,7 +425,7 @@ function editTopRecommend() {
     	
         $("#editId").val(id);       
         $("#editPrdType").val(data.prdType);
-        $("#editTId").val(data.catId);        
+        $("#editTopId").val(data.topId);        
         $("#editTopName").val(data.topName);
         $("#editStatus").val(data.status);        
         $("#editTopRecommendModal").modal("show"); 
@@ -435,7 +435,7 @@ function editTopRecommend() {
 function editSaveTopRecommend() {
 	var id = $("#editId").val();    
     var prdType = $("#editPrdType").val();
-    var tId = $("#editTId").val();    
+    var topId = $("#editTopId").val();    
     var topName = $("#editTopName").val();
     var status = $("#editStatus").val();
     
@@ -447,7 +447,7 @@ function editSaveTopRecommend() {
     	alertmsg("warning", "所属产品为空");
     	return;
     }   
-    if (tId == "") {
+    if (topId == "") {
     	alertmsg("warning", "节目ID为空");
     	return;
     }
@@ -462,7 +462,7 @@ function editSaveTopRecommend() {
 		data:{
 			"id": id,			
 			"prdType": prdType, 
-			"tId":tId,			 
+			"topId":topId,			 
 			"topName": topName, 
 			"status": status
 		},
@@ -476,7 +476,7 @@ function editSaveTopRecommend() {
 			if(data.error == false){
 				$("#editId").val("");				
 				$("#editPrdType").val("");
-				$("#editTId").val("");				
+				$("#editTopId").val("");				
 				$("#editTopName").val("");
 				$("#editStatus").val("");				
 				$("#editTopRecommendModal").modal("hide");
@@ -490,13 +490,13 @@ function addTopRecommend() {
 }
 function addSaveTopRecommend() {   
     var prdType = $("#addPrdType").val();
-    var tId = $("#addTId").val();   
+    var topId = $("#addTopId").val();   
     var topName = $("#addTopName").val();
     if (prdType == "") {
     	alertmsg("warning", "所属产品为空");
     	return;
     }  
-    if (tId == "") {
+    if (topId == "") {
     	alertmsg("warning", "节目ID为空");
     	return;
     }
@@ -510,7 +510,7 @@ function addSaveTopRecommend() {
 		url:webroot+"recomd/addTopRecommend.msp",
 		data:{			 
 			"prdType": prdType, 
-			"tId": tId, 			
+			"topId": topId, 			
 			"topName": topName
 		},
 		success:function(data){
@@ -522,7 +522,7 @@ function addSaveTopRecommend() {
 		    }).trigger("reloadGrid"); //重新载入 
 			if(data.error == false){				
 				$("#addPrdType").val("");
-				$("#addTId").val("");				
+				$("#addTopId").val("");				
 				$("#addTopName").val("");				
 				$("#addTopRecommendModal").modal("hide"); 
 			}

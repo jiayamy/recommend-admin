@@ -75,7 +75,7 @@
 								</div>
 							</div>
 							<div class = "col-md-3">
-								<label class="col-sm-3 control-label" for="s_tId"><fmt:message key="top.recomd.tId"/></label>
+								<label class="col-sm-3 control-label" for="s_topId"><fmt:message key="top.recomd.topId"/></label>
 								<div class="col-sm-9">
 									<input type="text" id="s_prdContId" class="form-control" />
 								</div>
@@ -145,9 +145,9 @@
 					</div>
 					<div class="form-group">						
 						<div class="col-md-6">
-							<label for="addTId" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.tId" /></label>
+							<label for="addTopId" ctopIds="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topId" /></label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="addTId" />
+								<input type="text" class="form-control" id="addTopId" />
 							</div>
 						</div>
 						<div class="col-md-6">
@@ -206,9 +206,9 @@
 					</div>
 					<div class="form-group">						
 						<div class="col-md-6">
-							<label for="editTId" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.tId" /></label>
+							<label for="editTopId" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topId" /></label>
 							<div class="col-sm-9">
-								<input type="text" class="form-control" id="editTId" />
+								<input type="text" class="form-control" id="editTopId" />
 							</div>
 						</div>
 						<div class="col-md-6">
