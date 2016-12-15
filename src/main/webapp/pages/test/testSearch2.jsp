@@ -86,30 +86,128 @@
 		</div>
 	</div>
 	<script type="text/javascript">
-		function subm(){
+		 function subm(){
 			var jsonData = $('#testForm').serialize();
-			
 			$('#grid-table').jqGrid('setGridParam',{
 				postData : jsonData,
 				page:1,
 				mtype:"post"
 			}).trigger("reloadGrid");
-		}
+		} 
 		var grid_selector = "#grid-table";
 	    var pager_selector = "#grid-pager";
 	    jQuery(document).ready(function(){
+	    	var statusEnum = [
+	    	                  {text: "待发布 ", value:"10"},
+	    	                  {text: "发布中", value: "11"},
+	    	                  {text: "发布成功", value: "12"},
+	    	                  {text: "发布失败", value: "13"},
+	    	                  {text: "待撤回", value: "20"},
+	    	                  {text: "撤回中", value: "21"},
+	    	                  {text: "撤回成功", value: "22"},
+	    	                  {text: "撤回失败", value: "23"},
+	    	                  {text: "无发布规则", value: "30"}
+	    	                  ];
+	    	var formTypeEnum =[
+								{text: "剧集", value:"6"},
+								{text: "子集", value: "7"},
+								{text: "非剧集", value: "8"},
+								{text: "专辑", value: "9"},
+								{text: "内容集", value: "10"},
+								{text: "单集", value: "11"},
+								{text: "图册", value: "12"}
+	    	                   ];
 			$(window).on('resize.jqGrid', function () {
-				$(grid_selector).jqGrid( 'setGridWidth', $("#page-content").width() );
+				$(grid_selector).jqGrid( 'setGridWidth', $("#page-content").width());
 		    })
 	    	jQuery(grid_selector).jqGrid({
-	    		url:"${ctx}/recomd/testSearch.msp",
-	    		mtype:"get",
-	    		postData:{},
+	    		url:"${ctx}/recomd/testSystemSearch.msp",
 		    	datatype: "json",//数据类型 json
-		    	colNames:['contName','prdContId'],
+		    	colNames:['节目ID','内容ID','节目名称','cpID','一级分类','播控状态','产品包','发布状态','发布(新)状态','创建时间','媒资类型','更新时间'],
 				colModel:[
-					{name:'contName',index:'contName', width:150,editable: false,editoptions:{size:"20",maxlength:"30"}},
-					{name:'prdContId',index:'prdContId', width:150,editable: false,editoptions:{size:"20",maxlength:"30"}},
+					{name:'prdContId',index:'prdContId', width:80,editable: false},
+					{name:'contentId',index:'contentId', width:80,editable: false},
+					{name:'name',index:'name', width:200,editable: false},
+					{name:'cpId',index:'cpId', width:80,editable: false},
+					{name:'displayName',index:'displayName', width:200,editable: false},
+					{name:'bcStatus',index:'bcStatus', width:80,editable: false,
+						formatter:function(cellvalue, options, rowObject){
+							if(cellvalue == "0"){
+								return "未播控"
+							}else if (cellvalue == "1") {
+								return "播控通过"
+							}else if (cellvalue == "2") {
+								return "播控拒绝"
+							}
+						},
+						unformat:function(cellvalue){
+							if(cellvalue == "未播控"){
+								return "0"
+							}else if (cellvalue == "播控通过") {
+								return "1"
+							}else if (cellvalue == "播控拒绝") {
+								return "2"
+							}
+						}
+					},
+					{name:'prdInfoName',index:'prdInfoName', width:200,editable: false},
+					{name:'pubStatus',index:'pubStatus', width:80,editable: false,
+						formatter:function(cellvalue, options, rowObject){
+							 for (var i = 0; i < statusEnum.length; i++) {
+								var k = statusEnum[i];
+								if(cellvalue == k.value){
+									return k.text;
+								}
+							} 
+						},
+						unformat:function(cellvalue){
+							 for (var i = 0; i < statusEnum.length; i++) {
+								var k = statusEnum[i];
+								if(cellvalue == k.text){
+									return k.value;
+								}
+							}
+						}
+					},
+					{name:'publishNoVomsStatus',index:'publishNoVomsStatus', width:200,editable: false,
+						formatter:function(cellvalue, options, rowObject){
+							 for (var i = 0; i < statusEnum.length; i++) {
+								var k = statusEnum[i];
+								if(cellvalue == k.value){
+									return k.text;
+								}
+							} 
+						},
+						unformat:function(cellvalue){
+							 for (var i = 0; i < statusEnum.length; i++) {
+								var k = statusEnum[i];
+								if(cellvalue == k.text){
+									return k.value;
+								}
+							}
+						}
+					},
+					{name:'createTime',index:'createTime', width:200,editable: false},
+					{name:'formType',index:'formType', width:80,editable: false,
+						formatter:function(cellvalue, options, rowObject){
+							 for (var i = 0; i < formTypeEnum.length; i++) {
+								var k = formTypeEnum[i];
+								if(cellvalue == k.value){
+									return k.text;
+								}
+							} 
+						},
+						unformat:function(cellvalue){
+							 for (var i = 0; i < formTypeEnum.length; i++) {
+								var k = formTypeEnum[i];
+								if(cellvalue == k.text){
+									return k.value;
+								}
+							}
+						}
+					
+					},
+					{name:'updateTime',index:'updateTime', width:200,editable: false}
 				], 
 		    	jsonReader:{
 		    		root: "root",

@@ -1,5 +1,6 @@
 package com.wondertek.mobilevideo.recommend.webapp.action;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -7,12 +8,14 @@ import java.util.Map;
 import org.apache.commons.httpclient.NameValuePair;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.wondertek.mobilevideo.core.poms.bean.Poms;
-import com.wondertek.mobilevideo.core.poms.service.PomsService;
+import com.alibaba.fastjson.serializer.DateSerializer;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
+import com.wondertek.mobilevideo.core.recommend.service.PomsService;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
+import com.wondertek.mobilevideo.core.recommend.vo.PrdContInfo;
+import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.UserTag;
 import com.wondertek.mobilevideo.core.util.StringUtil;
 import com.wondertek.mobilevideo.recommend.webapp.util.HttpClientUtil;
@@ -28,7 +31,7 @@ public class TestAction extends BaseAction {
 	private UserTag userTag;
 	private String catsInfoJson; //这个是默认模式传来的catsJson
 	private PomsService pomsService;
-	
+	private String userTagStr;
 	/**
 	 * 测试获取用户标签
 	 */
@@ -148,7 +151,7 @@ public class TestAction extends BaseAction {
 	}
 
 	/**
-	 * 测试系统由prdContId 得到整个节目的信息
+	 * 测试由prdContId 得到整个节目的信息
 	 */
 	public void testSystemSearch() {
 		try {
@@ -207,10 +210,129 @@ public class TestAction extends BaseAction {
 			}
 			//根据rootArray得到 List<Poms>
 			JSONObject rstObjJson = JSON.parseObject(rst);
-			JSONArray rootArray = (JSONArray)JSON.parse(rstObjJson.get("root").toString());
-			List<Poms> pomses = this.getPomses(rootArray);
-			System.out.println(pomses);
+			String code = rstObjJson.getString(RequestConstants.R_CODE);
+			if(RequestConstants.R_CODE_000000.equals(code)){
+				List<RecommendInfoVo> list = JSON.parseArray(rstObjJson.get("root").toString(), RecommendInfoVo.class);
+				
+				List<PrdContInfo> pomses = this.getPomses(list);
+				resultMap.put(RequestConstants.R_SUCC, rstObjJson.get(RequestConstants.R_SUCC));
+				resultMap.put(RequestConstants.R_CODE, rstObjJson.get(RequestConstants.R_CODE));
+				resultMap.put(RequestConstants.R_MSG, rstObjJson.get(RequestConstants.R_MSG));
+				resultMap.put(RequestConstants.R_ROOT, pomses);
+				resultMap.put(RequestConstants.R_TOTAL, rstObjJson.get(RequestConstants.R_TOTAL));
+				
+				this.writeTextResponse(JSON.toJSONString(resultMap,SerializerFeature.WriteDateUseDateFormat));
+				return;
+			}
+			this.writeTextResponse(JSON.toJSONString(rstObjJson, true));
+		} catch (Exception e) {
+			resultMap.put("error", true);
+			this.writeTextResponse(JSON.toJSONString(resultMap));
+		}
+	}
+	
+	public void testSearchAll() {
+		try {
+			//获取校验参数
+			String host = getParam("host");
+			if (StringUtil.isNullStr(host)) {
+				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+				resultMap.put(RequestConstants.R_MSG, "服务器不可为空");
+				this.writeTextResponse(JSON.toJSONString(resultMap));
+				return ;
+			}
+			catsInfoJson = StringUtil.null2Str(catsInfoJson);
+			UserTag oldUserTag = null;
+			if(!StringUtil.isNullStr(catsInfoJson)) {
+				try {
+					oldUserTag = JSON.parseObject(catsInfoJson, UserTag.class);
+				} catch (Exception e) {
+					log.error("处理json串出错，msg:"+e.getMessage()+",json:" + catsInfoJson);
+				}
+			}
+			if(oldUserTag != null){//以手动输入的为准
+				if(!StringUtil.isNullStr(userTag.getId())){
+					oldUserTag.setId(userTag.getId());
+				}
+				if(userTag.getStart() != null){
+					oldUserTag.setStart(userTag.getStart());
+				}
+				if(userTag.getLimit() != null){
+					oldUserTag.setLimit(userTag.getLimit());
+				}
+				if(!StringUtil.isNullStr(userTag.getCtVer())){
+					oldUserTag.setCtVer(userTag.getCtVer());
+				}
+				if(!StringUtil.isNullStr(userTag.getPrdType())){
+					oldUserTag.setPrdType(userTag.getPrdType());
+				}
+			}else{//否则默认就是输入的对象
+				oldUserTag = userTag;
+			}
+			if(oldUserTag == null){
+				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+				resultMap.put(RequestConstants.R_MSG,"未找到任何参数");
+				this.writeTextResponse(JSON.toJSONString(resultMap));
+				return;
+			}
+		    String userTagJson = JSON.toJSONString(oldUserTag);
+		    //可以传递
+			String url = "http://" + host + "/req/searchAll.msp";
+			String rst = HttpClientUtil.httpClientPost(url, new NameValuePair[0], userTagJson);
+			if(StringUtil.isNullStr(rst)){
+				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+				resultMap.put(RequestConstants.R_MSG,"连接指定推荐服务器出现异常");
+				this.writeTextResponse(JSON.toJSONString(resultMap));
+				return;
+			}
+			this.writeTextResponse(JSON.toJSONString(JSON.parseObject(rst), true));
+		} catch (Exception e) {
+			resultMap.put("error", true);
+			this.writeTextResponse(JSON.toJSONString(resultMap));
+		}
+	}
+	
+	public void testSearchVoms() {
+		try {
+			//获取校验参数
+			String host = getParam("host");
+			if (StringUtil.isNullStr(host)) {
+				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+				resultMap.put(RequestConstants.R_MSG, "服务器不可为空");
+				this.writeTextResponse(JSON.toJSONString(resultMap));
+				return ;
+			}
+			String id = this.getParam("id");
+			String type = this.getParam("type");
+			String prdType = this.getParam("prdType");
+			String labelInfo = this.getParam("labelInfo");
+			String startStr = this.getParam("start");
+			String limitStr = this.getParam("limit");
+			if (StringUtil.isNullStr(labelInfo) || StringUtil.isNullStr(prdType) 
+					|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr) ) {
+				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+				resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
+				resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+				return ;
+			}
+			NameValuePair[] values ={
+					new NameValuePair("id",id),
+					new NameValuePair("type",type),
+					new NameValuePair("prdType",prdType),
+					new NameValuePair("labelInfo",labelInfo),
+					new NameValuePair("start",startStr),
+					new NameValuePair("limit",limitStr),
+			};
 			
+		    //可以传递
+			String url = "http://" + host + "/req/searchVoms.msp";
+			String rst = HttpClientUtil.httpClientPost(url,values);
+			if(StringUtil.isNullStr(rst)){
+				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+				resultMap.put(RequestConstants.R_MSG,"连接指定推荐服务器出现异常");
+				this.writeTextResponse(JSON.toJSONString(resultMap));
+				return;
+			}
 			this.writeTextResponse(JSON.toJSONString(JSON.parseObject(rst), true));
 		} catch (Exception e) {
 			resultMap.put("error", true);
@@ -219,31 +341,45 @@ public class TestAction extends BaseAction {
 	}
 	
 	//根据rootArray去service中得到 List<Poms>
-	public List<Poms> getPomses(JSONArray rootArray ) {
-		List<Long> prdContIds = null;
-		List<Poms> pomses = null;
-		try {
-			if (rootArray != null) {
-				//遍历rootArray
-				String rootArrayStr = JSON.toJSONString(rootArray);
-				System.out.println(rootArrayStr);
-				List<HashMap> rootArrayMap = JSON.parseArray(rootArrayStr, HashMap.class);
-				for (int i = 0; i < rootArrayMap.size(); i++) {
-					String prdContId = (String) rootArrayMap.get(i).get("prdContId");
-					 prdContIds.add(StringUtil.nullToLong(prdContId));
+	public List<PrdContInfo> getPomses(List<RecommendInfoVo> list ) {
+		List<PrdContInfo> pomses = null;
+		List<PrdContInfo> rst = new ArrayList<PrdContInfo>();
+		if (list != null) {
+			List<Long> prdContIds = new ArrayList<Long>();
+			for (RecommendInfoVo vo : list) {
+				prdContIds.add(vo.getPrdContId());
+			}
+			try {
+				pomses = pomsService.getInfoByPrdContIds(prdContIds);
+			} catch (Exception e) {
+				log.error(e.getMessage(),e);
+			}
+			prdContIds.clear();
+			prdContIds = null;
+			
+			Map<Long, PrdContInfo> infos = new HashMap<Long,PrdContInfo>();
+			if(pomses != null){
+				for(PrdContInfo info : pomses){
+					infos.put(info.getPrdContId(), info);
+				}
+				pomses.clear();
+				pomses = null;
+			}
+			
+			PrdContInfo info = null;
+			for (RecommendInfoVo vo : list) {
+				info = infos.get(vo.getPrdContId());
+				if(info == null){
+					rst.add(new PrdContInfo(vo.getPrdContId(),vo.getContName()));
+				}else{
+					rst.add(info);
 				}
 			}
-			pomses = pomsService.testSystemSearch(prdContIds);
-			
-		} catch (Exception e) {
-			resultMap.put("error", true);
-			resultMap.put(RequestConstants.R_MSG, "出现未知错误");
-			e.printStackTrace();
+			infos.clear();
+			infos = null;
 		}
-		return pomses;
-			
+		return rst;
 	}
-	
 	public UserTagCacheManager getUserTagCacheManager() {
 		return userTagCacheManager;
 	}
@@ -268,5 +404,4 @@ public class TestAction extends BaseAction {
 	public void setPomsService(PomsService pomsService) {
 		this.pomsService = pomsService;
 	}
-	
 }

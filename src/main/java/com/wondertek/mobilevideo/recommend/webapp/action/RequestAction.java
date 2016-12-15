@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.httpclient.NameValuePair;
+
 import com.alibaba.fastjson.JSON;
 import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
@@ -29,6 +31,7 @@ import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.RecomdItem;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.UserTag;
 import com.wondertek.mobilevideo.core.util.StringUtil;
+import com.wondertek.mobilevideo.recommend.webapp.util.HttpClientUtil;
 
 /**
  * 外部请求
@@ -1464,6 +1467,4 @@ public class RequestAction extends BaseAction {
 	public void setVomsRecommendCacheManager(VomsRecommendCacheManager vomsRecommendCacheManager) {
 		this.vomsRecommendCacheManager = vomsRecommendCacheManager;
 	}
-	
-	
 }

@@ -92,7 +92,6 @@
 		<property name="isCluster" value="false" />
 		<property name="vomsRecommendCacheClusterManager" ref="vomsRecommendCacheClusterManager"/>
 		<property name="expireTime" value="720" /><!--12分 失效-->
-		
 	</bean>
 	
 </beans>
