@@ -2,17 +2,11 @@
 	contentType="text/html;charset=utf-8"%>
 <%@ include file="/common/taglibs.jsp"%>
 <style type="text/css">
-		.tree .tree-selected {
-		  background-color: rgba(255,215,100, 0.8);
-		  color: #6398B0;
-		}
-		.tree .tree-selected:hover {
-		  background-color: rgba(255,215,100, 0.8);
-		}
-		.tree .tree-item:hover {
-		    background-color: #ffebb2;
-		}
-	</style>
+/* 	.ztree li span.button { */
+/* 	    width: 14px; */
+/* 	    height: 14px; */
+/* 	} */
+</style>
 <div class="breadcrumbs" id="breadcrumbs">
 	<script type="text/javascript">
 		try {
@@ -31,41 +25,41 @@
 	<!-- /.breadcrumb -->
 </div>
 <div class="page-content">
-	<div class="panel-group accordion no-margin-bottom" id="accordion">
-		<div class="panel panel-default">
-			<div class="panel-heading no-padding">
-				<div id="actions" class="btn-group clearfix">
-					<cas:havePerm url="/sys/addConfig.htm">
-						<button type="button" class="btn btn-sm" onclick="addSysParms()">
-							<i class="ace-icon fa fa-plus orange bigger-110"></i>
-							<fmt:message key="button.add" />
-						</button>
-					</cas:havePerm>
+<!-- 	<div class="panel-group accordion no-margin-bottom" id="accordion"> -->
+<!-- 		<div class="panel panel-default"> -->
+<!-- 			<div class="panel-heading no-padding"> -->
+<!-- 				<div id="actions" class="btn-group clearfix"> -->
+<%-- 					<cas:havePerm url="/sys/addConfig.htm"> --%>
+<!-- 						<button type="button" class="btn btn-sm" onclick="addSysParms()"> -->
+<!-- 							<i class="ace-icon fa fa-plus orange bigger-110"></i> -->
+<%-- 							<fmt:message key="button.add" /> --%>
+<!-- 						</button> -->
+<%-- 					</cas:havePerm> --%>
 
-					<cas:havePerm url="/sys/delConfig.htm">
-						<button type="button" class="btn btn-sm btn-round pull-right"
-							onclick="delSysParms()">
-							<i class="ace-icon fa fa-trash-o orange bigger-120"></i>
-							<fmt:message key="button.delete" />
-						</button>
-					</cas:havePerm>
-
-
-
-					<cas:havePerm url="/sys/editConfig.htm">
-						<button type="button" class="btn btn-sm"
-							onclick="editRecomdParms()">
-							<i class="ace-icon fa fa-edit orange bigger-120"></i>
-							<fmt:message key="button.edit" />
-						</button>
-					</cas:havePerm>
+<%-- 					<cas:havePerm url="/sys/delConfig.htm"> --%>
+<!-- 						<button type="button" class="btn btn-sm btn-round pull-right" -->
+<!-- 							onclick="delSysParms()"> -->
+<!-- 							<i class="ace-icon fa fa-trash-o orange bigger-120"></i> -->
+<%-- 							<fmt:message key="button.delete" /> --%>
+<!-- 						</button> -->
+<%-- 					</cas:havePerm> --%>
 
 
-				</div>
-			</div>
+
+<%-- 					<cas:havePerm url="/sys/editConfig.htm"> --%>
+<!-- 						<button type="button" class="btn btn-sm" -->
+<!-- 							onclick="editRecomdParms()"> -->
+<!-- 							<i class="ace-icon fa fa-edit orange bigger-120"></i> -->
+<%-- 							<fmt:message key="button.edit" /> --%>
+<!-- 						</button> -->
+<%-- 					</cas:havePerm> --%>
+
+
+<!-- 				</div> -->
+<!-- 			</div> -->
 			
-		</div>
-	</div>
+<!-- 		</div> -->
+<!-- 	</div> -->
 
 	<div class="row">
 		<div class="col-sm-6">
@@ -75,8 +69,12 @@
 				</div>
 
 				<div class="widget-body">
-					<div class="widget-main padding-8">
-						<div id="tree1" class="tree"></div>
+<!-- 					<div class="widget-main padding-8"> -->
+<!-- 						<div id="tree1" class="tree"></div> -->
+<!-- 					</div> -->
+					
+					<div class="zTreeDemoBackground left">
+						<ul id="treeDemo" class="ztree"></ul>
 					</div>
 				</div>
 			</div>
@@ -165,15 +163,8 @@
 							<label for="addLabelType"
 								class="col-sm-2 control-label no-padding-right">标签类型</label>
 							<div class="col-sm-10">
-								
-								
-	
-								<select class="form-control addLabelType" id="form-field-select-1">
-									<option value=""></option>
-<!-- 									<option value="0">一级标签</option> -->
+								<select class="form-control addLabelType" id="form-field-select-1" disabled="disabled">
 									<option value="1">二级标签</option>
-									
-									
 								</select>
 								
 							</div>
@@ -290,22 +281,7 @@
 		</div>
 		<!-- /.modal-content -->
 	</div>
-	<div style="display: none">
-		<input type="hidden" id="sys-sysConfig-id"
-			value="<fmt:message key = "sys.sysConfig.id"/>"> <input
-			type="hidden" id="sys-sysConfig-key"
-			value="<fmt:message key = "sys.sysConfig.key"/>"> <input
-			type="hidden" id="sys-sysConfig-value"
-			value="<fmt:message key = "sys.sysConfig.value"/>"> <input
-			type="hidden" id="sys-sysConfig-detail"
-			value="<fmt:message key = "sys.sysConfig.detail"/>"> <input
-			type="hidden" id="sys-error-keyEmpty"
-			value="<fmt:message key = "sys.error.keyEmpty"/>"> <input
-			type="hidden" id="sys-error-valueEmpty"
-			value="<fmt:message key = "sys.error.valueEmpty"/>"> <input
-			type="hidden" id="sys-error-selectOne"
-			value="<fmt:message key = "common.select.mult"/>">
-	</div>
+	
 	<!-- /.modal -->
 </div>
 <script src="<c:url value='/pages/sys/js/recomdParam.js'/>"></script>
@@ -317,7 +293,24 @@
 <!-- ace scripts -->
 <script src="./ace/assets/js/ace-elements.js"></script>
 <script src="./ace/assets/js/ace.js"></script>
-
+<script src="./ace/plugins/js/ztree/jquery.ztree.core-3.5.js"></script>
+<script src="./ace/plugins/js/ztree/jquery.ztree.excheck-3.5.js"></script>
+<script src="./ace/plugins/js/ztree/jquery.ztree.exedit-3.5.js"></script>
+<script src="./ace/plugins/js/ztree/jquery.ztree.exhide-3.5.min.js"></script>
+<script src="<c:url value='/pages/sys/js/recomdZtree.js'/>"></script>
 <script type="text/javascript">
 	var webroot = '<c:url value="/"/>';
+	$(document).ready(function(){
+		initTree();
+	});
+	$('#treeDemo').bind("contextmenu",function(e){ return false; }); 
+	$('#rMenu').bind("contextmenu",function(e){ return false; }); 
 </script>
+<div id="rMenu">
+	<ul>
+		<li onclick="refreshTreeNode()"><span class="node-refresh"></span>更新此标签<span></span></li>
+		<li id="addLabelli" onclick="addSysParms()"><span class="node-add"></span><span>添加子标签</span></li>
+		<li onclick="editRecomdParms()"><span class="node-del"></span><span>编辑此标签</span></li>
+		<li id="delLabelli" onclick="delSysParms()"><span class="node-edit"></span><span>删除此标签</span></li>
+	</ul>
+</div>

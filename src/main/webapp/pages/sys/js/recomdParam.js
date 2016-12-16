@@ -171,17 +171,13 @@ jQuery(function($) {
 });
 
 function editRecomdParms() {
-	var selectedIds = $('.tree-selected'); //返回选中多行ids
-	if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
-		alertmsg("warning", "请选择一条记录进行操作");
-	} else if (selectedIds.length > 1) {
-		alertmsg("warning", "请只选择一条记录进行操作");
-	} else {
-
+//	var selectedIds = $('.tree-selected'); //返回选中多行ids
+	if(editNode == null){
+		alertmsg("warning", "请至少选择一条标签进行操作");
+	}else{
 		$("#editSysParamsModal").modal("show");
-
 	}
-
+		
 }
 
 function editSave() {
@@ -205,11 +201,7 @@ function editSave() {
 			"parentId" : $editLabelParentId.val()
 		},
 		success : function(data) {
-			
-//			console.log(data.data.data);
-			elems = data.data.data;
-			$mainPage.load('/recommend/sys/recommondParmsManage.msp');
-			
+			zTree.reAsyncChildNodes(editNode.getParentNode(), "refresh");
 			alertmsg("warning", data.msg);
 			
 		}
@@ -221,20 +213,14 @@ function editSave() {
 }
 
 function addSysParms() {
-	var selectedIds = $('.tree-selected'); //返回选中多行ids
-	if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
-		alertmsg("warning", "请选择一条一级标签进行操作");
-		return;
-	} else if (selectedIds.length > 1) {
-		alertmsg("warning", "请只选择一条一级标签进行操作");
-		return;
-	} else {
-		if ($addLabelParent.val() == "" || $addLabelParentType.val() != "0") {
-			alertmsg("warning", "请选择一级标签进行添加");
-			return;
-		}
+	if(editNode == null){
+		alertmsg("warning", "请至少选择一条标签进行操作");
+	}else if(editNode.laberType == '0'){
 		$("#addSysParmsModal").modal("show");
+	}else{
+		alertmsg("warning", "请选择一级标签进行添加");
 	}
+	
 }
 function addSave() {
 
@@ -271,8 +257,7 @@ function addSave() {
 			"addLabelName" : $addLabelName.val()
 		},
 		success : function(data) {
-			elems = data.data.data;
-			$mainPage.load('/recommend/sys/recommondParmsManage.msp');
+			zTree.reAsyncChildNodes(editNode, "refresh");
 			alertmsg("warning", data.msg);
 
 		}
@@ -283,44 +268,25 @@ function addSave() {
 }
 
 function delSysParms() {
-	var selectedIds = $('.tree-selected');
-	var addLabelType = $('#tree1').tree('selectedItems');
-	for ( var i in addLabelType){
-		if (addLabelType.hasOwnProperty(i)) {
-			var ite = addLabelType[i];
-			if(ite.laberType != "1"){
-				alertmsg("warning", "请选择二级标签进行删除");
-				return;
-			}
-			
-			
-		}
-	}
-	if (selectedIds == '' || selectedIds == null || selectedIds.length < 1) {
-		alertmsg("warning", "请至少选择一条记录进行操作");
-	} else if (selectedIds.length >= 1) {
+	
+
+	if (editNode == null) {
+		alertmsg("warning", "请至少选择一条标签进行操作");
+	} else if(editNode.laberType == '0'){
+		alertmsg("warning", "只能删除二级标签");
+	}else{
 
 		Lobibox.confirm({
 			title : "删除提示",
-			msg : "确定删除所选记录?",
+			msg : "确定删除标签 : "+editNode.text+" ?",
 			callback : function($this, type, eve) {
 				if (type == "yes") {
-					var ids = "";
-					var items = $('#tree1').tree('selectedItems');
-					for ( var i in items)
-						if (items.hasOwnProperty(i)) {
-							var item = items[i];
-							ids += item.id + ",";
-							
-						}
-
-					ids = ids.substring(0, ids.lastIndexOf(","));
 					var data = {
-						"configIds" : ids
+						"configIds" : editNode.nodeId
 					};
 					$.post(webroot + "sys/editWeights.msp", data, function(data) {
 						if (data.success == true) {
-							$mainPage.load('/recommend/sys/recommondParmsManage.msp');//重新载入 
+							zTree.reAsyncChildNodes(editNode.getParentNode(), "refresh");
 							alertmsg("success", "删除成功");
 						} else {
 							alertmsg("error", "删除失败");
