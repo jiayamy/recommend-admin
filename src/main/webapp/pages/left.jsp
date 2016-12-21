@@ -68,7 +68,7 @@
    		</cas:havePerm>
    		<cas:havePerm url="/menuTestManage.htm">
         <li>
-			<a href="#" class="dropdown-toggle"><i class="menu-icon fa fa-cog"></i><span class="menu-text">测试管理 </span>
+			<a href="#" class="dropdown-toggle"><i class="menu-icon glyphicon glyphicon-list"></i><span class="menu-text">测试管理 </span>
             	<b class="arrow fa fa-angle-down"></b>
             </a> 
             <b class="arrow"></b>

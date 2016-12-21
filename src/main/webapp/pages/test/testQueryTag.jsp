@@ -118,7 +118,6 @@
 					$('#contentDiv').val(msg);
 				},
 				error : function(msg) {
-					console.log(msg);
 					alert("失败了");
 				}
 			});

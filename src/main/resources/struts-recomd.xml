@@ -55,6 +55,12 @@
 			    <param name = "root"> resultMap</param>
 			</result>
 		</action>
+		
+		<action name="updateVomsRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.VomsRecommendAction" method="updateRecommend">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
 		<!-- 20161117 -->
 		<action name="testQueryTag" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testQueryTag">
 		</action>

@@ -25,7 +25,6 @@ var getParams = function(selector) {
 			data[name] = $(this).val().replace(/\n/g,"");
 		}
 	});
-	console.log(data);
 	return data;
 };
 
@@ -49,7 +48,6 @@ var getValuesByAttr = function(selector, attr) {
 			data.push(val);
 		}
 	});
-	console.log(data);
 	return (data||'').toString();;
 };
 //是否为源文件

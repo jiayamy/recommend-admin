@@ -57,7 +57,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//解析请求体
@@ -70,20 +70,20 @@ public class RequestAction extends BaseAction {
 		if(reqUserTag == null){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110002);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contenterror"));
+			resultMap.put(RequestConstants.R_MSG, "请求体与要求不符");
 			return SUCCESS;
 		}
 		if(StringUtil.isNullStr(reqUserTag.getPrdType()) || StringUtil.isNullStr(reqUserTag.getCtVer())){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			return SUCCESS;
 		}
 		PrdTypeRelation prdTypeRelation = PrdTypeRelationCache.PRDTYPE_RELATIONS.get(reqUserTag.getPrdType());
 		if(prdTypeRelation == null || StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.prdtypenotfound"));
+			resultMap.put(RequestConstants.R_MSG, "未找到匹配的产品");
 			return SUCCESS;
 		}
 		if(reqUserTag.getStart() == null || reqUserTag.getStart() < 0){
@@ -126,7 +126,7 @@ public class RequestAction extends BaseAction {
 //		if(searchMaxCount <= start){
 //			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 //			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-//			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+//			resultMap.put(RequestConstants.R_MSG, "请求成功");
 //			resultMap.put(RequestConstants.R_ROOT, new ArrayList<RecommendInfoVo>());
 //			resultMap.put(RequestConstants.R_TOTAL, searchMaxCount);
 //			return SUCCESS;
@@ -190,7 +190,7 @@ public class RequestAction extends BaseAction {
 						if (!checkTagsNotNull(reqUserTag)){
 							resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 							resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120002);
-							resultMap.put(RequestConstants.R_MSG, this.getText("request.error.tagnull"));
+							resultMap.put(RequestConstants.R_MSG, "未找到任何匹配的用户标签");
 							if(log.isDebugEnabled())
 								log.debug("searchAllList end,duration:" + (s -end1));
 							return SUCCESS;
@@ -553,7 +553,7 @@ public class RequestAction extends BaseAction {
 		//返回结果
 		resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 		resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-		resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+		resultMap.put(RequestConstants.R_MSG, "请求成功");
 		resultMap.put(RequestConstants.R_POMS_CONT, pomsContList);
 		resultMap.put(RequestConstants.R_TOTAL, total);
 		resultMap.put(RequestConstants.R_VOMS_SPECIALTOPIC, specialTopicList);
@@ -607,7 +607,7 @@ public class RequestAction extends BaseAction {
 				|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr) ) {
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			return SUCCESS;
 		}
 		// 处理参数
@@ -649,14 +649,14 @@ public class RequestAction extends BaseAction {
 			//返回结果
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
 			resultMap.put(RequestConstants.R_ROOT, returnList);
 			resultMap.put(RequestConstants.R_TOTAL, total);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.system"));
+			resultMap.put(RequestConstants.R_MSG, "系统异常");
 			end2 = System.currentTimeMillis();
 		}
 		
@@ -678,7 +678,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//直接透传
@@ -698,7 +698,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//直接透传
@@ -721,7 +721,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(userId)){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
 			return;
@@ -737,7 +737,7 @@ public class RequestAction extends BaseAction {
 			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
 			resultMap.put(RequestConstants.R_ROOT, userTag);
 			
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
@@ -745,7 +745,7 @@ public class RequestAction extends BaseAction {
 			log.error(e.getMessage(),e);
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.system"));
+			resultMap.put(RequestConstants.R_MSG, "系统异常");
 			
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
 		}
@@ -772,7 +772,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//解析请求体
@@ -785,20 +785,20 @@ public class RequestAction extends BaseAction {
 		if(reqUserTag == null){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110002);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contenterror"));
+			resultMap.put(RequestConstants.R_MSG, "请求体与要求不符");
 			return SUCCESS;
 		}
 		if(StringUtil.isNullStr(reqUserTag.getPrdType()) || StringUtil.isNullStr(reqUserTag.getCtVer())){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			return SUCCESS;
 		}
 		PrdTypeRelation prdTypeRelation = PrdTypeRelationCache.PRDTYPE_RELATIONS.get(reqUserTag.getPrdType());
 		if(prdTypeRelation == null || StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.prdtypenotfound"));
+			resultMap.put(RequestConstants.R_MSG, "未找到匹配的产品");
 			return SUCCESS;
 		}
 		if(reqUserTag.getStart() == null || reqUserTag.getStart() < 0){
@@ -833,7 +833,7 @@ public class RequestAction extends BaseAction {
 		if(searchMaxCount <= start){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
 			resultMap.put(RequestConstants.R_ROOT, new ArrayList<RecommendInfoVo>());
 			resultMap.put(RequestConstants.R_TOTAL, searchMaxCount);
 			return SUCCESS;
@@ -889,7 +889,7 @@ public class RequestAction extends BaseAction {
 						if (!checkTagsNotNull(reqUserTag)){
 							resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 							resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120002);
-							resultMap.put(RequestConstants.R_MSG, this.getText("request.error.tagnull"));
+							resultMap.put(RequestConstants.R_MSG, "未找到任何匹配的用户标签");
 							if(log.isDebugEnabled())
 								log.debug("list end,duration:" + (s -end1));
 							return SUCCESS;
@@ -1132,7 +1132,7 @@ public class RequestAction extends BaseAction {
 		//返回结果
 		resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 		resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-		resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+		resultMap.put(RequestConstants.R_MSG, "请求成功");
 		resultMap.put(RequestConstants.R_ROOT, returnList);
 		resultMap.put(RequestConstants.R_TOTAL, total);
 		if(log.isDebugEnabled())

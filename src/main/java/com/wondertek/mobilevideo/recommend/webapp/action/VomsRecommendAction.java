@@ -25,6 +25,35 @@ public class VomsRecommendAction extends BaseAction {
 	private VomsRecommendService vomsRecommendService;
 	private List<PrdTypeRelation> prdTypeRelations;
 	/**
+	 * voms推荐 撤回或者推荐
+	 */
+	public String updateRecommend(){
+		resultMap.put("success", true);
+		resultMap.put("error", true);
+		String ip = RequestUtil.getIpAddr(this.getRequest());
+		if(log.isInfoEnabled())
+			log.info("recommend:" + ip);
+		if(isNotLogin()){
+			resultMap.put("message", this.getText("common.isNotLogin"));
+			return SUCCESS;
+		}
+		String ids = this.getParam("ids");
+		String isRecommend = this.getParam("isRecommend");
+		if(StringUtil.isNullStr(isRecommend) || StringUtil.isNullStr(isRecommend)){
+			resultMap.put("message", this.getText("request.error.paramnull"));
+			return SUCCESS;
+		}
+		try {
+			vomsRecommendService.updateIsRecommend(StringUtil.stringToLongArray(ids),StringUtil.nullToBoolean(isRecommend),this.getUsername());
+			resultMap.put("message", this.getText("common.oper.success"));
+			resultMap.put("error", false);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			resultMap.put("message", this.getText("voms.recomd.error"));
+		}
+		return SUCCESS;
+	}
+	/**
 	 * 获取页面
 	 * @return
 	 */
@@ -63,14 +92,14 @@ public class VomsRecommendAction extends BaseAction {
 			
 			if(objId == null || StringUtil.isNullStr(isRecommendStr) || StringUtil.isNullStr(objType)){//类型校验
 				resultMap.put("error", true);
-				resultMap.put("message", this.getText("voms.recomd.param.error"));
+				resultMap.put("message", "必填参数为空");
 				return SUCCESS;
 			}
 			Boolean isRecommend = StringUtil.nullToBoolean(isRecommendStr);
 			if(isRecommend){//推荐校验
 				if(StringUtil.isNullStr(prdType) || StringUtil.isNullStr(type) || StringUtil.isNullStr(name) || StringUtil.isNullStr(labelInfo)){
 					resultMap.put("error", true);
-					resultMap.put("message", this.getText("voms.recomd.param.none"));
+					resultMap.put("message", "必填参数为空");
 					return SUCCESS;
 				}
 				StringBuffer sb = new StringBuffer();
@@ -86,7 +115,7 @@ public class VomsRecommendAction extends BaseAction {
 					labelInfo = "," + sb.toString();
 				}else{
 					resultMap.put("error", true);
-					resultMap.put("message", this.getText("voms.recomd.param.none"));
+					resultMap.put("message", "必填参数为空");
 					return SUCCESS;
 				}
 			}
@@ -123,10 +152,10 @@ public class VomsRecommendAction extends BaseAction {
 				vomsRecommendService.saveOrUpdateAll(voRecommends);	
 			}
 			resultMap.put("error", true);
-			resultMap.put("message", this.getText("voms.recomd.success"));
+			resultMap.put("message", "处理成功");
 		} catch (Exception e) {
 			resultMap.put("error",false);
-			resultMap.put("message", this.getText("voms.recomd.error"));
+			resultMap.put("message", "错误:出现未知异常");
 		}
 		return SUCCESS;
 	}

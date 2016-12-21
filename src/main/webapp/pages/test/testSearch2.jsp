@@ -118,7 +118,7 @@
 		    		repeatitems: true,  //表示返回的数据标签是否可重复
 	    		},
 	    		shrinkToFit:false,//设置列宽，表格宽度为设置宽度，列宽度不会重新计算，使用colModel中定义的值
-	    		rowNum:20,
+	    		rowNum:1000,
 				rowList:[20,100,500,1000],
 				pager : pager_selector,
 		    	multiselect: true,//支持多项选择
