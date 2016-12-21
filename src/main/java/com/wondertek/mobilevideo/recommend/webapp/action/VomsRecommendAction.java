@@ -57,6 +57,12 @@ public class VomsRecommendAction extends BaseAction {
 	 * 获取页面
 	 * @return
 	 */
+	public List<PrdTypeRelation> getPrdTypeRelations() {
+		return prdTypeRelations;
+	}
+	public void setPrdTypeRelations(List<PrdTypeRelation> prdTypeRelations) {
+		this.prdTypeRelations = prdTypeRelations;
+	}
 	public String getPage(){
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		if(log.isInfoEnabled())
@@ -243,10 +249,5 @@ public class VomsRecommendAction extends BaseAction {
 	public void setVomsRecommendService(VomsRecommendService vomsRecommendService) {
 		this.vomsRecommendService = vomsRecommendService;
 	}
-	public List<PrdTypeRelation> getPrdTypeRelations() {
-		return prdTypeRelations;
-	}
-	public void setPrdTypeRelations(List<PrdTypeRelation> prdTypeRelations) {
-		this.prdTypeRelations = prdTypeRelations;
-	}
+	
 }

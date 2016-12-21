@@ -37,6 +37,14 @@
 					<b class="arrow"></b>
 				</li>
 				</cas:havePerm>
+				<cas:havePerm url="/menuTopRecommend.htm">
+				<li>
+					<a href="#" menu-url="<c:url value='/recomd/topRecommend.msp'/>">
+						置顶推荐 
+					</a> 
+					<b class="arrow"></b>
+				</li>
+				</cas:havePerm>
 			</ul>
 		</li>
 		</cas:havePerm>
@@ -84,6 +92,23 @@
                 <li>
                     <a href="#" menu-url="<c:url value='/pages/test/testSearch2.jsp'/>">
                     	内容推荐
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+                </cas:havePerm>
+                <!--   新添加的测试 -->
+                 <cas:havePerm url="/menuTestSearchAllListManage.htm">
+                <li>
+                    <a href="#" menu-url="<c:url value='/pages/test/searchAllList.jsp'/>">
+                    	测试搜索合并
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+                </cas:havePerm>
+                 <cas:havePerm url="/menuTestsearchVomsManage.htm">
+                <li>
+                    <a href="#" menu-url="<c:url value='/pages/test/searchVoms.jsp'/>">
+                    	 测试获取VOMS数据
                     </a>
                     <b class="arrow"></b>
                 </li>

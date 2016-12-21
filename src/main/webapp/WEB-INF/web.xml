@@ -37,6 +37,10 @@
             classpath:/applicationContext-recommend-cache.xml
             classpath*:/applicationContext-cas.xml
             classpath:/applicationContext-recommend-job.xml
+            <!-- 
+             -->
+            classpath*:/applicationContext-poms-dao.xml
+            classpath*:/applicationContext-poms-service.xml
 		</param-value>
   	</context-param>
   	<!-- =============sso config start================ 

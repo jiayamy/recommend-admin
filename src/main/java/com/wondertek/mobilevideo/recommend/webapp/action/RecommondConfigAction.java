@@ -5,14 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.wondertek.mobilevideo.core.base.Constants;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsConfig;
 import com.wondertek.mobilevideo.core.recommend.model.EnumsInfo;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsConfigService;
 import com.wondertek.mobilevideo.core.recommend.service.EnumsInfoService;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
-import com.wondertek.mobilevideo.core.recommend.vo.AdditionalParameters;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendParam;
-import com.wondertek.mobilevideo.core.recommend.vo.RecommondListVo;
+import com.wondertek.mobilevideo.core.util.StringUtil;
 
 public class RecommondConfigAction extends BaseAction {
 
@@ -25,14 +25,23 @@ public class RecommondConfigAction extends BaseAction {
 	public String getPage() {
 		return SUCCESS;
 	}
+	
+	private List<RecommendParam> recommendParams = new ArrayList<RecommendParam>();
+	
 
+	public List<RecommendParam> getRecommendParams() {
+		return recommendParams;
+	}
+
+	public void setRecommendParams(List<RecommendParam> recommendParams) {
+		this.recommendParams = recommendParams;
+	}
+	
+	@SuppressWarnings({ "unchecked" })
 	public String list() {
-		String sid = getParam("skey");
-		
+		String nodeId = getParam("nodeId");
+		String isRefresh = StringUtil.nullToString(getRequest().getParameter("isRefresh"));
 		List<EnumsConfig> items = new ArrayList<EnumsConfig>();
-		RecommondListVo result = new RecommondListVo();
-		List<RecommendParam> recommendParams = new ArrayList<RecommendParam>();
-		
 		List<EnumsInfo> enumsInfos = enumsInfoService.getAll();
 		Map<String, String> enumsMap = new HashMap<String, String>();
 		for(EnumsInfo enums : enumsInfos){
@@ -40,44 +49,41 @@ public class RecommondConfigAction extends BaseAction {
 			String v1 = enums.getVal();
 			enumsMap.put(k1, v1);
 		}
-		
-		if("0".equals(sid)){
+		List<RecommendParam> rps = (List<RecommendParam>) getSession().getAttribute(Constants.CONTEENT_TREE_NODES);
+		if("0".equals(nodeId) || rps == null || nodeId ==null || nodeId.trim().isEmpty()){
 			items = enumsConfigService.findByType("0");
 			for (EnumsConfig eConfig : items) {
-
 				RecommendParam r = new RecommendParam();
 				r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
 				r.setLaberType(eConfig.getType());
 				r.setId(eConfig.getId());
 				r.setWeight(eConfig.getWeight());
-				r.setType("folder");
-				AdditionalParameters ad = new AdditionalParameters();
-				r.setAdditionalParameters(ad);
+				r.setIconCls("folder");
+				r.setIsParent(true);
 				recommendParams.add(r);
 			}
 		}else{
-			EnumsConfig enumsConfig = enumsConfigService.get(Long.parseLong(sid));
-			String skey = enumsConfig.getKey();
-			List<EnumsConfig> childs = enumsConfigService.findByParent(skey);
-			for(EnumsConfig eConfig : childs){
-				RecommendParam r = new RecommendParam();
-				r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
-				r.setLaberType(eConfig.getType());
-				r.setId(eConfig.getId());
-				r.setWeight(eConfig.getWeight());
-				r.setType("item");
-				r.setParentId(enumsConfig.getId().toString());
-				r.setParentText(enumsMap.get(enumsConfig.getKey() + "-" + enumsConfig.getType()));
-				AdditionalParameters ad = new AdditionalParameters();
-				r.setAdditionalParameters(ad);
-				recommendParams.add(r);
+			if("Y".equals(isRefresh)){
+				EnumsConfig enumsConfig = enumsConfigService.get(Long.parseLong(nodeId));
+				String skey = enumsConfig.getKey();
+				List<EnumsConfig> childs = enumsConfigService.findByParent(skey);
+				for(EnumsConfig eConfig : childs){
+					RecommendParam r = new RecommendParam();
+					r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
+					r.setLaberType(eConfig.getType());
+					r.setId(eConfig.getId());
+					r.setWeight(eConfig.getWeight());
+					r.setIconCls("item");
+					r.setIsParent(false);
+					r.setParentId(enumsConfig.getId().toString());
+					r.setParentText(enumsMap.get(enumsConfig.getKey() + "-" + enumsConfig.getType()));
+					recommendParams.add(r);
+				}
+				return SUCCESS;
 			}
+
 		}
-		
-		result.setData(recommendParams);
-
-		resultMap.put("data", result);
-
+		getSession().setAttribute(Constants.CONTEENT_TREE_NODES, recommendParams);
 		return SUCCESS;
 	}
 	
@@ -106,49 +112,20 @@ public class RecommondConfigAction extends BaseAction {
 		String addLabelType = getParam("addLabelType");
 		String addLabelWeight = getParam("addLabelWeight");
 		String ids = getParam("configIds");
-		String pid = getParam("parentId");
 		try {
 			EnumsConfig enumsConfig = null; 
-			List<EnumsInfo> enumsInfos = enumsInfoService.getAll();
-			RecommondListVo result = new RecommondListVo();
-			Map<String, String> enumsMap = new HashMap<String, String>();
-			for(EnumsInfo enums : enumsInfos){
-				String k1 = enums.getKey() + "-" + enums.getType();
-				String v1 = enums.getVal();
-				enumsMap.put(k1, v1);
-			}
-			List<EnumsConfig> items = new ArrayList<EnumsConfig>();
-			List<RecommendParam> recommendParams = new ArrayList<RecommendParam>();
-			items = enumsConfigService.findByType("0");
 			//有id：编辑
 			if(id != null && !"".equals(id)){
 				enumsConfig = enumsConfigService.get(Long.parseLong(id));
 				enumsConfig.setWeight(weights);
 				enumsConfigService.update(enumsConfig);
-				resultMap.put("msg", this.getText("system.editTag.success"));
+				resultMap.put("msg", this.getText("common.edit.success"));
 				
-				
-				for (EnumsConfig eConfig : items) {
-					RecommendParam r = new RecommendParam();
-					r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
-					r.setLaberType(eConfig.getType());
-					r.setId(eConfig.getId());
-					r.setWeight(eConfig.getWeight());
-					r.setType("folder");
-					AdditionalParameters ad = new AdditionalParameters();
-					if(pid.equals(eConfig.getId().toString())){
-						ad.setItemSelected(true);
-					}
-					r.setAdditionalParameters(ad);
-					recommendParams.add(r);
-				}
-				result.setData(recommendParams);
-				resultMap.put("data", result);
 			}
 			//无id：添加
 			if(parentLabelId != null && !"".equals(parentLabelId)){
 				if(parentLabelId == null || "".equals(parentLabelId)){
-					resultMap.put("msg", this.getText("system.addTag.fail"));
+					resultMap.put("msg", this.getText("common.add.fail"));
 					return SUCCESS;
 				}
 				enumsConfig = enumsConfigService.get(Long.parseLong(parentLabelId));
@@ -160,28 +137,11 @@ public class RecommondConfigAction extends BaseAction {
 				Boolean isExist = enumsConfigService.checkExistLabel(addLabelKey,enumsConfig.getKey(),addLabelType);
 				if(!isExist){
 					enumsConfigService.save(addEnumsConfig);
-					resultMap.put("msg", this.getText("system.addSecondTag.success"));
+					resultMap.put("msg", this.getText("common.add.success"));
 				}else{
-					resultMap.put("msg", this.getText("system.SecondTag.exist"));
+					resultMap.put("msg", "您添加的二级标签已存在，不能重复添加");
 				}
 				
-				
-				for (EnumsConfig eConfig : items) {
-					RecommendParam r = new RecommendParam();
-					r.setText(enumsMap.get(eConfig.getKey() + "-" + eConfig.getType()));
-					r.setLaberType(eConfig.getType());
-					r.setId(eConfig.getId());
-					r.setWeight(eConfig.getWeight());
-					r.setType("folder");
-					AdditionalParameters ad = new AdditionalParameters();
-					if(parentLabelId.equals(eConfig.getId().toString())){
-						ad.setItemSelected(true);
-					}
-					r.setAdditionalParameters(ad);
-					recommendParams.add(r);
-				}
-				result.setData(recommendParams);
-				resultMap.put("data", result);
 			}
 			//删除二级标签
 			if(ids != null && !"".equals(ids)){
@@ -196,10 +156,9 @@ public class RecommondConfigAction extends BaseAction {
 				}
 			}
 		} catch (Exception e) {
-			resultMap.put("msg", this.getText("system.editTag.fail"));
+			resultMap.put("msg", "操作失败");
 			e.printStackTrace();
 		}
-
 		return SUCCESS;
 	}
 
@@ -218,5 +177,4 @@ public class RecommondConfigAction extends BaseAction {
 	public void setEnumsInfoService(EnumsInfoService enumsInfoService) {
 		this.enumsInfoService = enumsInfoService;
 	}
-
 }
