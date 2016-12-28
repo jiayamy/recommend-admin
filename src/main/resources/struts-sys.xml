@@ -58,7 +58,7 @@
 		
 		<action name="listRecommondParam" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="list">
 			<result type="json">
-			    <param name = "root"> resultMap</param>
+			    <param name = "root">recommendParams</param>
 			</result>
 		</action>
 		
