@@ -9,13 +9,13 @@ import org.apache.commons.httpclient.NameValuePair;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.serializer.DateSerializer;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
 import com.wondertek.mobilevideo.core.recommend.service.PomsService;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.vo.PrdContInfo;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
+import com.wondertek.mobilevideo.core.recommend.vo.VomsRecommendVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.UserTag;
 import com.wondertek.mobilevideo.core.util.StringUtil;
 import com.wondertek.mobilevideo.recommend.webapp.util.HttpClientUtil;
@@ -285,7 +285,36 @@ public class TestAction extends BaseAction {
 				this.writeTextResponse(JSON.toJSONString(resultMap));
 				return;
 			}
-			this.writeTextResponse(JSON.toJSONString(JSON.parseObject(rst), true));
+			//根据rootArray得到 List<Poms>
+			JSONObject rstObjJson = JSON.parseObject(rst);
+			String code = rstObjJson.getString(RequestConstants.R_CODE);
+			if(RequestConstants.R_CODE_000000.equals(code)){
+				List<RecommendInfoVo> list = JSON.parseArray(rstObjJson.get(RequestConstants.R_POMS_CONT).toString(), RecommendInfoVo.class);
+				List<VomsRecommendVo> specialTopicList = JSON.parseArray(rstObjJson.get(RequestConstants.R_VOMS_SPECIALTOPIC).toString(), VomsRecommendVo.class);
+				List<VomsRecommendVo> combinedContList = JSON.parseArray(rstObjJson.get(RequestConstants.R_VOMS_COMBINEDCONT).toString(), VomsRecommendVo.class);
+				List<VomsRecommendVo> bigPicContList = JSON.parseArray(rstObjJson.get(RequestConstants.R_VOMS_BIGPICCONT).toString(), VomsRecommendVo.class);
+				List<VomsRecommendVo> multiPicContList = JSON.parseArray(rstObjJson.get(RequestConstants.R_VOMS_MULTIPICCONT).toString(), VomsRecommendVo.class);
+				
+				List<PrdContInfo> pomses = this.getPomses(list);
+				resultMap.put(RequestConstants.R_SUCC, rstObjJson.get(RequestConstants.R_SUCC));
+				resultMap.put(RequestConstants.R_CODE, rstObjJson.get(RequestConstants.R_CODE));
+				resultMap.put(RequestConstants.R_MSG, rstObjJson.get(RequestConstants.R_MSG));
+				resultMap.put(RequestConstants.R_POMS_CONT, pomses);
+				resultMap.put(RequestConstants.R_TOTAL, rstObjJson.get(RequestConstants.R_TOTAL));
+				resultMap.put(RequestConstants.R_VOMS_SPECIALTOPIC, specialTopicList);
+				resultMap.put(RequestConstants.R_TOTAL_SPECIALTOPIC, rstObjJson.get(RequestConstants.R_TOTAL_SPECIALTOPIC));
+				resultMap.put(RequestConstants.R_VOMS_COMBINEDCONT, combinedContList);
+				resultMap.put(RequestConstants.R_TOTAL_COMBINEDCONT, rstObjJson.get(RequestConstants.R_TOTAL_COMBINEDCONT));
+				resultMap.put(RequestConstants.R_VOMS_BIGPICCONT, bigPicContList);
+				resultMap.put(RequestConstants.R_TOTAL_BIGPICCONT, rstObjJson.get(RequestConstants.R_TOTAL_BIGPICCONT));
+				resultMap.put(RequestConstants.R_VOMS_MULTIPICCONT, multiPicContList);
+				resultMap.put(RequestConstants.R_TOTAL_MULTIPICCONT, rstObjJson.get(RequestConstants.R_TOTAL_MULTIPICCONT));
+				
+				this.writeTextResponse(JSON.toJSONString(resultMap,SerializerFeature.WriteDateUseDateFormat));
+				return;
+			}
+			this.writeTextResponse(JSON.toJSONString(rstObjJson, true));
+			
 		} catch (Exception e) {
 			resultMap.put("error", true);
 			this.writeTextResponse(JSON.toJSONString(resultMap));
@@ -344,7 +373,7 @@ public class TestAction extends BaseAction {
 	public List<PrdContInfo> getPomses(List<RecommendInfoVo> list ) {
 		List<PrdContInfo> pomses = null;
 		List<PrdContInfo> rst = new ArrayList<PrdContInfo>();
-		if (list != null) {
+		if (list != null && !list.isEmpty()) {
 			List<Long> prdContIds = new ArrayList<Long>();
 			for (RecommendInfoVo vo : list) {
 				prdContIds.add(vo.getPrdContId());

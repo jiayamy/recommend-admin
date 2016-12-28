@@ -89,7 +89,7 @@ public class TopRecommendAction extends BaseAction {
 		}
 		String topId = getParam("topId");
 		if(!StringUtil.isNullStr(topId)){
-			paramsMap.put("topId", topId);
+			paramsMap.put("topId", StringUtil.nullToLong(topId));
 		}		
 		String topName = getParam("topName");
 		if(!StringUtil.isNullStr(topName)){

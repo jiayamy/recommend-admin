@@ -146,6 +146,13 @@ function editRecomdParms() {
 	if(editNode == null){
 		alertmsg("warning", "请至少选择一条标签进行操作");
 	}else{
+		console.log(editNode);
+		if(editNode.labelType == "0"){
+			$("#editLabelParentFormGroup").css("display","none");
+		}else{
+			$("#editLabelParentFormGroup").css("display","");
+		}
+		
 		$("#editSysParamsModal").modal("show");
 	}
 		
@@ -157,7 +164,7 @@ function editSave() {
 		alertmsg("warning", "权重为空");
 		return;
 	}
-	var reg = /^(\d{1,2}(\.\d{1,2})?|100)$/;
+	var reg = /^(\d{1,2}(\.\d{1,2})?|100|100\.00|100\.0)$/;
 	if (!reg.test($editLabelWeight.val())) {
 		alertmsg("warning", "请输入0-100以内的权重数值，小数点后最多2位");
 		return;
@@ -210,7 +217,7 @@ function addSave() {
 		alertmsg("warning", "标签权重为空");
 		return;
 	}
-	var reg = /^(\d{1,2}(\.\d{1,2})?|100)$/;
+	var reg = /^(\d{1,2}(\.\d{1,2})?|100|100\.00|100\.0)$/;
 	if (!reg.test($addLabelWeight.val())) {
 		alertmsg("warning", "请输入0-100以内的权重数值，小数点后最多2位");
 		return;

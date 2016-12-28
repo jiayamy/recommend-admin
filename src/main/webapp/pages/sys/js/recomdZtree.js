@@ -50,6 +50,7 @@ function initTree(){
 
 /**单击菜单加载内容列表TabelGrid**/
 function zTreeOnClick(event, treeId, treeNode) {
+	zTreeOnRightClick(event,treeId,treeNode);
 	//
 	addLabelInfo(treeNode);
 	//
@@ -94,16 +95,17 @@ function zTreeOnRightClick(event, treeId, treeNode){
 		if(treeNode.labelType == "0"){
 			$("#delLabelli").css('display','none');
 			$("#addLabelli").css("display",'block');
+			$("#refreshLabelli").css("display",'block');
 		}
 		if(treeNode.labelType == "1"){
 			$("#addLabelli").css('display','none');
 			$("#delLabelli").css("display",'block');
+			$("#refreshLabelli").css("display",'none');
 		}
 	}
 	zTree.selectNode(treeNode);
-	showRMenu( event.clientX,event.clientY);
+	showRMenu( event.clientX + 20,event.clientY);
 	addLabelInfo(treeNode);
-	
 }
 
 function filter(treeId, parentNode, childNodes) {
@@ -149,13 +151,8 @@ function refreshTreeNode(){
 	zTree.reAsyncChildNodes(editNode, "refresh");
 }
 
-
-
-
 function showRMenu( x, y) {
 	$("#rMenu ul").show();
-	x=x-$('#main_page').position().left +200;
-	y=y-$('#main_page').position().top +55;
 	$("#rMenu").css({"top":y+"px", "left":x+"px", "visibility":"visible"});
 	$("body").bind("mousedown", onBodyMouseDown);
 }
@@ -170,4 +167,11 @@ function onBodyMouseDown(event){
 		$("#rMenu").css({"visibility" : "hidden"});
 	}
 }
-
+function windowResize(){
+	console.log(1);
+	$('#treeDemo').css("min-height", $(window).height() - 210);
+	$('#treeDemo').css("max-height", $(window).height() - 200);
+}
+$(window).resize(function() {
+	windowResize();
+});

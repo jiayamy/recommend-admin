@@ -2,7 +2,7 @@
 <%@ include file="/common/taglibs.jsp" %>
 	<div class="row col-md-12">
 		<div class="col-md-12" id="page-content">
-			<h3 class="header smaller lighter red center-block">内容推荐接口测试</h3>
+			<h3 class="header smaller lighter red center-block">节目推荐接口测试</h3>
 			<form class="form-horizontal no-padding-bottom no-margin-bottom" role="form" action="${ctx}/recomd/testSearch.msp" method="post" id="testForm">
 				<div class="form-group">
 					<div class="col-md-4">
@@ -64,8 +64,8 @@
 				<div class="clearfix form-actions center-block col-md-12">
 					<div class="col-sm-2 control-label no-padding-right"></div>
 					<div class="col-sm-10">
-						<button class="btn btn-info" type="button" onclick="subm()">
-							<i class="ace-icon fa fa-check bigger-110"></i> 提交
+						<button class="btn" type="button" onclick="subm()">
+							<i class="ace-icon fa fa-search bigger-110"></i> 查询
 						</button>
 						&nbsp; &nbsp; &nbsp;
 						<button class="btn" type="reset">
@@ -123,13 +123,13 @@
 	    	jQuery(grid_selector).jqGrid({
 	    		url:"${ctx}/recomd/testSystemSearch.msp",
 		    	datatype: "json",//数据类型 json
-		    	colNames:['节目ID','内容ID','节目名称','cpID','一级分类','播控状态','产品包','发布状态','发布(新)状态','创建时间','媒资类型','更新时间'],
+		    	colNames:['节目ID','内容ID','节目名称','CPID','一级分类','播控状态','产品包','发布状态','发布(新)状态','媒资类型','创建时间','更新时间'],
 				colModel:[
 					{name:'prdContId',index:'prdContId', width:80,editable: false},
 					{name:'contentId',index:'contentId', width:80,editable: false},
 					{name:'name',index:'name', width:200,editable: false},
-					{name:'cpId',index:'cpId', width:80,editable: false},
-					{name:'displayName',index:'displayName', width:200,editable: false},
+					{name:'cpId',index:'cpId', width:70,editable: false},
+					{name:'displayName',index:'displayName', width:70,editable: false},
 					{name:'bcStatus',index:'bcStatus', width:80,editable: false,
 						formatter:function(cellvalue, options, rowObject){
 							if(cellvalue == "0"){
@@ -139,75 +139,54 @@
 							}else if (cellvalue == "2") {
 								return "播控拒绝"
 							}
-						},
-						unformat:function(cellvalue){
-							if(cellvalue == "未播控"){
-								return "0"
-							}else if (cellvalue == "播控通过") {
-								return "1"
-							}else if (cellvalue == "播控拒绝") {
-								return "2"
+							if(cellvalue == undefined){
+								return "";
 							}
 						}
 					},
-					{name:'prdInfoName',index:'prdInfoName', width:200,editable: false},
+					{name:'prdInfoName',index:'prdInfoName', width:100,editable: false},
 					{name:'pubStatus',index:'pubStatus', width:80,editable: false,
 						formatter:function(cellvalue, options, rowObject){
-							 for (var i = 0; i < statusEnum.length; i++) {
+							for (var i = 0; i < statusEnum.length; i++) {
 								var k = statusEnum[i];
 								if(cellvalue == k.value){
 									return k.text;
 								}
-							} 
-						},
-						unformat:function(cellvalue){
-							 for (var i = 0; i < statusEnum.length; i++) {
-								var k = statusEnum[i];
-								if(cellvalue == k.text){
-									return k.value;
-								}
+							}
+							if(cellvalue == undefined){
+								return "";
 							}
 						}
 					},
-					{name:'publishNoVomsStatus',index:'publishNoVomsStatus', width:200,editable: false,
+					{name:'publishNoVomsStatus',index:'publishNoVomsStatus', width:100,editable: false,
 						formatter:function(cellvalue, options, rowObject){
-							 for (var i = 0; i < statusEnum.length; i++) {
+							for (var i = 0; i < statusEnum.length; i++) {
 								var k = statusEnum[i];
 								if(cellvalue == k.value){
 									return k.text;
 								}
-							} 
-						},
-						unformat:function(cellvalue){
-							 for (var i = 0; i < statusEnum.length; i++) {
-								var k = statusEnum[i];
-								if(cellvalue == k.text){
-									return k.value;
-								}
+							}
+							if(cellvalue == undefined){
+								return "";
 							}
 						}
 					},
-					{name:'createTime',index:'createTime', width:200,editable: false},
-					{name:'formType',index:'formType', width:80,editable: false,
+					{name:'formType',index:'formType', width:70,editable: false,
 						formatter:function(cellvalue, options, rowObject){
-							 for (var i = 0; i < formTypeEnum.length; i++) {
+							for (var i = 0; i < formTypeEnum.length; i++) {
 								var k = formTypeEnum[i];
 								if(cellvalue == k.value){
 									return k.text;
 								}
-							} 
-						},
-						unformat:function(cellvalue){
-							 for (var i = 0; i < formTypeEnum.length; i++) {
-								var k = formTypeEnum[i];
-								if(cellvalue == k.text){
-									return k.value;
-								}
+							}
+							if(cellvalue == undefined){
+								return "";
 							}
 						}
 					
 					},
-					{name:'updateTime',index:'updateTime', width:200,editable: false}
+					{name:'createTime',index:'createTime', width:130,editable: false},
+					{name:'updateTime',index:'updateTime', width:130,editable: false}
 				], 
 		    	jsonReader:{
 		    		root: "root",

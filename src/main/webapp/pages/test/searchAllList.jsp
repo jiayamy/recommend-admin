@@ -2,7 +2,7 @@
 <%@ include file="/common/taglibs.jsp" %>
 <div class="row col-md-12">
 		<div class="col-md-12" id="page-content">
-			<h3 class="header smaller lighter red center-block">内容推荐接口测试</h3>
+			<h3 class="header smaller lighter red center-block">综合推荐接口测试</h3>
 			<form class="form-horizontal no-padding-bottom no-margin-bottom" role="form" action="${ctx}/recomd/testSearch.msp" method="post" id="testForm">
 				<div class="form-group">
 					<div class="col-md-4">
@@ -64,8 +64,8 @@
 				<div class="clearfix form-actions center-block col-md-12">
 					<div class="col-sm-2 control-label no-padding-right"></div>
 					<div class="col-sm-10">
-						<button class="btn btn-info" type="button" id="subBtn">
-							<i class="ace-icon fa fa-check bigger-110"></i> 提交
+						<button class="btn" type="button" id="subBtn">
+							<i class="ace-icon fa fa-search bigger-110"></i> 查询
 						</button>
 						&nbsp; &nbsp; &nbsp;
 						<button class="btn" type="reset">
@@ -89,7 +89,7 @@
 <div class="row col-md-12">
 	<div class="col-md-12">
 		<div class="table-header">
-			pomsContList结果页面
+			节目列表
 		</div>
 		<div>
 			<table id="pomsContTab" class="table table-striped table-bordered table-hover">
@@ -108,16 +108,15 @@
 	<!-- 第二个 -->
 	<div class="col-md-12">
 		<div class="table-header">
-			specialTopicList结果页面
+			专题列表
 		</div>
 		<div>
 			<table id="specialTopicTable" class="table table-striped table-bordered table-hover">
 				<thead>
 					<tr>
-						<th class="center">名称</th>
 						<th class="center">推荐对象ID</th>
+						<th class="center">名称</th>
 						<th class="center">推荐对象</th>
-						<th class="center">类型</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -128,16 +127,15 @@
 	<!-- 第三个 -->
 	<div class="col-md-12">
 		<div class="table-header">
-			combinedContList结果页面
+			内容组合列表
 		</div>
 		<div>
 			<table id="combinedContTab" class="table table-striped table-bordered table-hover">
 				<thead>
 					<tr>
-						<th class="center">名称</th>
 						<th class="center">推荐对象ID</th>
+						<th class="center">名称</th>
 						<th class="center">推荐对象</th>
-						<th class="center">类型</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -148,16 +146,15 @@
 	<!-- 第四个 -->
 	<div class="col-md-12">
 		<div class="table-header">
-			bigPicContList结果页面
+			大图内容列表
 		</div>
 		<div>
 			<table id="bigPicContTab" class="table table-striped table-bordered table-hover">
 				<thead>
 					<tr>
-						<th class="center">名称</th>
 						<th class="center">推荐对象ID</th>
+						<th class="center">名称</th>
 						<th class="center">推荐对象</th>
-						<th class="center">类型</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -168,16 +165,15 @@
 	<!-- 第五个 -->
 	<div class="col-md-12">
 		<div class="table-header">
-			multiPicContList结果页面
+			多图内容列表
 		</div>
 		<div>
 			<table id="multiPicContTab" class="table table-striped table-bordered table-hover">
 				<thead>
 					<tr>
-						<th class="center">名称</th>
 						<th class="center">推荐对象ID</th>
+						<th class="center">名称</th>
 						<th class="center">推荐对象</th>
-						<th class="center">类型</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -205,7 +201,10 @@
 						for(var i = 0;i<pomsContList.length;i++){
 							ht = ht+'<tr>';
 							ht = ht+'<td class="center">'+pomsContList[i].prdContId+'</td>';
-							ht = ht+'<td class="center">'+pomsContList[i].contName+'</td>';
+							if(pomsContList[i].name == undefined){
+								pomsContList[i].name = "";
+							}
+							ht = ht+'<td class="center">'+pomsContList[i].name+'</td>';
 							ht = ht+'</tr>';
 						} 
 						$('#pomsContTab tbody').html(ht);
@@ -213,12 +212,20 @@
 						//给specialTopicList页面添加数据
 						var specialTopicList = result.specialTopic;
 						ht = '';
+						var name = "";
 						for(var i = 0;i<specialTopicList.length;i++){
 							ht = ht+'<tr>';
-							ht = ht+'<td class="center">'+specialTopicList[i].name+'</td>';
 							ht = ht+'<td class="center">'+specialTopicList[i].objId+'</td>';
-							ht = ht+'<td class="center">'+specialTopicList[i].objType+'</td>';
-							ht = ht+'<td class="center">'+specialTopicList[i].type+'</td>';
+							ht = ht+'<td class="center">'+specialTopicList[i].name+'</td>';
+							name = specialTopicList[i].objType;
+							if(specialTopicList[i].objType == "0"){
+								name = "栏目";
+							}else if(specialTopicList[i].objType == "1"){
+								name = "展现对象";
+							}else if(specialTopicList[i].objType == "101"){
+								name = "页面对象";
+							}
+							ht = ht+'<td class="center">'+name+'</td>';
 							ht = ht+'</tr>';
 						}
 						$('#specialTopicTable tbody').html(ht);
@@ -228,10 +235,17 @@
 						ht = '';
 						for(var i = 0;i<combinedContList.length;i++){
 							ht = ht+'<tr>';
-							ht = ht+'<td class="center">'+combinedContList[i].name+'</td>';
 							ht = ht+'<td class="center">'+combinedContList[i].objId+'</td>';
-							ht = ht+'<td class="center">'+combinedContList[i].objType+'</td>';
-							ht = ht+'<td class="center">'+combinedContList[i].type+'</td>';
+							ht = ht+'<td class="center">'+combinedContList[i].name+'</td>';
+							name = combinedContList[i].objType;
+							if(combinedContList[i].objType == "0"){
+								name = "栏目";
+							}else if(combinedContList[i].objType == "1"){
+								name = "展现对象";
+							}else if(combinedContList[i].objType == "101"){
+								name = "页面对象";
+							}
+							ht = ht+'<td class="center">'+name+'</td>';
 							ht = ht+'</tr>';
 						}
 						$('#combinedContTab tbody').html(ht);
@@ -241,10 +255,17 @@
 						ht = '';
 						for(var i = 0;i<bigPicContList.length;i++){
 							ht = ht+'<tr>';
-							ht = ht+'<td class="center">'+bigPicContList[i].name+'</td>';
 							ht = ht+'<td class="center">'+bigPicContList[i].objId+'</td>';
-							ht = ht+'<td class="center">'+bigPicContList[i].objType+'</td>';
-							ht = ht+'<td class="center">'+bigPicContList[i].type+'</td>';
+							ht = ht+'<td class="center">'+bigPicContList[i].name+'</td>';
+							name = bigPicContList[i].objType;
+							if(bigPicContList[i].objType == "0"){
+								name = "栏目";
+							}else if(bigPicContList[i].objType == "1"){
+								name = "展现对象";
+							}else if(bigPicContList[i].objType == "101"){
+								name = "页面对象";
+							}
+							ht = ht+'<td class="center">'+name+'</td>';
 							ht = ht+'</tr>';
 						}
 						$('#bigPicContTab tbody').html(ht);
@@ -256,8 +277,15 @@
 							ht = ht+'<tr>';
 							ht = ht+'<td class="center">'+multiPicContList[i].name+'</td>';
 							ht = ht+'<td class="center">'+multiPicContList[i].objId+'</td>';
-							ht = ht+'<td class="center">'+multiPicContList[i].objType+'</td>';
-							ht = ht+'<td class="center">'+multiPicContList[i].type+'</td>';
+							name = multiPicContList[i].objType;
+							if(multiPicContList[i].objType == "0"){
+								name = "栏目";
+							}else if(multiPicContList[i].objType == "1"){
+								name = "展现对象";
+							}else if(multiPicContList[i].objType == "101"){
+								name = "页面对象";
+							}
+							ht = ht+'<td class="center">'+name+'</td>';
 							ht = ht+'</tr>';
 						}
 						$('#multiPicContTab tbody').html(ht);

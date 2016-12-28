@@ -26,8 +26,8 @@
 </div>
 <div class="page-content">
 	<div class="row">
-		<div class="col-sm-6">
-			<div class="widget-box widget-color-green2">
+		<div class="col-sm-4">
+			<div class="widget-box">
 				<div class="widget-header">
 					<h4 class="widget-title lighter smaller">选择标签</h4>
 				</div>
@@ -39,27 +39,22 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-sm-6">
-			<div class="widget-box widget-color-blue2">
+		<div class="col-sm-8">
+			<div class="widget-box">
 				<div class="widget-header">
 					<h4 class="widget-title lighter smaller">标签信息</h4>
 				</div>
-
 				<form class="form-horizontal" style="padding-top:15px;" role="form">
 					<div class="form-group">
-						<label class="col-sm-3 control-label no-padding-right"
-							for="form-field-1"> 标签名 </label>
+						<label class="col-sm-3 control-label no-padding-right" for="laberName"> 标签名: </label>
 
 						<div class="col-sm-9">
 							<input type="text" id="laberName" placeholder="标签名" readonly="readonly"
 								class="col-xs-10 col-sm-5" />
 						</div>
 					</div>
-					
 					<div class="form-group">
-						<label class="col-sm-3 control-label no-padding-right"
-							for="form-field-1"> 权重 </label>
-
+						<label class="col-sm-3 control-label no-padding-right" for="laberQ"> 权重: </label>
 						<div class="col-sm-9">
 							<input type="text" id="laberQ" placeholder="权重" readonly="readonly"
 								class="col-xs-10 col-sm-5" />
@@ -118,7 +113,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group" style="display:none">
 						<div class="col-md-12">
 							<label for="addLabelType"s
 								class="col-sm-2 control-label no-padding-right">标签类型</label>
@@ -182,7 +177,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group" id="editLabelParentFormGroup">
 						<div class="col-md-12">
 							<label for="editLabelParent"
 								class="col-sm-2 control-label no-padding-right">上级标签</label>
@@ -200,7 +195,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group" style="display:none">
 						<div class="col-md-12">
 							<label for="editLabelType"
 								class="col-sm-2 no-padding-right control-label">标签类型</label>
@@ -266,8 +261,8 @@
 	$('#rMenu').bind("contextmenu",function(e){ return false; }); 
 </script>
 <div id="rMenu">
-	<ul>
-		<li onclick="refreshTreeNode()"><span class="node-refresh"></span>更新此标签<span></span></li>
+	<ul style="margin: 0;">
+		<li id="refreshLabelli" onclick="refreshTreeNode()"><span class="node-refresh"></span>更新此标签<span></span></li>
 		<cas:havePerm url="/sys/editRcmdParam.htm">
 		<li id="addLabelli" onclick="addSysParms()"><span class="node-add"></span><span>添加子标签</span></li>
 		<li onclick="editRecomdParms()"><span class="node-del"></span><span>编辑此标签</span></li>

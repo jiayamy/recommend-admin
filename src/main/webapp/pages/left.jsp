@@ -24,7 +24,7 @@
 				<cas:havePerm url="/menuArtificialInfo.htm">
 				<li>
 					<a href="#" menu-url="<c:url value='/recomd/artificialInfo.msp'/>">
-						人工推荐
+						节目推荐
 					</a> 
 					<b class="arrow"></b>
 				</li>
@@ -32,7 +32,7 @@
 				<cas:havePerm url="/menuVomsRecommend.htm">
 				<li>
 					<a href="#" menu-url="<c:url value='/recomd/queryVomsRecommend.msp'/>">
-						VOMS推荐 
+						展现数据推荐 
 					</a> 
 					<b class="arrow"></b>
 				</li>
@@ -40,7 +40,15 @@
 				<cas:havePerm url="/menuTopRecommend.htm">
 				<li>
 					<a href="#" menu-url="<c:url value='/recomd/topRecommend.msp'/>">
-						置顶推荐 
+						置顶节目推荐 
+					</a> 
+					<b class="arrow"></b>
+				</li>
+				</cas:havePerm>
+				<cas:havePerm url="/menuRecommonParmsManage.htm">
+				<li>
+					<a href="#" id="menuRecomdMang" menu-url="<c:url value='/sys/recommondParmsManage.msp'/>">
+						标签权重配置 
 					</a> 
 					<b class="arrow"></b>
 				</li>
@@ -48,6 +56,47 @@
 			</ul>
 		</li>
 		</cas:havePerm>
+   		<cas:havePerm url="/menuTestManage.htm">
+        <li>
+			<a href="#" class="dropdown-toggle"><i class="menu-icon glyphicon glyphicon-list"></i><span class="menu-text">接口测试 </span>
+            	<b class="arrow fa fa-angle-down"></b>
+            </a> 
+            <b class="arrow"></b>
+            <ul class="submenu">
+            	<cas:havePerm url="/menuTestQueryTagManage.htm">
+                <li>
+					<a href="#" menu-url="<c:url value='/pages/test/testQueryTag2.jsp'/>">
+                    	获取用户标签
+          			</a>
+                    <b class="arrow"></b>
+                </li>
+                <cas:havePerm url="/menuTestSearchManage.htm">
+                <li>
+                    <a href="#" menu-url="<c:url value='/pages/test/testSearch2.jsp'/>">
+                    	节目推荐
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+                </cas:havePerm>
+                <cas:havePerm url="/menuTestSearchVomsManage.htm">
+                <li>
+                    <a href="#" menu-url="<c:url value='/pages/test/searchVoms.jsp'/>">
+                    	 展现数据
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+                </cas:havePerm>
+                <cas:havePerm url="/menuTestSearchAllListManage.htm">
+                <li>
+                    <a href="#" menu-url="<c:url value='/pages/test/searchAllList.jsp'/>">
+                    	综合推荐
+                    </a>
+                    <b class="arrow"></b>
+                </li>
+                </cas:havePerm>
+            </ul>
+        </li>
+        </cas:havePerm>
 		<cas:havePerm url="/menuSysManage.htm">
 		<li>
 			<a href="#" class="dropdown-toggle"> <i class="menu-icon fa fa-cog"></i><span class="menu-text">系统管理 </span> 
@@ -63,59 +112,9 @@
 					<b class="arrow"></b>
 				</li>
 				</cas:havePerm>
-				<cas:havePerm url="/menuRecommonParmsManage.htm">
-				<li>
-					<a href="#" id="menuRecomdMang" menu-url="<c:url value='/sys/recommondParmsManage.msp'/>">
-						推荐标签权重管理 
-					</a> 
-					<b class="arrow"></b>
-				</li>
-				</cas:havePerm>
 			</ul>
    		</li>
    		</cas:havePerm>
-   		<cas:havePerm url="/menuTestManage.htm">
-        <li>
-			<a href="#" class="dropdown-toggle"><i class="menu-icon glyphicon glyphicon-list"></i><span class="menu-text">测试管理 </span>
-            	<b class="arrow fa fa-angle-down"></b>
-            </a> 
-            <b class="arrow"></b>
-            <ul class="submenu">
-            	<cas:havePerm url="/menuTestQueryTagManage.htm">
-                <li>
-					<a href="#" menu-url="<c:url value='/pages/test/testQueryTag2.jsp'/>">
-                    	获取用户标签
-          			</a>
-                    <b class="arrow"></b>
-                </li>
-                <cas:havePerm url="/menuTestSearchManage.htm">
-                <li>
-                    <a href="#" menu-url="<c:url value='/pages/test/testSearch2.jsp'/>">
-                    	内容推荐
-                    </a>
-                    <b class="arrow"></b>
-                </li>
-                </cas:havePerm>
-                <!--   新添加的测试 -->
-                 <cas:havePerm url="/menuTestSearchAllListManage.htm">
-                <li>
-                    <a href="#" menu-url="<c:url value='/pages/test/searchAllList.jsp'/>">
-                    	测试搜索合并
-                    </a>
-                    <b class="arrow"></b>
-                </li>
-                </cas:havePerm>
-                 <cas:havePerm url="/menuTestsearchVomsManage.htm">
-                <li>
-                    <a href="#" menu-url="<c:url value='/pages/test/searchVoms.jsp'/>">
-                    	 测试获取VOMS数据
-                    </a>
-                    <b class="arrow"></b>
-                </li>
-                </cas:havePerm>
-            </ul>
-        </li>
-        </cas:havePerm>
     </ul>
     <!-- /.nav-list -->
 				</li>

@@ -53,7 +53,7 @@
 					<form class="form-horizontal" role="form">
 						<!-- #section:elements.form -->
 						<div class="form-group">
-							<div class = "col-md-3">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_PrdType"><fmt:message key="recomd.prdType"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_prdType" data-default="">
@@ -64,7 +64,21 @@
 									</select>
 								</div>
 							</div>
-							<div class = "col-md-3">
+							<div class = "col-md-4">
+								<label class="col-sm-3 control-label" for="s_prdContId"><fmt:message key="recomd.prdContId"/></label>
+								<div class="col-sm-9">
+									<input type="text" id="s_prdContId" class="form-control" />
+								</div>
+							</div>
+							<div class = "col-md-4">
+								<label class="col-sm-3 control-label" for="s_contName"><fmt:message key="recomd.contName"/></label>
+								<div class="col-sm-9">
+									<input type="text" id="s_contName" class="form-control" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_catId"><fmt:message key="recomd.catId"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_catId" data-default="">
@@ -75,13 +89,13 @@
 									</select>
 								</div>
 							</div>
-							<div class = "col-md-3">
+							<div class = "col-md-4">
 							    <label class="col-sm-3 control-label" for="s_labelInfo"><fmt:message key="recomd.lableInfo"/></label>
 								<div class="col-sm-9">
 									<input type="text" id="s_labelInfo" class="form-control" />
 								</div>
 							</div>
-							<div class = "col-md-3">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_status"><fmt:message key="common.status"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_status" data-default="">
@@ -93,21 +107,11 @@
 							</div>
 						</div>
 						<div class="form-group">
-							<div class = "col-md-3">
-								<label class="col-sm-3 control-label" for="s_prdContId"><fmt:message key="recomd.prdContId"/></label>
-								<div class="col-sm-9">
-									<input type="text" id="s_prdContId" class="form-control" />
-								</div>
+							<div class = "col-md-4">
 							</div>
-							<div class = "col-md-3">
-								<label class="col-sm-3 control-label" for="s_contName"><fmt:message key="recomd.contName"/></label>
-								<div class="col-sm-9">
-									<input type="text" id="s_contName" class="form-control" />
-								</div>
+							<div class = "col-md-4">
 							</div>
-							<div class = "col-md-3">
-							</div>
-							<div class = "col-md-3 text-right">
+							<div class = "col-md-4 text-right">
 							    <button type="button" class="btn  btn-md" onclick="listArtificialInfo(event)">
 							    	<i class="ace-icon fa fa-search orange"></i><fmt:message key="button.search"/>
 							    </button>

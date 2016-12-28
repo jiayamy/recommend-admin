@@ -53,7 +53,7 @@
 					<form class="form-horizontal" role="form">
 						<!-- #section:elements.form -->
 						<div class="form-group">
-							<div class = "col-md-3">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_PrdType"><fmt:message key="top.recomd.prdType"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_prdType" data-default="">
@@ -64,7 +64,21 @@
 									</select>
 								</div>
 							</div>													
-							<div class = "col-md-3">
+							<div class = "col-md-4">
+								<label class="col-sm-3 control-label" for="s_topId"><fmt:message key="top.recomd.topId"/></label>
+								<div class="col-sm-9">
+									<input type="text" id="s_topId" class="form-control" />
+								</div>
+							</div>
+							<div class = "col-md-4">
+								<label class="col-sm-3 control-label" for="s_topName"><fmt:message key="top.recomd.topName"/></label>
+								<div class="col-sm-9">
+									<input type="text" id="s_topName" class="form-control" />
+								</div>
+							</div>
+						</div>
+						<div class="form-group">
+							<div class = "col-md-4">
 								<label class="col-sm-3 control-label" for="s_status"><fmt:message key="common.status"/></label>
 								<div class="col-sm-9">
 									<select class="chosen-select form-control" id="s_status" data-default="">
@@ -74,23 +88,9 @@
 									</select>
 								</div>
 							</div>
-							<div class = "col-md-3">
-								<label class="col-sm-3 control-label" for="s_topId"><fmt:message key="top.recomd.topId"/></label>
-								<div class="col-sm-9">
-									<input type="text" id="s_prdContId" class="form-control" />
-								</div>
+							<div class = "col-md-4">
 							</div>
-							<div class = "col-md-3">
-								<label class="col-sm-3 control-label" for="s_topName"><fmt:message key="top.recomd.topName"/></label>
-								<div class="col-sm-9">
-									<input type="text" id="s_topName" class="form-control" />
-								</div>
-							</div>							
-						</div>
-						<div class="form-group">
-							<div class = "col-md-6">
-							</div>
-							<div class = "col-md-6 text-right">
+							<div class = "col-md-4 text-right">
 							    <button type="button" class="btn  btn-md" onclick="listTopRecommend(event)">
 							    	<i class="ace-icon fa fa-search orange"></i><fmt:message key="button.search"/>
 							    </button>
@@ -131,6 +131,20 @@
 			</div>
 			<div class="modal-body">
 				<form class="form-horizontal" id="addForm" onsubmit="return false;">
+					<div class="form-group">						
+						<div class="col-md-6">
+							<label for="addTopId" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topId" /></label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="addTopId" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<label for="addTopName" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topName" /></label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="addTopName" />
+							</div>
+						</div>						
+					</div>										
 					<div class="form-group">
 						<div class="col-md-6">
 							<label for="addPrdType" class="col-sm-3 control-label no-padding-right"><fmt:message key="top.recomd.prdType" /></label>
@@ -143,20 +157,6 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">						
-						<div class="col-md-6">
-							<label for="addTopId" ctopIds="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topId" /></label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="addTopId" />
-							</div>
-						</div>
-						<div class="col-md-6">
-							<label for="addTopName" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topName" /></label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="addTopName" />
-							</div>
-						</div>						
-					</div>										
 				</form>
 			</div>
 			<div class="modal-footer">
@@ -182,7 +182,21 @@
 			<div class="modal-body">
 				<form class="form-horizontal" id="saveEditForm"
 					onsubmit="return false;">
-					<input type="hidden" class="form-control" id="editId" />					
+					<input type="hidden" class="form-control" id="editId" />	
+					<div class="form-group">						
+						<div class="col-md-6">
+							<label for="editTopId" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topId" /></label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="editTopId" />
+							</div>
+						</div>
+						<div class="col-md-6">
+							<label for="editTopName" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topName" /></label>
+							<div class="col-sm-9">
+								<input type="text" class="form-control" id="editTopName" />
+							</div>
+						</div>
+					</div>					
 					<div class="form-group">
 						<div class="col-md-6">
 							<label for="editPrdType" class="col-sm-3 control-label no-padding-right"><fmt:message key="top.recomd.prdType" /></label>
@@ -204,20 +218,6 @@
 							</div>
 						</div>
 					</div>
-					<div class="form-group">						
-						<div class="col-md-6">
-							<label for="editTopId" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topId" /></label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="editTopId" />
-							</div>
-						</div>
-						<div class="col-md-6">
-							<label for="editTopName" class="col-sm-3 no-padding-right control-label"><fmt:message key="top.recomd.topName" /></label>
-							<div class="col-sm-9">
-								<input type="text" class="form-control" id="editTopName" />
-							</div>
-						</div>
-					</div>					
 				</form>
 			</div>
 
