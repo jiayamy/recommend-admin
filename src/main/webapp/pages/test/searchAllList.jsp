@@ -198,7 +198,6 @@
 				success : function(msg) {
 					$('#vomsContTab tbody').empty();
 					var result = jQuery.parseJSON(msg);
-					console.log(result);
 					//给pomsContList结果页面添加数据
 					if(result.success == true){
 						var pomsContList = result.pomsCont;
@@ -265,7 +264,6 @@
 					}
 				},
 				error : function(msg) {
-					console.log(msg);
 					alert("失败了");
 				}
 			});

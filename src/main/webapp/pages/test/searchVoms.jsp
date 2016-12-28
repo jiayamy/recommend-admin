@@ -109,7 +109,6 @@ $('#subBtn').click(function(){
 		success : function(msg) {
 			$('#vomsContTab tbody').empty();
 			var result = jQuery.parseJSON(msg);
-			console.log(result);
 			if(result.success == true){
 				var vomsContList = result.root;
 				var ht = '';
@@ -125,7 +124,6 @@ $('#subBtn').click(function(){
 			}
 		},
 		error : function(msg) {
-			console.log(msg);
 			alert("失败了");
 		}
 	});

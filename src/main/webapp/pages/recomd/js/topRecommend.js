@@ -122,7 +122,6 @@ function initGridTable() {
 			var table = this;
 			var pageNow = $(grid_selector).jqGrid('getGridParam', 'page');//当前页
 			var totalPage = data.total;//总页数
-			console.log(data.rows);
 			if(totalPage == 0){
 				$(".ui-pg-input").val(0);
 				$("td.ui-corner-all").addClass("ui-state-disabled");

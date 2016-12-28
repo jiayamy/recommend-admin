@@ -1,4 +1,4 @@
-var $laberName = $('#laberName'),$addLabelParentId=$('#addLabelParentId'),$mainPage = $('#main_page'), $laberType = $('#laberType'), $laberQ = $('#laberQ'), $addLabelParent = $('#addLabelParent'), $addLabelName = $('.addLabelName'), $addLabelWeight = $('#addLabelWeight'), $addLabelType = $('.addLabelType'), $addLabelParentType = $('#addLabelParentType'), $editLabelParent = $('#editLabelParent'),$editLabelParentId = $('#editLabelParentId'), $editLabelName = $('#editLabelName'), $editLabelType = $('#editLabelType'), $editLabelWeight = $('#editLabelWeight'), $editLabelId = $('#editLabelId');
+var $laberName = $('#laberName'),$addLabelParentId=$('#addLabelParentId'),$mainPage = $('#main_page'), $labelType = $('#labelType'), $laberQ = $('#laberQ'), $addLabelParent = $('#addLabelParent'), $addLabelName = $('.addLabelName'), $addLabelWeight = $('#addLabelWeight'), $addLabelType = $('.addLabelType'), $addLabelParentType = $('#addLabelParentType'), $editLabelParent = $('#editLabelParent'),$editLabelParentId = $('#editLabelParentId'), $editLabelName = $('#editLabelName'), $editLabelType = $('#editLabelType'), $editLabelWeight = $('#editLabelWeight'), $editLabelId = $('#editLabelId');
 var allSelectedIds, elems;
 
 jQuery(function($) {
@@ -18,7 +18,6 @@ jQuery(function($) {
 			
 				parent_id = options['id']
 		}
-//		console.log(parent_id);
 		if (parent_id !== null) {
 			$.ajax({
 				url : remoteUrl,
@@ -30,40 +29,12 @@ jQuery(function($) {
 					callback({
 						data : response.data.data
 					});
-//					console.log(response.data.data)
 				},
 				error : function(response) {
-					//console.log(response);  
 				}
 			})
 		}
 	};
-
-	//    var treeDataSource = function(options , callback) {
-	//    	 //options has extra info such as "type" "text" "additionalParameteres", etc
-	//    	 //which you can use to specify requested set of data
-	//    	
-	//    	 var myData = [ ... ];//set of data
-	//    	 callback({ data: myData });
-	//    }
-	$.ajax({
-		url : 'sys/addLabelNameList.msp',
-		type : 'POST',
-		dataType : 'json',
-		success : function(response) {
-
-			var $addLabelList = response.data;
-
-			var max = $addLabelList.length;
-			for (var i = 0; i < max; i++) {
-				$addLabelName.append('<option value="' + $addLabelList[i].key
-						+ '">' + $addLabelList[i].val + '</option>');
-			}
-		},
-		error : function(response) {
-			//console.log(response);  
-		}
-	});
 
 	$('#tree1')
 			.ace_tree(
@@ -104,15 +75,15 @@ jQuery(function($) {
 	$('#tree1').on('selected.fu.tree', function(evt, data) {
 
 		$laberName.val(data.target.text);
-		$laberType.val(data.target.laberType);
+		$labelType.val(data.target.labelType);
 		$laberQ.val(data.target.weight);
 		$addLabelParent.val(data.target.text);
-		$addLabelParentType.val(data.target.laberType);
+		$addLabelParentType.val(data.target.labelType);
 		$addLabelParentId.val(data.target.id);
 		$editLabelParent.val(data.target.parentText);
 		$editLabelParentId.val(data.target.parentId);
 		$editLabelName.val(data.target.text);
-		$editLabelType.val(data.target.laberType);
+		$editLabelType.val(data.target.labelType);
 		$editLabelWeight.val(data.target.weight);
 		$editLabelId.val(data.target.id);
 
@@ -130,18 +101,18 @@ jQuery(function($) {
 			$editLabelWeight.val("");
 		}else{
 			var items = $('#tree1').tree('selectedItems');
-//			console.log(items);
-			for ( var i in items)
+			for ( var i in items){
 				if (items.hasOwnProperty(i)) {
 					var item = items[i];
 					$addLabelParent.val(item.text);
-					$addLabelParentType.val(item.laberType);
+					$addLabelParentType.val(item.labelType);
 					$addLabelParentId.val(item.id);
 					$editLabelParent.val(item.parentText);
 					$editLabelParentId.val(item.parentId);
 					$editLabelName.val(item.text);
-					$editLabelType.val(item.laberType);
+					$editLabelType.val(item.labelType);
 					$editLabelWeight.val(item.weight);
+				}
 			}
 		}
 		
@@ -194,16 +165,14 @@ function editSave() {
 
 	$.ajax({
 		type : "post",
-		url : webroot + "sys/editWeights.msp",
+		url : webroot + "sys/editRcmdParam.msp",
 		data : {
-			"configKey" : $editLabelId.val(),
-			"configValue" : $editLabelWeight.val(),
-			"parentId" : $editLabelParentId.val()
+			"id" : $editLabelId.val(),
+			"weight" : $editLabelWeight.val()
 		},
 		success : function(data) {
 			zTree.reAsyncChildNodes(editNode.getParentNode(), "refresh");
 			alertmsg("warning", data.msg);
-			
 		}
 	});
 	$editLabelName.val("");
@@ -215,7 +184,7 @@ function editSave() {
 function addSysParms() {
 	if(editNode == null){
 		alertmsg("warning", "请至少选择一条标签进行操作");
-	}else if(editNode.laberType == '0'){
+	}else if(editNode.labelType == '0'){
 		$("#addSysParmsModal").modal("show");
 	}else{
 		alertmsg("warning", "请选择一级标签进行添加");
@@ -249,17 +218,16 @@ function addSave() {
 
 	$.ajax({
 		type : "post",
-		url : webroot + "sys/editWeights.msp",
+		url : webroot + "sys/editRcmdParam.msp",
 		data : {
-			"labelId" : $addLabelParentId.val(),
-			"addLabelType" : $addLabelType.val(),
-			"addLabelWeight" : $addLabelWeight.val(),
-			"addLabelName" : $addLabelName.val()
+			"parentId" : $addLabelParentId.val(),
+			"type" : $addLabelType.val(),
+			"weight" : $addLabelWeight.val(),
+			"key" : $addLabelName.val()
 		},
 		success : function(data) {
 			zTree.reAsyncChildNodes(editNode, "refresh");
 			alertmsg("warning", data.msg);
-
 		}
 	});
 	$addLabelName.val("");
@@ -272,7 +240,7 @@ function delSysParms() {
 
 	if (editNode == null) {
 		alertmsg("warning", "请至少选择一条标签进行操作");
-	} else if(editNode.laberType == '0'){
+	} else if(editNode.labelType == '0'){
 		alertmsg("warning", "只能删除二级标签");
 	}else{
 
@@ -282,9 +250,9 @@ function delSysParms() {
 			callback : function($this, type, eve) {
 				if (type == "yes") {
 					var data = {
-						"configIds" : editNode.nodeId
+						"ids" : editNode.nodeId
 					};
-					$.post(webroot + "sys/editWeights.msp", data, function(data) {
+					$.post(webroot + "sys/deleteRcmdParam.msp", data, function(data) {
 						if (data.success == true) {
 							zTree.reAsyncChildNodes(editNode.getParentNode(), "refresh");
 							alertmsg("success", "删除成功");
@@ -311,5 +279,4 @@ function getDatas() {
 	ids = ids.substring(0, ids.lastIndexOf(","));
 	allSelectedIds = ids;
 	output = output.substring(0, output.lastIndexOf(","));
-	console.log(ids + "___" + output);
 }

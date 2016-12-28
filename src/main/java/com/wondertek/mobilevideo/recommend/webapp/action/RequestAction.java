@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.httpclient.NameValuePair;
-
 import com.alibaba.fastjson.JSON;
 import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
@@ -33,7 +31,6 @@ import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.RecomdItem;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.UserTag;
 import com.wondertek.mobilevideo.core.util.StringUtil;
-import com.wondertek.mobilevideo.recommend.webapp.util.HttpClientUtil;
 
 /**
  * 外部请求
@@ -610,7 +607,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(prdType)|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr)){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			return SUCCESS;
 		}
 		// 处理参数		
@@ -641,14 +638,14 @@ public class RequestAction extends BaseAction {
 			//返回结果
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
 			resultMap.put(RequestConstants.R_ROOT, returnList);
 			resultMap.put(RequestConstants.R_TOTAL, total);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.system"));
+			resultMap.put(RequestConstants.R_MSG, "系统异常");
 			end2 = System.currentTimeMillis();
 		}
 		

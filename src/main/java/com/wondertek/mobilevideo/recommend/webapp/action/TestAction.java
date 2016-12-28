@@ -311,8 +311,8 @@ public class TestAction extends BaseAction {
 			if (StringUtil.isNullStr(labelInfo) || StringUtil.isNullStr(prdType) 
 					|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr) ) {
 				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
-				resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-				resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+				resultMap.put(RequestConstants.R_MSG, "必填参数为空");
+				this.writeTextResponse(JSON.toJSONString(resultMap));
 				return ;
 			}
 			NameValuePair[] values ={

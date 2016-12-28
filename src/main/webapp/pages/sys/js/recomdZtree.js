@@ -40,9 +40,7 @@ function initTree(){
 		url: "sys/listRecommondParam.msp",
 		data:{"nodeId":"0"},
 		success:function(data){
-			console.log(data);
 			$.fn.zTree.init($("#treeDemo"), setting,  data);
-			//$.fn.zTree.init($("#treeDemo"), setting,  zTreeNodes);
 			zTree = $.fn.zTree.getZTreeObj("treeDemo");
 			rMenu = $("#rMenu");
 		}
@@ -74,15 +72,15 @@ function zTreeOnClick(event, treeId, treeNode) {
 function addLabelInfo(treeNode){
 	if(treeNode != null){
 		$laberName.val(treeNode.text);
-		$laberType.val(treeNode.laberType);
+		$labelType.val(treeNode.labelType);
 		$laberQ.val(treeNode.weight);
 		$addLabelParent.val(treeNode.text);
-		$addLabelParentType.val(treeNode.laberType);
+		$addLabelParentType.val(treeNode.labelType);
 		$addLabelParentId.val(treeNode.nodeId);
 		$editLabelParent.val(treeNode.parentText);
 		$editLabelParentId.val(treeNode.parentId);
 		$editLabelName.val(treeNode.text);
-		$editLabelType.val(treeNode.laberType);
+		$editLabelType.val(treeNode.labelType);
 		$editLabelWeight.val(treeNode.weight);
 		$editLabelId.val(treeNode.nodeId);
 	}
@@ -92,22 +90,18 @@ function addLabelInfo(treeNode){
 
 function zTreeOnRightClick(event, treeId, treeNode){
 	editNode = treeNode;
-	console.log(treeNode);
-//	zTreeOnClick(event, treeId, treeNode);
-//	console.log(treeNode.getParentNode());
 	if(treeNode != null){
-		if(treeNode.laberType == "0"){
+		if(treeNode.labelType == "0"){
 			$("#delLabelli").css('display','none');
 			$("#addLabelli").css("display",'block');
 		}
-		if(treeNode.laberType == "1"){
+		if(treeNode.labelType == "1"){
 			$("#addLabelli").css('display','none');
 			$("#delLabelli").css("display",'block');
 		}
 	}
 	zTree.selectNode(treeNode);
 	showRMenu( event.clientX,event.clientY);
-//	console.log( event.clientX,event.clientY);
 	addLabelInfo(treeNode);
 	
 }
@@ -121,8 +115,6 @@ function filter(treeId, parentNode, childNodes) {
 }
 
 function onAsyncSuccess(event, treeId, treeNode, msg) {
-	console.log("onAsyncSuccess");
-	console.log(treeNode);
 	if (curStatus == "expand") {
 		expandNodes(treeNode);
 	} else if (curStatus == "async") {
@@ -164,7 +156,6 @@ function showRMenu( x, y) {
 	$("#rMenu ul").show();
 	x=x-$('#main_page').position().left +200;
 	y=y-$('#main_page').position().top +55;
-//	console.log("menu" + x + ":" + y);
 	$("#rMenu").css({"top":y+"px", "left":x+"px", "visibility":"visible"});
 	$("body").bind("mousedown", onBodyMouseDown);
 }

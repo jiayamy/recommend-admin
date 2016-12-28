@@ -13,7 +13,10 @@
 		</property>
 	</bean>
 	<!-- JNDI DataSource for J2EE environments -->
-    <!--<jee:jndi-lookup id="dataSource_recommend" jndi-name="java:comp/env/jdbc/recommend"/>-->
+    <!--
+    	<jee:jndi-lookup id="dataSource_recommend" jndi-name="java:comp/env/jdbc/recommend"/>
+    	<jee:jndi-lookup id="dataSource_poms" jndi-name="java:comp/env/jdbc/poms"/>
+    -->
     
     <!-- tomcat/conf/context.xml配置 -->
     <!-- 
@@ -26,6 +29,15 @@
             maxIdleTime="300" maxStatements="200" maxStatementsPerConnection="200"
         	idleConnectionTestPeriod="120" preferredTestQuery="select sysdate from dual"
 		/>
+		<Resource name="jdbc/poms" auth="Container"
+        	factory="org.apache.naming.factory.BeanFactory" type="com.mchange.v2.c3p0.ComboPooledDataSource"
+      		driverClass="oracle.jdbc.OracleDriver"
+       		jdbcUrl="jdbc:oracle:thin:@172.16.8.73:1521:oms"
+       		user="OMS_SOURCE" password="OMS_SOURCE_2o1o"
+         	maxPoolSize="50" minPoolSize="1" initialPoolSize="5" acquireIncrement="5"
+            maxIdleTime="300" maxStatements="200" maxStatementsPerConnection="200"
+        	idleConnectionTestPeriod="120" preferredTestQuery="select sysdate from dual"
+		/>
      -->
     <!--
 	<bean id="dataSource_recommend" class="org.springframework.jndi.JndiObjectFactoryBean">
@@ -33,8 +45,12 @@
             <value>java:comp/env/jdbc/recommend</value>
         </property>
     </bean>
+    <bean id="dataSource_poms" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName">
+            <value>java:comp/env/jdbc/poms</value>
+        </property>
+    </bean>
     -->
-     
 	<bean id="dataSource_recommend" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close">
         <property name="driverClass" value="${jdbc.driverClassName}"/>
         <property name="jdbcUrl" value="${jdbc.url.recommend}"/>
