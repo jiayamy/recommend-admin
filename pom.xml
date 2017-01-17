@@ -42,6 +42,12 @@
                             </includes>
                         </scanTargetPattern>
                     </scanTargetPatterns>
+                    <connectors> 
+						<connector implementation="org.mortbay.jetty.nio.SelectChannelConnector"> 
+							<port>8888</port> 
+							<headerBufferSize>8000</headerBufferSize> 
+						</connector>
+					</connectors>
                 </configuration>
             </plugin>
            <plugin>

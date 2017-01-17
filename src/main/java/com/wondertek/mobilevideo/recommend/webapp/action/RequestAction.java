@@ -174,6 +174,7 @@ public class RequestAction extends BaseAction {
 		UserTag originalUserTag = null;//用于查询voms数据，防止被修改
 		Boolean isInitVomsLabel = Boolean.FALSE; 
 		StringBuffer vomsLabelInfo = new StringBuffer();
+		String vomsLabel = null;
 		//查找poms的数据
 		//TODO 循环执行
 		int exeCount = 0;
@@ -204,6 +205,10 @@ public class RequestAction extends BaseAction {
 						//如果传送过来的一级分类或者人工推荐数据都为空，则从mongo里面获取
 						reqUserTag = dbUserTag;
 					}
+				}
+				//门户提供过来的voms推荐标签
+				if(vomsLabel == null){
+					vomsLabel = reqUserTag.getVomsLabel();
 				}
 				end2 = System.currentTimeMillis();
 				//获取用户的标签分数
@@ -459,7 +464,11 @@ public class RequestAction extends BaseAction {
 		}
 		//2 查询voms数据
 		List<String> types = new ArrayList<String>();
-		String labelInfo = vomsLabelInfo.toString();
+		//优先取推荐标签
+		String labelInfo = vomsLabel;
+		if(StringUtil.isNullStr(labelInfo)){
+			labelInfo = vomsLabelInfo.toString();
+		}
 		int vomsstart = 0;
 		int vomslimit = 0;
 		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
