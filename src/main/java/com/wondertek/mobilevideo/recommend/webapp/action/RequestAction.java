@@ -104,6 +104,11 @@ public class RequestAction extends BaseAction {
 		int limit = reqUserTag.getLimit();
 		String order = reqUserTag.getOrder();
 		String ctVer = reqUserTag.getCtVer();
+		//voms推荐标签
+		String vomsLabel = null;
+		if(!StringUtil.isNullStr(reqUserTag.getVomsLabel())){
+			vomsLabel = reqUserTag.getVomsLabel();
+		}
 		//当前页数
 		int page = (start / limit) + 1;
 		//初始化数据
@@ -174,7 +179,6 @@ public class RequestAction extends BaseAction {
 		UserTag originalUserTag = null;//用于查询voms数据，防止被修改
 		Boolean isInitVomsLabel = Boolean.FALSE; 
 		StringBuffer vomsLabelInfo = new StringBuffer();
-		String vomsLabel = null;
 		//查找poms的数据
 		//TODO 循环执行
 		int exeCount = 0;
