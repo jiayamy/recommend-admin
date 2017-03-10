@@ -269,5 +269,6 @@
 		<commons.fileupload.version>1.3.1</commons.fileupload.version>
 		<commons.io.version>2.4</commons.io.version>
 		<spring.version>4.3.3.RELEASE</spring.version>
+		<struts.version>2.3.32</struts.version>
 	</properties>
 </project>
