@@ -32,6 +32,7 @@ public class TestAction extends BaseAction {
 	private String catsInfoJson; //这个是默认模式传来的catsJson
 	private PomsService pomsService;
 	private String userTagStr;
+	
 	/**
 	 * 测试获取用户标签
 	 */
@@ -432,5 +433,11 @@ public class TestAction extends BaseAction {
 	}
 	public void setPomsService(PomsService pomsService) {
 		this.pomsService = pomsService;
+	}
+	public String getUserTagStr() {
+		return userTagStr;
+	}
+	public void setUserTagStr(String userTagStr) {
+		this.userTagStr = userTagStr;
 	}
 }
