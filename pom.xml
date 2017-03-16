@@ -265,7 +265,7 @@
 		<cas.noPermUrl>/403.jsp</cas.noPermUrl>
 		<cas.appCode>89</cas.appCode>
 		<cas.resources>.htm,.json</cas.resources>
-		<sso-client.version>3.0.0</sso-client.version>
+		<sso-client.version>5.0.0</sso-client.version>
 		<commons.fileupload.version>1.3.1</commons.fileupload.version>
 		<commons.io.version>2.4</commons.io.version>
 		<spring.version>4.3.3.RELEASE</spring.version>
