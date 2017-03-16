@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSON;
+import com.wondertek.mobilevideo.core.recommend.cache.EnumsConfigCache;
 import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.RecommendInfoCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.SearchCacheManager;
+import com.wondertek.mobilevideo.core.recommend.cache.redis.service.TopRecommendCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.UserTagCacheManager;
 import com.wondertek.mobilevideo.core.recommend.cache.redis.service.VomsRecommendCacheManager;
 import com.wondertek.mobilevideo.core.recommend.model.PrdTypeRelation;
@@ -20,9 +22,11 @@ import com.wondertek.mobilevideo.core.recommend.util.CatInfoSort;
 import com.wondertek.mobilevideo.core.recommend.util.CatItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecomdItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
+import com.wondertek.mobilevideo.core.recommend.util.RecommendInfoVoSort;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
+import com.wondertek.mobilevideo.core.recommend.vo.RecommendTopVo;
 import com.wondertek.mobilevideo.core.recommend.vo.VomsRecommendVo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatInfo;
 import com.wondertek.mobilevideo.core.recommend.vo.mongo.CatItem;
@@ -41,6 +45,7 @@ public class RequestAction extends BaseAction {
 	private UserTagCacheManager userTagCacheManager;
 	private SearchCacheManager searchCacheManager;
 	private VomsRecommendCacheManager vomsRecommendCacheManager;
+	private TopRecommendCacheManager topRecommendCacheManager;
 	/**
 	 * 搜索合并的返回
 	 * @return
@@ -57,7 +62,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//解析请求体
@@ -70,20 +75,20 @@ public class RequestAction extends BaseAction {
 		if(reqUserTag == null){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110002);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contenterror"));
+			resultMap.put(RequestConstants.R_MSG, "请求体与要求不符");
 			return SUCCESS;
 		}
 		if(StringUtil.isNullStr(reqUserTag.getPrdType()) || StringUtil.isNullStr(reqUserTag.getCtVer())){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			return SUCCESS;
 		}
 		PrdTypeRelation prdTypeRelation = PrdTypeRelationCache.PRDTYPE_RELATIONS.get(reqUserTag.getPrdType());
 		if(prdTypeRelation == null || StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.prdtypenotfound"));
+			resultMap.put(RequestConstants.R_MSG, "未找到匹配的产品");
 			return SUCCESS;
 		}
 		if(reqUserTag.getStart() == null || reqUserTag.getStart() < 0){
@@ -99,6 +104,11 @@ public class RequestAction extends BaseAction {
 		int limit = reqUserTag.getLimit();
 		String order = reqUserTag.getOrder();
 		String ctVer = reqUserTag.getCtVer();
+		//voms推荐标签
+		String vomsLabel = null;
+		if(!StringUtil.isNullStr(reqUserTag.getVomsLabel())){
+			vomsLabel = reqUserTag.getVomsLabel();
+		}
 		//当前页数
 		int page = (start / limit) + 1;
 		//初始化数据
@@ -126,7 +136,7 @@ public class RequestAction extends BaseAction {
 //		if(searchMaxCount <= start){
 //			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 //			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-//			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+//			resultMap.put(RequestConstants.R_MSG, "请求成功");
 //			resultMap.put(RequestConstants.R_ROOT, new ArrayList<RecommendInfoVo>());
 //			resultMap.put(RequestConstants.R_TOTAL, searchMaxCount);
 //			return SUCCESS;
@@ -190,7 +200,7 @@ public class RequestAction extends BaseAction {
 						if (!checkTagsNotNull(reqUserTag)){
 							resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 							resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120002);
-							resultMap.put(RequestConstants.R_MSG, this.getText("request.error.tagnull"));
+							resultMap.put(RequestConstants.R_MSG, "未找到任何匹配的用户标签");
 							if(log.isDebugEnabled())
 								log.debug("searchAllList end,duration:" + (s -end1));
 							return SUCCESS;
@@ -199,6 +209,10 @@ public class RequestAction extends BaseAction {
 						//如果传送过来的一级分类或者人工推荐数据都为空，则从mongo里面获取
 						reqUserTag = dbUserTag;
 					}
+				}
+				//门户提供过来的voms推荐标签
+				if(vomsLabel == null){
+					vomsLabel = reqUserTag.getVomsLabel();
 				}
 				end2 = System.currentTimeMillis();
 				//获取用户的标签分数
@@ -227,6 +241,8 @@ public class RequestAction extends BaseAction {
 					int recomdCatCount = 1;		//一级分类下推荐标签查找次数
 					int catItemCount = 1;		//一级分类下的标签查找次数
 					String recomdLabels = null;	//搜索的标签，最后搜索引擎需要使用
+					Double catWeight = null;	//一级分类权重
+					Double itemWeight = null;	//其他权重
 					for(CatInfo catInfo : reqUserTag.getCats()){//一个一级分类查找N次
 						if(StringUtil.isNullStr(catInfo.getCatId())){//如果一级标签不存在，则不查找
 							continue;
@@ -234,6 +250,9 @@ public class RequestAction extends BaseAction {
 						if(recomdCatCount > recomdCatMax && searchCatCount > searchCatMax){//超过了人工推荐和搜索引擎最多的一级分类搜索次数
 							break;
 						}
+						//一级分类权重
+						catWeight = findFillWeight(catInfo.getCatId(),null,RequestConstants.V_DEFAULT_RECOMD_TAG_CAT_WEIGHT);
+						catWeight = catWeight * catInfo.getScore();
 						//查找内容形态
 						String mediaShape = null;//多个逗号分隔
 						boolean isAllMediaShape = true;
@@ -262,6 +281,11 @@ public class RequestAction extends BaseAction {
 						if(catInfo.getRecommendation() != null 
 								&& (recomdCatCount <= recomdCatMax || searchCatCount <= searchCatMax)){
 							catItemCount = 1;
+							
+							//权重提前列出来，以供下面score调用 --推荐下的一、二级权重信息
+							Map<String,Double> recomdLabelScoAndWei = new HashMap<String,Double>();//
+							recomdLabelScoAndWei.put(catInfo.getCatId(), catWeight);
+							
 							for(RecomdItem recomdItem : catInfo.getRecommendation()){
 								if(catItemCount > recomdCatItemMax){//每个一级分类下的推荐标签最多取多少个
 									break;
@@ -269,6 +293,12 @@ public class RequestAction extends BaseAction {
 								if(StringUtil.isNullStr(recomdItem.getLabel())){
 									continue;
 								}
+								//推荐标签权重
+								itemWeight = findFillWeight(catInfo.getCatId(),RequestConstants.SEARCH_KEY_RECOMMD,RequestConstants.V_DEFAULT_RECOMD_TAG_RCMDITEM_WEIGHT);
+								itemWeight = itemWeight * recomdItem.getScore();
+								
+								recomdLabelScoAndWei.put(recomdItem.getLabel(), itemWeight);
+								
 								if(catItemCount == 1){
 									recomdLabels = recomdItem.getLabel();
 								}else{
@@ -278,7 +308,7 @@ public class RequestAction extends BaseAction {
 								if(searchCatCount <= searchCatMax && !RequestConstants.V_SEARCH_RECOMD_ENABLE){
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											RequestConstants.SEARCH_KEY_RECOMMD,recomdItem.getLabel(),mediaShape);
+											RequestConstants.SEARCH_KEY_RECOMMD,recomdItem.getLabel(),mediaShape,(catWeight + itemWeight));
 									isSearchCat = true;
 								}
 								catItemCount ++;
@@ -289,8 +319,8 @@ public class RequestAction extends BaseAction {
 							//调用个性化推荐平台人工推荐数据
 							if(recomdCatCount <= recomdCatMax && recomdLabels != null){
 								Long rstart = System.currentTimeMillis();
-								//从平台搜索数据
-								List<RecommendInfoVo> list = recommendInfoCacheManager.queryByLabels(recomdLabels,prdType,catInfo.getCatId());
+								//从平台搜索数据//2016
+								List<RecommendInfoVo> list = recommendInfoCacheManager.queryByLabels(recomdLabels,prdType,catInfo.getCatId(),recomdLabelScoAndWei);
 								Long rend = System.currentTimeMillis();
 								if(log.isDebugEnabled())
 									log.debug("search from system,duration:" + (rend - rstart));
@@ -326,22 +356,25 @@ public class RequestAction extends BaseAction {
 								//搜索一级分类下的某一个评分高的对象。这个默认搜索（searchCatItemMax - 1 ）次
 								tmpFields = catItem.getLabelId();
 								tmpKeyword = catItem.getLabelValue();
+								//普通标签权重
+								itemWeight = findFillWeight(catInfo.getCatId(),catItem.getLabelId(),RequestConstants.V_DEFAULT_RECOMD_TAG_ITEM_WEIGHT);
+								itemWeight = itemWeight * catItem.getScore();
 								
 								if(isAllMediaShape){//全部都是内容形态，则一个个内容形态查询
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword,null);
+											tmpFields,tmpKeyword,null,(catWeight + itemWeight));
 								}else if(!StringUtil.isNullStr(recomdLabels) && RequestConstants.V_SEARCH_RECOMD_ENABLE){//普通标签查询时附带推荐标签
 									tmpFields = tmpFields + RecommendConstants.SPLIT_COMMA + RequestConstants.SEARCH_KEY_RECOMMD;
 									tmpKeyword = tmpKeyword + RecommendConstants.SPLIT_COMMA + recomdLabels;
 									
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword,mediaShape);
+											tmpFields,tmpKeyword,mediaShape,(catWeight + itemWeight));
 								}else{//普通标签查询
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword,mediaShape);
+											tmpFields,tmpKeyword,mediaShape,(catWeight + itemWeight));
 								}
 								catItemCount ++;
 							}
@@ -406,6 +439,7 @@ public class RequestAction extends BaseAction {
 			if(start < total){
 				for(int i = start; i < end ; i++){
 					pomsContList.add(uniqList.get(i));
+//					pomsContList.add(uniqList.get(i).setScore(null));
 				}
 			}
 			end8 = System.currentTimeMillis();
@@ -434,7 +468,11 @@ public class RequestAction extends BaseAction {
 		}
 		//2 查询voms数据
 		List<String> types = new ArrayList<String>();
-		String labelInfo = vomsLabelInfo.toString();
+		//优先取推荐标签
+		String labelInfo = vomsLabel;
+		if(StringUtil.isNullStr(labelInfo)){
+			labelInfo = vomsLabelInfo.toString();
+		}
 		int vomsstart = 0;
 		int vomslimit = 0;
 		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
@@ -553,7 +591,7 @@ public class RequestAction extends BaseAction {
 		//返回结果
 		resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 		resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-		resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+		resultMap.put(RequestConstants.R_MSG, "请求成功");
 		resultMap.put(RequestConstants.R_POMS_CONT, pomsContList);
 		resultMap.put(RequestConstants.R_TOTAL, total);
 		resultMap.put(RequestConstants.R_VOMS_SPECIALTOPIC, specialTopicList);
@@ -587,6 +625,72 @@ public class RequestAction extends BaseAction {
 	}
 
 	/**
+	 * 获取置顶(TOP)数据
+	 * @return
+	 */
+	public String searchTop(){
+		String ip = RequestUtil.getIpAddr(this.getRequest());
+		//获取参数		
+		String prdType = this.getParam("prdType");				
+		String startStr = this.getParam("start");
+		String limitStr = this.getParam("limit");
+		if (log.isDebugEnabled()) {	
+			log.debug("searchVomsData ip:" + ip + "," + prdType +"|" + startStr +"|" + limitStr +"|" );
+		}
+		//校验参数		
+		int start = StringUtil.nullToInteger(startStr);
+		int limit = StringUtil.nullToInteger(limitStr);
+		if(StringUtil.isNullStr(prdType)|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr)){
+			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
+			return SUCCESS;
+		}
+		// 处理参数		
+		List<RecommendTopVo> returnList = new ArrayList<RecommendTopVo>();
+		int total = 0;
+		
+		long s = System.currentTimeMillis();
+		long end1 = s;
+		long end2 = s;
+		try {
+			//获取数据
+			List<RecommendTopVo> aList = topRecommendCacheManager.queryTopVos(prdType);
+			end1 = System.currentTimeMillis();
+			if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
+				log.debug("searchTopData aList:" + aList.size());
+			}
+			//数据分页
+			total = aList.size();
+			int requestTotal = (start + limit);
+			int end = requestTotal > total ? total : requestTotal;
+			if(start < total){
+				for(int i = start; i < end ; i++){
+					returnList.add(aList.get(i));
+				}
+			}
+			end2 = System.currentTimeMillis();
+			
+			//返回结果
+			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
+			resultMap.put(RequestConstants.R_ROOT, returnList);
+			resultMap.put(RequestConstants.R_TOTAL, total);
+		} catch (Exception e) {
+			log.error(e.getMessage(),e);
+			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
+			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
+			resultMap.put(RequestConstants.R_MSG, "系统异常");
+			end2 = System.currentTimeMillis();
+		}
+		
+		if(log.isDebugEnabled())
+			log.debug("searchVomsData end,duration:" + (end2 -s) + "|" + (end1 - s) + "|" + (end2 - end1));
+		
+		return SUCCESS;		
+	}
+	/**
 	 * 获取VOMS数据
 	 * @return
 	 */
@@ -607,7 +711,7 @@ public class RequestAction extends BaseAction {
 				|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr) ) {
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			return SUCCESS;
 		}
 		// 处理参数
@@ -649,14 +753,14 @@ public class RequestAction extends BaseAction {
 			//返回结果
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
 			resultMap.put(RequestConstants.R_ROOT, returnList);
 			resultMap.put(RequestConstants.R_TOTAL, total);
 		} catch (Exception e) {
 			log.error(e.getMessage(),e);
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.system"));
+			resultMap.put(RequestConstants.R_MSG, "系统异常");
 			end2 = System.currentTimeMillis();
 		}
 		
@@ -678,7 +782,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//直接透传
@@ -698,7 +802,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//直接透传
@@ -721,7 +825,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(userId)){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
 			return;
@@ -737,7 +841,7 @@ public class RequestAction extends BaseAction {
 			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
 			resultMap.put(RequestConstants.R_ROOT, userTag);
 			
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
@@ -745,7 +849,7 @@ public class RequestAction extends BaseAction {
 			log.error(e.getMessage(),e);
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_999999);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.system"));
+			resultMap.put(RequestConstants.R_MSG, "系统异常");
 			
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
 		}
@@ -772,7 +876,7 @@ public class RequestAction extends BaseAction {
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contentnull"));
+			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
 			return SUCCESS;
 		}
 		//解析请求体
@@ -785,20 +889,20 @@ public class RequestAction extends BaseAction {
 		if(reqUserTag == null){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110002);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.contenterror"));
+			resultMap.put(RequestConstants.R_MSG, "请求体与要求不符");
 			return SUCCESS;
 		}
 		if(StringUtil.isNullStr(reqUserTag.getPrdType()) || StringUtil.isNullStr(reqUserTag.getCtVer())){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.paramnull"));
+			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
 			return SUCCESS;
 		}
 		PrdTypeRelation prdTypeRelation = PrdTypeRelationCache.PRDTYPE_RELATIONS.get(reqUserTag.getPrdType());
 		if(prdTypeRelation == null || StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120001);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.error.prdtypenotfound"));
+			resultMap.put(RequestConstants.R_MSG, "未找到匹配的产品");
 			return SUCCESS;
 		}
 		if(reqUserTag.getStart() == null || reqUserTag.getStart() < 0){
@@ -833,7 +937,7 @@ public class RequestAction extends BaseAction {
 		if(searchMaxCount <= start){
 			resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-			resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+			resultMap.put(RequestConstants.R_MSG, "请求成功");
 			resultMap.put(RequestConstants.R_ROOT, new ArrayList<RecommendInfoVo>());
 			resultMap.put(RequestConstants.R_TOTAL, searchMaxCount);
 			return SUCCESS;
@@ -889,7 +993,7 @@ public class RequestAction extends BaseAction {
 						if (!checkTagsNotNull(reqUserTag)){
 							resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 							resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120002);
-							resultMap.put(RequestConstants.R_MSG, this.getText("request.error.tagnull"));
+							resultMap.put(RequestConstants.R_MSG, "未找到任何匹配的用户标签");
 							if(log.isDebugEnabled())
 								log.debug("list end,duration:" + (s -end1));
 							return SUCCESS;
@@ -924,6 +1028,8 @@ public class RequestAction extends BaseAction {
 					int recomdCatCount = 1;		//一级分类下推荐标签查找次数
 					int catItemCount = 1;		//一级分类下的标签查找次数
 					String recomdLabels = null;	//搜索的标签，最后搜索引擎需要使用
+					Double catWeight = null;	//一级分类权重
+					Double itemWeight = null;	//其他权重
 					for(CatInfo catInfo : reqUserTag.getCats()){//一个一级分类查找N次
 						if(StringUtil.isNullStr(catInfo.getCatId())){//如果一级标签不存在，则不查找
 							continue;
@@ -931,6 +1037,9 @@ public class RequestAction extends BaseAction {
 						if(recomdCatCount > recomdCatMax && searchCatCount > searchCatMax){//超过了人工推荐和搜索引擎最多的一级分类搜索次数
 							break;
 						}
+						//一级分类权重
+						catWeight = findFillWeight(catInfo.getCatId(),null,RequestConstants.V_DEFAULT_RECOMD_TAG_CAT_WEIGHT);
+						catWeight = catWeight * catInfo.getScore();
 						//查找内容形态
 						String mediaShape = null;//多个逗号分隔
 						boolean isAllMediaShape = true;
@@ -959,6 +1068,11 @@ public class RequestAction extends BaseAction {
 						if(catInfo.getRecommendation() != null 
 								&& (recomdCatCount <= recomdCatMax || searchCatCount <= searchCatMax)){
 							catItemCount = 1;
+							
+							//权重提前列出来，以供下面score调用 --推荐下的一、二级权重信息
+							Map<String,Double> recomdLabelScoAndWei = new HashMap<String,Double>();//
+							recomdLabelScoAndWei.put(catInfo.getCatId(), catWeight);
+							
 							for(RecomdItem recomdItem : catInfo.getRecommendation()){
 								if(catItemCount > recomdCatItemMax){//每个一级分类下的推荐标签最多取多少个
 									break;
@@ -966,6 +1080,12 @@ public class RequestAction extends BaseAction {
 								if(StringUtil.isNullStr(recomdItem.getLabel())){
 									continue;
 								}
+								//推荐标签权重
+								itemWeight = findFillWeight(catInfo.getCatId(),RequestConstants.SEARCH_KEY_RECOMMD,RequestConstants.V_DEFAULT_RECOMD_TAG_RCMDITEM_WEIGHT);
+								itemWeight = itemWeight * recomdItem.getScore();
+								
+								recomdLabelScoAndWei.put(recomdItem.getLabel(), itemWeight);
+								
 								if(catItemCount == 1){
 									recomdLabels = recomdItem.getLabel();
 								}else{
@@ -975,7 +1095,7 @@ public class RequestAction extends BaseAction {
 								if(searchCatCount <= searchCatMax && !RequestConstants.V_SEARCH_RECOMD_ENABLE){
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											RequestConstants.SEARCH_KEY_RECOMMD,recomdItem.getLabel(),mediaShape);
+											RequestConstants.SEARCH_KEY_RECOMMD,recomdItem.getLabel(),mediaShape,(catWeight + itemWeight));
 									isSearchCat = true;
 								}
 								catItemCount ++;
@@ -984,7 +1104,7 @@ public class RequestAction extends BaseAction {
 							if(recomdCatCount <= recomdCatMax && recomdLabels != null){
 								Long rstart = System.currentTimeMillis();
 								//从平台搜索数据
-								List<RecommendInfoVo> list = recommendInfoCacheManager.queryByLabels(recomdLabels,prdType,catInfo.getCatId());
+								List<RecommendInfoVo> list = recommendInfoCacheManager.queryByLabels(recomdLabels,prdType,catInfo.getCatId(),recomdLabelScoAndWei);
 								Long rend = System.currentTimeMillis();
 								if(log.isDebugEnabled())
 									log.debug("search from system,duration:" + (rend - rstart));
@@ -1020,22 +1140,24 @@ public class RequestAction extends BaseAction {
 								//搜索一级分类下的某一个评分高的对象。这个默认搜索（searchCatItemMax - 1 ）次
 								tmpFields = catItem.getLabelId();
 								tmpKeyword = catItem.getLabelValue();
+								//普通标签权重
+								itemWeight = findFillWeight(catInfo.getCatId(),catItem.getLabelId(),RequestConstants.V_DEFAULT_RECOMD_TAG_ITEM_WEIGHT);
+								itemWeight = itemWeight * catItem.getScore();
 								
 								if(isAllMediaShape){//全部都是内容形态，则一个个内容形态查询
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword,null);
+											tmpFields,tmpKeyword,null,(catWeight + itemWeight));
 								}else if(!StringUtil.isNullStr(recomdLabels) && RequestConstants.V_SEARCH_RECOMD_ENABLE){//普通标签查询时附带推荐标签
 									tmpFields = tmpFields + RecommendConstants.SPLIT_COMMA + RequestConstants.SEARCH_KEY_RECOMMD;
 									tmpKeyword = tmpKeyword + RecommendConstants.SPLIT_COMMA + recomdLabels;
-									
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword,mediaShape);
+											tmpFields,tmpKeyword,mediaShape,(catWeight + itemWeight));
 								}else{//普通标签查询
 									SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+searchItemLimit,catInfo.getCatId(),
 											prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
-											tmpFields,tmpKeyword,mediaShape);
+											tmpFields,tmpKeyword,mediaShape,(catWeight + itemWeight));
 								}
 								catItemCount ++;
 							}
@@ -1096,6 +1218,7 @@ public class RequestAction extends BaseAction {
 			if(start < total){
 				for(int i = start; i < end ; i++){
 					returnList.add(uniqList.get(i));
+//					returnList.add(uniqList.get(i).setScore(null));
 				}
 			}
 			end8 = System.currentTimeMillis();
@@ -1132,7 +1255,7 @@ public class RequestAction extends BaseAction {
 		//返回结果
 		resultMap.put(RequestConstants.R_SUCC, Boolean.TRUE);
 		resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
-		resultMap.put(RequestConstants.R_MSG, this.getText("request.success"));
+		resultMap.put(RequestConstants.R_MSG, "请求成功");
 		resultMap.put(RequestConstants.R_ROOT, returnList);
 		resultMap.put(RequestConstants.R_TOTAL, total);
 		if(log.isDebugEnabled())
@@ -1146,64 +1269,23 @@ public class RequestAction extends BaseAction {
 	 * @return
 	 */
 	private List<RecommendInfoVo> filterAndSort(List<RecommendInfoVo> recomdList) {
-		List<RecommendInfoVo> returnList = new ArrayList<RecommendInfoVo>();
-		
-		Map<Integer,List<Long>> checkMap1 = new HashMap<Integer,List<Long>>();//次数里面的所有内容
-		Map<Long,Integer> checkMap2 = new HashMap<Long,Integer>();//内容所在次数
-		Map<Long,RecommendInfoVo> dataMap = new HashMap<Long,RecommendInfoVo>();//内容map
-		
-		if(recomdList != null && !recomdList.isEmpty()){
-			for(RecommendInfoVo tmp : recomdList){
-				Integer times = checkMap2.get(tmp.getPrdContId());
-				if(times == null){//没添加过
-					times = 1;
-					dataMap.put(tmp.getPrdContId(), tmp);
-					if(checkMap1.get(times) == null){
-						checkMap1.put(times, new ArrayList<Long>());
-					}
-					checkMap1.get(times).add(tmp.getPrdContId());
-					checkMap2.put(tmp.getPrdContId(), times);
-				}else{//已经添加过
-					//先从数字小的map中删除掉
-					checkMap1.get(times).remove(tmp.getPrdContId());
-					
-					//再在高一个数字里面的map中添加
-					if(checkMap1.get(times + 1) == null){
-						checkMap1.put(times + 1, new ArrayList<Long>());
-					}
-					checkMap1.get(times + 1).add(tmp.getPrdContId());
-					//最后更改节目所在数字的map
-					checkMap2.put(tmp.getPrdContId(), times + 1);
-				}
-			}
-			//查找所有的KEY，并按照次数由高到低排序
-			List<Integer> keys = new ArrayList<Integer>();
-			for(Integer key : checkMap1.keySet()){
-				keys.add(key);
-			}
-			Collections.sort(keys);
-			//由次数最高到底添加数据
-			for(int i = keys.size() - 1; i >= 0; i--){
-				List<Long> prdContIds = checkMap1.get(keys.get(i));
-				for(Long prdContId : prdContIds){
-					RecommendInfoVo vo = dataMap.get(prdContId);
-					if(vo != null){
-						returnList.add(vo);
-					}
-				}
-			}
-			keys.clear();
-			keys = null;
-			
-		}
-		checkMap1.clear();
-		checkMap1 = null;
-		checkMap2.clear();
-		checkMap2 = null;
-		dataMap.clear();
-		dataMap = null;
-		
-		return returnList;
+		//去重
+        List<RecommendInfoVo> rst = new ArrayList<RecommendInfoVo>();
+        Map<Long,RecommendInfoVo> contIdMap = new HashMap<Long,RecommendInfoVo>();
+        for(RecommendInfoVo recommendInfoVo : recomdList){
+        	if(!contIdMap.containsKey(recommendInfoVo.getPrdContId())){
+        		contIdMap.put(recommendInfoVo.getPrdContId(), recommendInfoVo);
+        	}else{
+        		contIdMap.get(recommendInfoVo.getPrdContId()).setScore(recommendInfoVo.getScore() + contIdMap.get(recommendInfoVo.getPrdContId()).getScore());
+        	}
+        }
+        rst.addAll(contIdMap.values());
+        contIdMap.clear();
+        contIdMap = null;
+        //排序
+        Collections.sort(rst,new RecommendInfoVoSort());
+        
+		return rst;
 	}
 	private void getUserTagScore(UserTag dbUserTag, Map<String, Double> userTagScoreMap, Map<String, String> catIds,
 			Map<String, String> labelIds, Map<String, CatInfo> dbCatInfos) {
@@ -1357,7 +1439,7 @@ public class RequestAction extends BaseAction {
 	 * @param mediaShape 内容形态
 	 */
 	public void SearchRequest(List<RecommendInfoVo> returnList,String searchUrl,String order,String pageSize,
-			String contDisplayType,String packId,String ctVer,String ct,String fields,String keyword,String mediaShape){
+			String contDisplayType,String packId,String ctVer,String ct,String fields,String keyword,String mediaShape,Double score){
 		if(!RequestConstants.V_DEFAULT_SEARCH_ENABLE){
 			return;
 		}
@@ -1387,7 +1469,8 @@ public class RequestAction extends BaseAction {
 					if(searchRst.getContentId() != null){
 						RecommendInfoVo vo = new RecommendInfoVo();
 						vo.setPrdContId(StringUtil.nullToCloneLong(searchRst.getContentId()));
-//						vo.setContName(contName);
+						vo.setContName(searchRst.getContentName());
+						vo.setScore(score);
 						returnList.add(vo);
 					}
 				}
@@ -1436,6 +1519,25 @@ public class RequestAction extends BaseAction {
 		}
 		return Boolean.FALSE;
 	}
+	/**
+	 * 初始化一级cat、二级label 权重
+	 * @param catId
+	 * @param itemId
+	 * @param type
+	 */
+	private Double findFillWeight(String catId , String itemId ,Double defaultWeight){
+		Double weight = null;
+		if(itemId == null){
+			weight = EnumsConfigCache.ENUMS_CONFIG.get(catId);
+		}else{
+			weight = EnumsConfigCache.ENUMS_CONFIG.get(catId + "_" + itemId);
+		}
+		if(weight == null){
+			weight = defaultWeight;
+		}
+		return weight;
+	}
+	
 	public RecommendInfoCacheManager getRecommendInfoCacheManager() {
 		return recommendInfoCacheManager;
 	}
@@ -1464,6 +1566,10 @@ public class RequestAction extends BaseAction {
 	public void setVomsRecommendCacheManager(VomsRecommendCacheManager vomsRecommendCacheManager) {
 		this.vomsRecommendCacheManager = vomsRecommendCacheManager;
 	}
-	
-	
+	public TopRecommendCacheManager getTopRecommendCacheManager() {
+		return topRecommendCacheManager;
+	}
+	public void setTopRecommendCacheManager(TopRecommendCacheManager topRecommendCacheManager) {
+		this.topRecommendCacheManager = topRecommendCacheManager;
+	}
 }

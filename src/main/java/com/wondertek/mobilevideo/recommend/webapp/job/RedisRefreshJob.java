@@ -23,5 +23,11 @@ public class RedisRefreshJob{
 		RecommendUtil.initVomsRecommednRedisCache();
 		end = System.currentTimeMillis();
 		log.debug("initVomsRecommednRedisCache end,duration:" + (end - start));
+
+		start = System.currentTimeMillis();
+		log.debug("initTopRecommednRedisCache start");
+		RecommendUtil.initTopRecommednRedisCache();
+		end = System.currentTimeMillis();
+		log.debug("initTopRecommednRedisCache end,duration:" + (end - start));
 	}
 }

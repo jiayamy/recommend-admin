@@ -95,7 +95,6 @@ function initGridTable() {
 			{name:'labelInfo',index:'labelInfo', width:200,sortable : true},
 			{name:'isRecommend',index:'isRecommend', width:100,sortable : true,
 				formatter:function(cellvalue, options, rowObject){
-					console.log(cellvalue);
 					if(cellvalue == true){
 						return "推荐"
 					}else{
@@ -278,7 +277,44 @@ function initGridTable() {
 		$('.ui-jqdialog').remove();
 	});
 }
-
+function updateVomsRecommend(isRecommend) {
+	var selectedIds = $("#grid-table").jqGrid("getGridParam", "selarrrow"); //返回选中多行ids
+    if (selectedIds == '' || selectedIds == null) {
+	    alertmsg("warning","请至少选择一条记录进行操作");
+    } else if (selectedIds.length >= 1) {
+    	Lobibox.confirm({
+    		title: isRecommend ? "推荐提示" : "撤回提示",
+    		msg: isRecommend ? "确定推荐所选择的记录" : "确定撤回所选择的记录",
+    		callback: function ($this, type, eve) {
+    			if(type == "yes"){
+    				var ids = "";
+			    	for (var i = 0; i < selectedIds.length; i++) {
+			    		var rowData = $('#grid-table').getRowData(selectedIds[i]);
+			    		var configId = rowData.id;
+			    		ids = ids + configId + ",";
+			    	}
+    				var data = {"ids":ids,"isRecommend":isRecommend};
+    				$.post(webroot+"recomd/updateVomsRecommend.msp",
+    					data,
+    					function(data){
+    						if(data.error == false){
+    							$("#grid-table").jqGrid('setGridParam',{ 
+    						        page:1,
+    						        mtype:"post"
+    						    }).trigger("reloadGrid"); //重新载入 
+    							alertmsg("success","操作成功");
+    						}else if(data.message){
+    							alertmsg("error",data.message);
+    						}else{
+    							alertmsg("error","操作出现问题");
+    						}
+    					}
+    				);
+    			}			
+    		}
+    	});
+    }  
+} 
 
 function listVomsRecommend(e) {
 	var labelInfo = $("#s_labelInfo").val();

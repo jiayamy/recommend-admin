@@ -55,10 +55,50 @@
 			    <param name = "root"> resultMap</param>
 			</result>
 		</action>
-		<!-- 20161117 -->
+		<action name="updateVomsRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.VomsRecommendAction" method="updateRecommend">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		<!-- 20161117 20161212  madongwei -->
 		<action name="testQueryTag" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testQueryTag">
 		</action>
+		<action name="testSystemSearch" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testSystemSearch">
+		</action>
 		<action name="testSearch" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testSearch">
+		</action>
+		<action name="testSearchAll" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testSearchAll">
+		</action>
+		<action name="testSearchVoms" class="com.wondertek.mobilevideo.recommend.webapp.action.TestAction" method="testSearchVoms">
+		</action>
+		
+		<!-- 20161205 -->
+		<action name="topRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="getPage">
+			<result name="success">/pages/recomd/topRecommend.jsp</result>
+		</action>
+		
+		<action name="listTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="list">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="delTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="delete">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="addTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="addSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
+		</action>
+		
+		<action name="editTopRecommend" class="com.wondertek.mobilevideo.recommend.webapp.action.TopRecommendAction" method="editSave">
+			<result type="json">
+			    <param name = "root"> resultMap</param>
+			</result>
 		</action>
 	</package>
 </struts>	

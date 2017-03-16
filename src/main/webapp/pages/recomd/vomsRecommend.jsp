@@ -19,7 +19,17 @@
 	<div class="panel-group accordion no-margin-bottom" id="accordion">
 		<div class="panel panel-default">
 			<div class="panel-heading no-padding">
-				<div id="actions" class="btn-group clearfix">				    
+				<div id="actions" class="btn-group clearfix">	
+					<cas:havePerm url="/recomd/updateVomsRecommend.htm">
+				    <button type="button" class="btn btn-sm" onclick="updateVomsRecommend(true)">
+				    	<i class="ace-icon glyphicon glyphicon-upload orange bigger-120"></i>
+				    	推荐
+				    </button>
+				    <button type="button" class="btn btn-sm" onclick="updateVomsRecommend(false)">
+				    	<i class="ace-icon glyphicon glyphicon-download orange bigger-120"></i>
+				    	撤回
+				    </button>
+				    </cas:havePerm>			    
 			    	<button id="searchTitle" flag="hide" onclick="change()" class="btn btn-sm"> 
 				        <b class="ace-icon fa fa-search orange bigger-115"></b>
 				        	<span>展开</span>

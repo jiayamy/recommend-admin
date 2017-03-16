@@ -58,7 +58,7 @@
 		
 		<action name="listRecommondParam" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="list">
 			<result type="json">
-			    <param name = "root"> resultMap</param>
+			    <param name = "root">recommendParams</param>
 			</result>
 		</action>
 		
@@ -69,12 +69,16 @@
 		</action>
 		
 		<!-- 编辑一级标签权重 -->
-		<action name="editWeights" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="editLabel">
+		<action name="editRcmdParam" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="edit">
 			<result type="json">
 				<param name="root">resultMap</param>
 			</result>
 		</action>
-		
+		<action name="deleteRcmdParam" class="com.wondertek.mobilevideo.recommend.webapp.action.RecommondConfigAction" method="delete">
+			<result type="json">
+				<param name="root">resultMap</param>
+			</result>
+		</action>
 	</package>
 </struts>	
 

@@ -972,3 +972,14 @@ div#rMenu ul li {
 .plus-tag-add a{float:left;margin:12px 0 0 20px;display:inline;font-size:18px;background-position:-289px -59px;padding:0 0 0 16px;}
 .plus-tag-add a.plus{background-position:-289px -96px;}
 /* labelBox */
+
+.ui-jqgrid-view > .ui-jqgrid-titlebar {
+    background: #ffff none repeat scroll 0 0;  
+    border-bottom: 2px solid #ff6900;
+    color: #000000;
+}
+.table-header {
+    background-color: #ffff;
+    border-bottom: 2px solid #ff6900;
+    color: #000000;
+}

@@ -59,8 +59,8 @@
 				<div class="clearfix form-actions center-block col-md-12">
 					<div class="col-sm-2 control-label no-padding-right"></div>
 					<div class="col-sm-10">
-						<button class="btn btn-info" type="button" onclick="subClic()">
-							<i class="ace-icon fa fa-check bigger-110"></i> 提交
+						<button class="btn" type="button" onclick="subClic()">
+							<i class="ace-icon fa fa-search bigger-110"></i> 查询
 						</button>
 						&nbsp; &nbsp; &nbsp;
 						<button class="btn" type="reset">
@@ -118,7 +118,6 @@
 					$('#contentDiv').val(msg);
 				},
 				error : function(msg) {
-					console.log(msg);
 					alert("失败了");
 				}
 			});

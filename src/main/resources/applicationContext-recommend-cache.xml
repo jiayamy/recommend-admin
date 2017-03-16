@@ -44,7 +44,12 @@
 		<property name="vomsRecommendService" ref="vomsRecommendService"/>
 		<property name="expireTime" value="720" />
 	</bean>
-	
+	<!-- 20161212 -->
+	<bean id="topRecommendCacheClusterManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.TopRecommendCacheClusterManagerImpl">
+		<property name="jedisClusterFactory" ref="jedisClusterFactory"/>
+		<property name="topRecommendService" ref="topRecommendService"/>
+		<property name="expireTime" value="720" />
+	</bean>
 	<!--redis集群配置，未使用 end-->
 	<!--单个redis配置，start-->
 	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
@@ -91,8 +96,13 @@
 		<property name="vomsRecommendService" ref="vomsRecommendService"/>
 		<property name="isCluster" value="false" />
 		<property name="vomsRecommendCacheClusterManager" ref="vomsRecommendCacheClusterManager"/>
-		<property name="expireTime" value="720" /><!--12分 失效-->
-		
 	</bean>
-	
+	<!-- 20161212 -->
+	<bean id="topRecommendCacheManager" class="com.wondertek.mobilevideo.core.recommend.cache.redis.service.impl.TopRecommendCacheManagerImpl">
+		<property name="redisManager" ref="redisManager"/>
+		<property name="topRecommendService" ref="topRecommendService"/>
+		<property name="isCluster" value="false" />
+		<property name="topRecommendCacheClusterManager" ref="topRecommendCacheClusterManager"/>
+		<property name="expireTime" value="720" /><!--12分 失效-->		
+	</bean>
 </beans>
