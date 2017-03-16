@@ -17,6 +17,7 @@
 	<constant name="struts.serve.static" value="true" />
 	<constant name="struts.serve.static.browserCache" value="true" />
 	<constant name="struts.configuration.xml.reload" value="true" />
+	<constant name="struts.enable.DynamicMethodInvocation" value="true"/>
 	<constant name="struts.action.excludePattern" value="/scripts/ckfinder/connector" />
 	
 	<!-- Configuration for the default package. -->
