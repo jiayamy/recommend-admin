@@ -49,12 +49,12 @@ public class RecommondConfigAction extends BaseAction {
 //			String v1 = enums.getVal();
 //			enumsMap.put(k1, v1);
 //		}
-		Map<String,String> map = null;
+		Map<String,EnumsInfo> map = null;
 		for(Integer type : EnumsInfoCache.VAL_ENUMSINFO.keySet()){
 			map = EnumsInfoCache.VAL_ENUMSINFO.get(type);
 			if(map != null){
 				for(String val : map.keySet()){
-					enumsMap.put(map.get(val) + "-" + type, val);
+					enumsMap.put(map.get(val).getKey() + "-" + type, val);
 				}
 			}
 		}

@@ -9,6 +9,7 @@ import java.util.Map;
 import com.wondertek.mobilevideo.core.recommend.bean.PageList;
 import com.wondertek.mobilevideo.core.recommend.cache.EnumsInfoCache;
 import com.wondertek.mobilevideo.core.recommend.cache.PrdTypeRelationCache;
+import com.wondertek.mobilevideo.core.recommend.model.EnumsInfo;
 import com.wondertek.mobilevideo.core.recommend.model.PrdTypeRelation;
 import com.wondertek.mobilevideo.core.recommend.model.RecommendInfo;
 import com.wondertek.mobilevideo.core.recommend.service.RecommendInfoService;
@@ -39,10 +40,10 @@ public class RecommendInfoAction extends BaseAction {
 			prdTypeRelations.add(PrdTypeRelationCache.PRDTYPE_RELATIONS.get(key));
 		}
 		catInfos = new ArrayList<KeyVal>();
-		Map<String,String> maps = EnumsInfoCache.VAL_ENUMSINFO.get(EnumsInfoCache.TYPE_CAT);
+		Map<String, EnumsInfo> maps = EnumsInfoCache.VAL_ENUMSINFO.get(EnumsInfoCache.TYPE_CAT);
 		if(maps != null){
 			for(String key : maps.keySet()){
-				catInfos.add(new KeyVal(maps.get(key),key));
+				catInfos.add(new KeyVal(maps.get(key).getKey(),key));
 			}
 		}
     	return SUCCESS;

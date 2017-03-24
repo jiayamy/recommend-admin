@@ -9,10 +9,14 @@
 				<div class="col-sm-10">
 					<select class="col-xs-10 col-sm-12" id="host">
 						<option value="localhost:8080${ctx}">localhost</option>
-						<option value="172.16.70.116:8080${ctx}">172.16.70.116</option>
-						<option value="172.16.70.119:8080${ctx}">172.16.70.119</option>
-						<option value="172.16.70.120:8080${ctx}">172.16.70.120</option>
-						<option value="172.16.70.121:8080${ctx}">172.16.70.121</option>
+						<option value="172.16.70.116${ctx}">172.16.70.116</option>
+						<option value="172.16.70.119${ctx}">172.16.70.119</option>
+						<option value="172.16.70.120${ctx}">172.16.70.120</option>
+						<option value="172.16.70.121${ctx}">172.16.70.121</option>
+						<option value="10.200.66.22${ctx}">10.200.66.22</option>
+						<option value="10.200.66.23${ctx}">10.200.66.23</option>
+						<option value="10.200.66.91${ctx}">10.200.66.91</option>
+						<option value="10.200.66.92${ctx}">10.200.66.92</option>
 					</select>
 				</div>
 			</div>

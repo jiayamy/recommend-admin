@@ -25,7 +25,7 @@
     </appender>
     <appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
     	<param name="Target" value="System.out"/>
-        <param name="Threshold" value="info" />
+        <param name="Threshold" value="debug" />
         <layout class="org.apache.log4j.PatternLayout">
             <param name="ConversionPattern"
                 value="[RECOMMEND-ADMIN][%d{yyyy-MM-dd HH:mm:ss SSS}] %p [%t] %c{1}.%M(%L) | %m%n"/>
@@ -41,7 +41,7 @@
     </logger>
 
     <logger name="org.apache">
-        <level value="ERROR"/>
+        <level value="debug"/>
     </logger>
 
     <logger name="org.apache.velocity">
@@ -80,15 +80,15 @@
     </logger>
     
     <logger name="com.wondertek.mobilevideo">
-        <level value="DEBUG"/>
+        <level value="debug"/>
         <appender-ref ref="LOG_FILE"/>
     </logger>
     <logger name="com.wondertek.mobilevideo.recommend.webapp.filter.RequestInterceptor">
-        <level value="INFO"/>
+        <level value="debug"/>
         <appender-ref ref="ACCESS_ACTION_LOG"/>
     </logger>
     <root>
-        <level value="ERROR"/>
+        <level value="debug"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 
