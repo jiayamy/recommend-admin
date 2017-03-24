@@ -209,15 +209,15 @@ public class RequestAction extends BaseAction {
 				Map<String, EnumsInfo> labelIds = EnumsInfoCache.VAL_ENUMSINFO.get(EnumsInfoCache.TYPE_LABEL);
 				//获取内容形态和推荐标签的字段描述
 				String contRecommKeyDesc = "contRecomm";
-				String mediaShapeKeyDesc = "mediaShape";
+//				String mediaShapeKeyDesc = "mediaShape";
 				if(EnumsInfoCache.KEY_ENUMSINFO.containsKey(EnumsInfoCache.TYPE_LABEL)){
 					Map<String, EnumsInfo> labelKeys = EnumsInfoCache.KEY_ENUMSINFO.get(EnumsInfoCache.TYPE_LABEL);
 					if(labelKeys.containsKey(RequestConstants.SEARCH_KEY_RECOMMD)){
 						contRecommKeyDesc = labelKeys.get(RequestConstants.SEARCH_KEY_RECOMMD).getKeyDesc();
 					}
-					if(labelKeys.containsKey(RequestConstants.SEARCH_KEY_MEDIASHAPE)){
-						mediaShapeKeyDesc = labelKeys.get(RequestConstants.SEARCH_KEY_MEDIASHAPE).getKeyDesc();
-					}
+//					if(labelKeys.containsKey(RequestConstants.SEARCH_KEY_MEDIASHAPE)){
+//						mediaShapeKeyDesc = labelKeys.get(RequestConstants.SEARCH_KEY_MEDIASHAPE).getKeyDesc();
+//					}
 				}
 				//获取用户的标签评分
 				if(dbUserTag != null){
@@ -259,6 +259,9 @@ public class RequestAction extends BaseAction {
 						catSearchCount = 1;
 					}
 					int pageSize = limit / catSearchCount;
+					if((limit % catSearchCount) > 0){
+						pageSize = pageSize + 1;
+					}
 					if(pageSize > searchLimit){
 						pageSize = searchLimit;
 					}
@@ -339,7 +342,11 @@ public class RequestAction extends BaseAction {
 									}else{
 										searchKeywords.append(" OR ");
 									}
-									searchKeywords.append(contRecommKeyDesc).append(":").append(recomdItem.getLabel())/*.append("^").append(itemWeight.longValue())*/;
+									searchKeywords.append(contRecommKeyDesc).append(":").append("(").append(recomdItem.getLabel());
+									if(RequestConstants.V_DEFAULT_SEARCH_WITH_WEIGHT){
+										searchKeywords.append("^").append(itemWeight.longValue());
+									}
+									searchKeywords.append(")");
 									isSearchCat = true;
 								}
 								catItemCount ++;
@@ -396,7 +403,11 @@ public class RequestAction extends BaseAction {
 								if(searchKeywords.length() > 0){
 									searchKeywords.append(" OR ");
 								}
-								searchKeywords.append(catItem.getLabelKey()).append(":").append(catItem.getLabelValue())/*.append("^").append(itemWeight.longValue())*/;
+								searchKeywords.append(catItem.getLabelKey()).append(":").append("(").append(catItem.getLabelValue());
+								if(RequestConstants.V_DEFAULT_SEARCH_WITH_WEIGHT){
+									searchKeywords.append("^").append(itemWeight.longValue());
+								}
+								searchKeywords.append(")");
 
 								catItemCount ++;
 							}
