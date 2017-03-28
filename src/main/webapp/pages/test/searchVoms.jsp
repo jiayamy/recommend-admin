@@ -94,6 +94,7 @@
 						<th class="center">名称</th>
 						<th class="center">推荐对象</th>
 						<th class="center">类型</th>
+						<th class="center">接口请求时间</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -141,7 +142,15 @@ $('#subBtn').click(function(){
 					}
 					
 					ht = ht+'<td class="center">'+name+'</td>';
+					ht = ht+'<td class="center">'+result.requestTime + "MS" +'</td>';
 					ht = ht+'</tr>';
+				}
+				if(vomsContList.length == 0){
+					ht = ht+'<td class="center"></td>';
+					ht = ht+'<td class="center"></td>';
+					ht = ht+'<td class="center"></td>';
+					ht = ht+'<td class="center"></td>';
+					ht = ht+'<td class="center">'+result.requestTime + "MS" +'</td>';
 				}
 				$('#vomsContTab tbody').html(ht);
 			}

@@ -127,7 +127,7 @@
 	    	jQuery(grid_selector).jqGrid({
 	    		url:"${ctx}/recomd/testSystemSearch.msp",
 		    	datatype: "json",//数据类型 json
-		    	colNames:['节目ID','内容ID','节目名称','CPID','一级分类','播控状态','产品包','发布状态','发布(新)状态','媒资类型','创建时间','更新时间'],
+		    	colNames:['节目ID','内容ID','节目名称','CPID','一级分类','播控状态','产品包','发布状态','发布(新)状态','媒资类型','创建时间','更新时间','接口请求时间'],
 				colModel:[
 					{name:'prdContId',index:'prdContId', width:80,editable: false},
 					{name:'contentId',index:'contentId', width:80,editable: false},
@@ -190,7 +190,16 @@
 					
 					},
 					{name:'createTime',index:'createTime', width:130,editable: false},
-					{name:'updateTime',index:'updateTime', width:130,editable: false}
+					{name:'updateTime',index:'updateTime', width:130,editable: false},
+					{name:'requestTime',index:'requestTime', width:130,editable: false,
+						formatter:function(cellvalue, options, rowObject){
+							cellvalue = cellvalue + "MS";
+							return cellvalue;
+							if(cellvalue == undefined){
+								return "";
+							}
+						}	
+					}
 				], 
 		    	jsonReader:{
 		    		root: "root",
@@ -213,6 +222,7 @@
 	    	});
 			$(grid_selector).jqGrid( 'setGridWidth', $("#page-content").width() );
 			$("#grid-pager_center").css("display","none");
+			$("#grid-pager_right").css("display","none");
 		});
 	</script>
 </body>

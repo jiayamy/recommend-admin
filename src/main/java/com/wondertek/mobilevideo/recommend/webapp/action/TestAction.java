@@ -59,28 +59,35 @@ public class TestAction extends BaseAction {
 			
 			Map<String, String> map = new HashMap<String,String>();
 			map.put("userId", userId);
+			long start = System.currentTimeMillis();
 			String rst = HttpClientUtil.httpClientPost(url, HttpClientUtil.praseParameterMap(map));
+			long end = System.currentTimeMillis();
 			if(StringUtil.isNullStr(rst)){
 				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 				resultMap.put(RequestConstants.R_MSG,"连接指定推荐服务器出现异常");
+				resultMap.put(RequestConstants.R_VOMS_REQUESTTIME, end-start);
 				this.writeTextResponse(JSON.toJSONString(resultMap));
 				return;
 			}
+			StringBuffer sb = new StringBuffer(rst);
+			sb.insert(1, RequestConstants.R_VOMS_REQUESTTIME + ":" + (end-start) + ",").toString();
+			rst = sb.toString();
+			this.writeTextResponse(JSON.toJSONString(JSON.parseObject(rst), true));
 			//解析返回数据
-			JSONObject obj = JSON.parseObject(rst);
-			if(obj.containsKey("root") && obj.containsKey("success") && obj.getBooleanValue("success") 
-					&& obj.containsKey("returnCode") && "000000".equals(obj.getString("returnCode"))
-					&& obj.get("root") != null){
-				Object root = obj.get("root");
-				UserTag userTag = JSON.parseObject(root.toString(), UserTag.class);
-				if(StringUtil.isNullStr(userTag.getId())){
-					this.writeTextResponse(rst);
-				}else{
-					this.writeTextResponse(JSON.toJSONString(JSON.parseObject(root.toString()), true));
-				}
-			}else{
-				this.writeTextResponse(rst);
-			}
+//			JSONObject obj = JSON.parseObject(rst);
+//			if(obj.containsKey("root") && obj.containsKey("success") && obj.getBooleanValue("success") 
+//					&& obj.containsKey("returnCode") && "000000".equals(obj.getString("returnCode"))
+//					&& obj.get("root") != null){
+//				Object root = obj.get("root");
+//				UserTag userTag = JSON.parseObject(root.toString(), UserTag.class);
+//				if(StringUtil.isNullStr(userTag.getId())){
+//					this.writeTextResponse(rst);
+//				}else{
+//					this.writeTextResponse(JSON.toJSONString(JSON.parseObject(root.toString()), true));
+//				}
+//			}else{
+//				this.writeTextResponse(rst);
+//			}
 		} catch (Exception e) {
 			resultMap.put("error", true);
 			this.writeTextResponse(JSON.toJSONString(resultMap));
@@ -201,8 +208,10 @@ public class TestAction extends BaseAction {
 		    String userTagJson = JSON.toJSONString(oldUserTag);
 		    //可以传递
 			String url = "http://" + host + "/req/search.msp";
+			Long start = System.currentTimeMillis();
 			String rst = HttpClientUtil.httpClientPost(url, new NameValuePair[0], userTagJson);
-			
+			Long end = System.currentTimeMillis();
+			Long requestTime = end-start;
 			if(StringUtil.isNullStr(rst)){
 				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 				resultMap.put(RequestConstants.R_MSG,"连接指定推荐服务器出现异常");
@@ -215,7 +224,7 @@ public class TestAction extends BaseAction {
 			if(RequestConstants.R_CODE_000000.equals(code)){
 				List<RecommendInfoVo> list = JSON.parseArray(rstObjJson.get("root").toString(), RecommendInfoVo.class);
 				
-				List<PrdContInfo> pomses = this.getPomses(list);
+				List<PrdContInfo> pomses = this.getPomses(list,requestTime);
 				resultMap.put(RequestConstants.R_SUCC, rstObjJson.get(RequestConstants.R_SUCC));
 				resultMap.put(RequestConstants.R_CODE, rstObjJson.get(RequestConstants.R_CODE));
 				resultMap.put(RequestConstants.R_MSG, rstObjJson.get(RequestConstants.R_MSG));
@@ -279,7 +288,10 @@ public class TestAction extends BaseAction {
 		    String userTagJson = JSON.toJSONString(oldUserTag);
 		    //可以传递
 			String url = "http://" + host + "/req/searchAll.msp";
+			long start = System.currentTimeMillis();
 			String rst = HttpClientUtil.httpClientPost(url, new NameValuePair[0], userTagJson);
+			long end = System.currentTimeMillis();
+			resultMap.put(RequestConstants.R_VOMS_REQUESTTIME, end-start);
 			if(StringUtil.isNullStr(rst)){
 				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 				resultMap.put(RequestConstants.R_MSG,"连接指定推荐服务器出现异常");
@@ -296,7 +308,7 @@ public class TestAction extends BaseAction {
 				List<VomsRecommendVo> bigPicContList = JSON.parseArray(rstObjJson.get(RequestConstants.R_VOMS_BIGPICCONT).toString(), VomsRecommendVo.class);
 				List<VomsRecommendVo> multiPicContList = JSON.parseArray(rstObjJson.get(RequestConstants.R_VOMS_MULTIPICCONT).toString(), VomsRecommendVo.class);
 				
-				List<PrdContInfo> pomses = this.getPomses(list);
+				List<PrdContInfo> pomses = this.getPomses(list,0L);
 				resultMap.put(RequestConstants.R_SUCC, rstObjJson.get(RequestConstants.R_SUCC));
 				resultMap.put(RequestConstants.R_CODE, rstObjJson.get(RequestConstants.R_CODE));
 				resultMap.put(RequestConstants.R_MSG, rstObjJson.get(RequestConstants.R_MSG));
@@ -356,13 +368,19 @@ public class TestAction extends BaseAction {
 			
 		    //可以传递
 			String url = "http://" + host + "/req/searchVoms.msp";
+			long start = System.currentTimeMillis();
 			String rst = HttpClientUtil.httpClientPost(url,values);
+			long end = System.currentTimeMillis();
 			if(StringUtil.isNullStr(rst)){
 				resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 				resultMap.put(RequestConstants.R_MSG,"连接指定推荐服务器出现异常");
+				resultMap.put(RequestConstants.R_VOMS_REQUESTTIME, end-start);
 				this.writeTextResponse(JSON.toJSONString(resultMap));
 				return;
 			}
+			StringBuffer sb = new StringBuffer(rst);
+			sb.insert(1, RequestConstants.R_VOMS_REQUESTTIME + ":" + (end-start) + ",").toString();
+			rst = sb.toString();
 			this.writeTextResponse(JSON.toJSONString(JSON.parseObject(rst), true));
 		} catch (Exception e) {
 			resultMap.put("error", true);
@@ -371,7 +389,7 @@ public class TestAction extends BaseAction {
 	}
 	
 	//根据rootArray去service中得到 List<Poms>
-	public List<PrdContInfo> getPomses(List<RecommendInfoVo> list ) {
+	public List<PrdContInfo> getPomses(List<RecommendInfoVo> list, Long requestTime ) {
 		List<PrdContInfo> pomses = null;
 		List<PrdContInfo> rst = new ArrayList<PrdContInfo>();
 		if (list != null && !list.isEmpty()) {
@@ -400,8 +418,9 @@ public class TestAction extends BaseAction {
 			for (RecommendInfoVo vo : list) {
 				info = infos.get(vo.getPrdContId());
 				if(info == null){
-					rst.add(new PrdContInfo(vo.getPrdContId(),vo.getContName()));
+					rst.add(new PrdContInfo(vo.getPrdContId(),vo.getContName(),requestTime.toString()));
 				}else{
+					info.setRequestTime(requestTime.toString());
 					rst.add(info);
 				}
 			}

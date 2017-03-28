@@ -28,7 +28,7 @@
 			</div>
 			<div class="clearfix form-actions center-block col-md-12">
 				<div class="col-sm-2 control-label no-padding-right"></div>
-				<div class="col-sm-10">
+				<div class="col-sm-10" id="requestTime">
 					<button class="btn" type="button" onclick="subClic()">
 						<i class="ace-icon fa fa-search bigger-110"></i> 查询
 					</button>
@@ -53,12 +53,31 @@
 	function subClic() {
 		var host = $('#host').val();
 		var userId = $('#userId').val();
+		if(userId == "" || host == ""){
+			$('#requestTime').find('span').remove();
+		}
 		$.ajax({
 			url : "${ctx}/recomd/testQueryTag.msp",
 			type : "post",
 			data:{"userId": userId, "host":host},
 			success : function(msg) {
-				$('#contentDiv').val(msg);
+				var result = jQuery.parseJSON(msg);
+				var jsonMsg = JSON.stringify(result.root);
+				if(result.root == undefined){
+					$('#contentDiv').val(msg);
+				}else{
+					$('#contentDiv').val(jsonMsg);
+				}
+				
+				if(result.requestTime == undefined){
+					return "";
+				}
+				var p = '<span>' + "(接口请求时间：" + result.requestTime + "MS" + ")" + '<span>';
+				$('#requestTime').append(p);
+				
+				if($('#requestTime').find('span').length > 2){
+					$('#requestTime').find('span').first().remove();
+				}
 			},
 			error : function(msg) {
 				alert("失败了");

@@ -100,7 +100,18 @@
 				<thead>
 					<tr>
 						<th class="center">节目ID</th>
+						<th class="center">内容ID</th>
 						<th class="center">节目名称</th>
+						<th class="center">CPID</th>
+						<th class="center">一级分类</th>
+						<th class="center">播控状态</th>
+						<th class="center">产品包</th>
+						<th class="center">发布状态</th>
+						<th class="center">发布(新)状态</th>
+						<th class="center">媒资类型</th>
+						<th class="center">创建时间</th>
+						<th class="center">更新时间</th>
+						<th class="center">接口请求时间</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -198,17 +209,122 @@
 				success : function(msg) {
 					$('#vomsContTab tbody').empty();
 					var result = jQuery.parseJSON(msg);
+					//处理结果
+					var statusEnum = [
+			    	                  {text: "待发布 ", value:"10"},
+			    	                  {text: "发布中", value: "11"},
+			    	                  {text: "发布成功", value: "12"},
+			    	                  {text: "发布失败", value: "13"},
+			    	                  {text: "待撤回", value: "20"},
+			    	                  {text: "撤回中", value: "21"},
+			    	                  {text: "撤回成功", value: "22"},
+			    	                  {text: "撤回失败", value: "23"},
+			    	                  {text: "无发布规则", value: "30"}
+			    	                  ];
+					var formTypeEnum =[
+										{text: "剧集", value:"6"},
+										{text: "子集", value: "7"},
+										{text: "非剧集", value: "8"},
+										{text: "专辑", value: "9"},
+										{text: "内容集", value: "10"},
+										{text: "单集", value: "11"},
+										{text: "图册", value: "12"}
+			    	                   ];
 					//给pomsContList结果页面添加数据
 					if(result.success == true){
 						var pomsContList = result.pomsCont;
+						var status = '';
+						var sun;
 						var ht = '';
 						for(var i = 0;i<pomsContList.length;i++){
 							ht = ht+'<tr>';
+							if(pomsContList[i].prdContId == undefined){
+								pomsContList[i].prdContId = null;
+							}
 							ht = ht+'<td class="center">'+pomsContList[i].prdContId+'</td>';
+							if(pomsContList[i].contentId == undefined){
+								pomsContList[i].contentId = "";
+							}
+							ht = ht+'<td class="center">'+pomsContList[i].contentId+'</td>';
 							if(pomsContList[i].name == undefined){
 								pomsContList[i].name = "";
 							}
 							ht = ht+'<td class="center">'+pomsContList[i].name+'</td>';
+							if(pomsContList[i].cpId == undefined){
+								pomsContList[i].cpId = "";
+							}
+							ht = ht+'<td class="center">'+pomsContList[i].cpId+'</td>';
+							if(pomsContList[i].displayName == undefined){
+								pomsContList[i].displayName = "";
+							}
+							ht = ht+'<td class="center">'+pomsContList[i].displayName+'</td>';
+							status = pomsContList[i].bcStatus;
+							if(pomsContList[i].bcStatus == 0){
+								status = "未播控";
+							}else if(pomsContList[i].bcStatus == 1){
+								status = "播控通过";
+							}else if (pomsContList[i].bcStatus == 2) {
+								status = "播控拒绝";
+							}
+							if(pomsContList[i].bcStatus == undefined){
+								status = "";
+							}
+							ht = ht+'<td class="center">'+status+'</td>';
+							if(pomsContList[i].prdInfoName == undefined){
+								pomsContList[i].prdInfoName = "";
+							}
+							ht = ht+'<td class="center">'+pomsContList[i].prdInfoName+'</td>';
+							if(pomsContList[i].pubStatus != undefined){
+								for (var j = 0; j < statusEnum.length; j++) {
+									var k = statusEnum[j];
+									if(pomsContList[i].pubStatus == k.value){
+										pomsContList[i].pubStatus = k.text;
+										ht = ht+'<td class="center">'+pomsContList[i].pubStatus+'</td>';
+										break;
+									}
+								}
+							}else{
+								pomsContList[i].pubStatus = "";
+								ht = ht+'<td class="center">'+pomsContList[i].pubStatus+'</td>';
+							}
+							
+							if(pomsContList[i].publishNoVomsStatus != undefined){
+								for (var j = 0; j < statusEnum.length; j++) {
+									var k = statusEnum[j];
+									if(pomsContList[i].publishNoVomsStatus == k.value){
+										pomsContList[i].publishNoVomsStatus = k.text;
+										ht = ht+'<td class="center">'+pomsContList[i].publishNoVomsStatus+'</td>';
+										break;
+									}
+								}
+							}else{
+								ht = ht+"<td class=center></td>";
+							}
+							
+							if(pomsContList[i].formType != undefined){
+								for (var j = 0; j < formTypeEnum.length; j++) {
+									var k = formTypeEnum[j];
+									if(pomsContList[i].formType == k.value){
+										pomsContList[i].formType = k.text;
+										ht = ht+'<td class="center">'+pomsContList[i].formType+'</td>';
+										break;
+									}
+								}
+							}else{
+								ht = ht+"<td class=center></td>";
+							}
+							if(pomsContList[i].createTime == undefined){
+								pomsContList[i].createTime = "";
+							}
+							ht = ht+'<td class="center">'+pomsContList[i].createTime+'</td>';
+							if(pomsContList[i].updateTime == undefined){
+								pomsContList[i].updateTime = "";
+							}
+							ht = ht+'<td class="center">'+pomsContList[i].updateTime+'</td>';
+							if(result.requestTime == undefined){
+								result.requestTime = "";
+							}
+							ht = ht+'<td class="center">'+result.requestTime+ "MS" +'</td>';
 							ht = ht+'</tr>';
 						} 
 						$('#pomsContTab tbody').html(ht);
