@@ -282,7 +282,6 @@ public class RequestAction extends BaseAction {
 						catWeight = catWeight * catInfo.getScore();
 						//查找内容形态
 						String mediaShape = null;//多个逗号分隔
-						boolean isAllMediaShape = true;
 						if(catInfo.getItems() != null 
 								&& searchCatCount <= searchCatMax){
 							for(CatItem catItem : catInfo.getItems()){
@@ -296,8 +295,6 @@ public class RequestAction extends BaseAction {
 									}else{
 										mediaShape = mediaShape + RecommendConstants.SPLIT_COMMA + catItem.getLabelValue();
 									}
-								}else{
-									isAllMediaShape = false;
 								}
 							}
 						}
@@ -390,7 +387,7 @@ public class RequestAction extends BaseAction {
 								if(catItemCount > searchCatItemMax){//每个一级分类最多搜索多少个标签
 									break;
 								}
-								if(!isAllMediaShape && RequestConstants.SEARCH_KEY_MEDIASHAPE.equals(catItem.getLabelId())){//给出来的不都是内容形态，此时内容形态不单独查询
+								if(RequestConstants.SEARCH_KEY_MEDIASHAPE.equals(catItem.getLabelId())){//给出来的不都是内容形态，此时内容形态不单独查询
 									continue;
 								}
 								//普通标签权重
@@ -414,7 +411,7 @@ public class RequestAction extends BaseAction {
 							isSearchCat = true;
 						}
 						//只调用一次
-						if(isAllMediaShape){//全部都是内容形态，则一个个内容形态查询
+						if(fieldList.size() == 0){//全部都是内容形态，则一个个内容形态查询
 							SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+pageStart, RecommendConstants.S_BLANK+pageSize,catInfo.getCatId(),
 									prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
 									RequestConstants.SEARCH_KEY_MEDIASHAPE,(mediaShape == null ? null : mediaShape.replaceAll(",", " ")),null,catWeight);
@@ -619,7 +616,7 @@ public class RequestAction extends BaseAction {
 		resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
 		resultMap.put(RequestConstants.R_MSG, "请求成功");
 		resultMap.put(RequestConstants.R_POMS_CONT, pomsContList);
-		resultMap.put(RequestConstants.R_TOTAL, total);
+		resultMap.put(RequestConstants.R_TOTAL, pomsContList.size());
 		resultMap.put(RequestConstants.R_VOMS_SPECIALTOPIC, specialTopicList);
 		resultMap.put(RequestConstants.R_TOTAL_SPECIALTOPIC, specialTopicTotal);
 		resultMap.put(RequestConstants.R_VOMS_COMBINEDCONT, combinedContList);
@@ -1095,7 +1092,6 @@ public class RequestAction extends BaseAction {
 						catWeight = catWeight * catInfo.getScore();
 						//查找内容形态
 						String mediaShape = null;//多个逗号分隔
-						boolean isAllMediaShape = true;
 						if(catInfo.getItems() != null 
 								&& searchCatCount <= searchCatMax){
 							for(CatItem catItem : catInfo.getItems()){
@@ -1109,8 +1105,6 @@ public class RequestAction extends BaseAction {
 									}else{
 										mediaShape = mediaShape + RecommendConstants.SPLIT_COMMA + catItem.getLabelValue();
 									}
-								}else{
-									isAllMediaShape = false;
 								}
 							}
 						}
@@ -1196,7 +1190,7 @@ public class RequestAction extends BaseAction {
 								if(catItemCount > searchCatItemMax){//每个一级分类最多搜索多少个标签
 									break;
 								}
-								if(!isAllMediaShape && RequestConstants.SEARCH_KEY_MEDIASHAPE.equals(catItem.getLabelId())){//给出来的不都是内容形态，此时内容形态不单独查询
+								if(RequestConstants.SEARCH_KEY_MEDIASHAPE.equals(catItem.getLabelId())){//给出来的不都是内容形态，此时内容形态不单独查询
 									continue;
 								}
 								//普通标签权重
@@ -1216,7 +1210,7 @@ public class RequestAction extends BaseAction {
 							isSearchCat = true;
 						}
 						//只调用一次
-						if(isAllMediaShape){//全部都是内容形态，则一个个内容形态查询
+						if(fieldList.size() == 0){//全部都是内容形态，则一个个内容形态查询
 							SearchRequest(searchList,searchUrl,order,RecommendConstants.S_BLANK+pageStart,RecommendConstants.S_BLANK+pageSize,catInfo.getCatId(),
 									prdTypeRelation.getPrdInfoIds(),ctVer,prdTypeRelation.getSearchCt(),
 									RequestConstants.SEARCH_KEY_MEDIASHAPE,(mediaShape == null ? null : mediaShape.replaceAll(",", " ")),null,catWeight);
@@ -1298,7 +1292,7 @@ public class RequestAction extends BaseAction {
 		resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_000000);
 		resultMap.put(RequestConstants.R_MSG, "请求成功");
 		resultMap.put(RequestConstants.R_ROOT, pomsContList);
-		resultMap.put(RequestConstants.R_TOTAL, total);
+		resultMap.put(RequestConstants.R_TOTAL, pomsContList.size());
 		if(log.isDebugEnabled())
 			log.debug("list end,duration:" + (end8 -s) + "|" + (end1 - s) + "|" + (end2 - end1) + "|" + (end3 - end2) + "|" + (end4 - end3) + "|" + (end5 - end4)
 				 + "|" + (end6 - end5) + "|" + (end7 - end6) + "|" + (end8 - end7));
