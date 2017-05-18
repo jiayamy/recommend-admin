@@ -54,14 +54,18 @@ public class RequestAction extends BaseAction {
 	 */
 	public String searchAllList() {
 		String ip = RequestUtil.getIpAddr(this.getRequest());
-		if(log.isInfoEnabled())
-			log.info("searchAllList Ip:" + ip);
+		StringBuffer sb = new StringBuffer();
+		sb.append("searchAllList Ip:").append(ip);
 		//首先流中获取请求体
 		String reqJson = RequestUtil.receiveReq(this.getRequest());
-		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
-			log.debug("searchAllList reqJson:" + reqJson);
+		if(log.isDebugEnabled() || RequestConstants.V_PRINT_REQUEST_ENABLE){
+			sb.append(",reqJson:").append(reqJson);
 		}
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
+			sb.append(",msg:请求内容为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
 			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
@@ -75,12 +79,20 @@ public class RequestAction extends BaseAction {
 		}
 		//校验请求体
 		if(reqUserTag == null){
+			sb.append(",msg:请求内容为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110002);
 			resultMap.put(RequestConstants.R_MSG, "请求体与要求不符");
 			return SUCCESS;
 		}
 		if(StringUtil.isNullStr(reqUserTag.getPrdType()) || StringUtil.isNullStr(reqUserTag.getCtVer())){
+			sb.append(",msg:必填参数为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
 			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
@@ -88,6 +100,10 @@ public class RequestAction extends BaseAction {
 		}
 		PrdTypeRelation prdTypeRelation = PrdTypeRelationCache.PRDTYPE_RELATIONS.get(reqUserTag.getPrdType());
 		if(prdTypeRelation == null || StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
+			sb.append(",msg:未找到匹配的产品");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120001);
 			resultMap.put(RequestConstants.R_MSG, "未找到匹配的产品");
@@ -185,11 +201,14 @@ public class RequestAction extends BaseAction {
 						}
 						//没有任何标签
 						if (!checkTagsNotNull(reqUserTag)){
+							sb.append(",msg:未找到任何匹配的用户标签");
+							sb.append(",duration:" + (s -end1));
+							if(log.isInfoEnabled()){
+								log.info(sb.toString());
+							}
 							resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 							resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120002);
 							resultMap.put(RequestConstants.R_MSG, "未找到任何匹配的用户标签");
-							if(log.isDebugEnabled())
-								log.debug("searchAllList end,duration:" + (s -end1));
 							return SUCCESS;
 						}
 					}else{
@@ -626,10 +645,15 @@ public class RequestAction extends BaseAction {
 		resultMap.put(RequestConstants.R_VOMS_MULTIPICCONT, multiPicContList);
 		resultMap.put(RequestConstants.R_TOTAL_MULTIPICCONT, multiPicContTotal);
 		
-		if(log.isDebugEnabled())
-			log.debug("searchAllList end,duration:" + (end12 -s) + "|" + (end1 - s) + "|" + (end2 - end1) + "|" + (end3 - end2) + "|" + (end4 - end3) + "|" + (end5 - end4)
+		sb.append(",labelInfo:"+labelInfo);
+		sb.append(",list size:" + pomsContList.size() +"|" + specialTopicList.size() +"|" + combinedContList.size() + "|" + bigPicContList.size() + "|" + multiPicContList.size());
+		sb.append(",total:" + pomsContList.size() +"|" + specialTopicTotal +"|" + combinedContTotal + "|" + bigPicContTotal + "|" + multiPicContTotal);
+		sb.append(",duration:" + (end12 -s) + "|" + (end1 - s) + "|" + (end2 - end1) + "|" + (end3 - end2) + "|" + (end4 - end3) + "|" + (end5 - end4)
 				 + "|" + (end6 - end5) + "|" + (end7 - end6) + "|" + (end8 - end7) + "|" + (end9 - end8) + "|" + (end10 - end9) + "|" + (end11 - end10)
 				 + "|" + (end12 - end11));
+		if(log.isInfoEnabled()){
+			log.info(sb.toString());
+		}
 		return SUCCESS;
 	}
 	/**
@@ -652,18 +676,21 @@ public class RequestAction extends BaseAction {
 	 * @return
 	 */
 	public String searchTop(){
+		StringBuffer sb = new StringBuffer();
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		//获取参数		
 		String prdType = this.getParam("prdType");				
 		String startStr = this.getParam("start");
 		String limitStr = this.getParam("limit");
-		if (log.isDebugEnabled()) {	
-			log.debug("searchVomsData ip:" + ip + "," + prdType +"|" + startStr +"|" + limitStr +"|" );
-		}
+		sb.append("searchVomsData ip:" + ip + "," + prdType +"|" + startStr +"|" + limitStr);
 		//校验参数		
 		int start = StringUtil.nullToInteger(startStr);
 		int limit = StringUtil.nullToInteger(limitStr);
 		if(StringUtil.isNullStr(prdType)|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr)){
+			sb.append(",msg:必填参数为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
 			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
@@ -708,9 +735,12 @@ public class RequestAction extends BaseAction {
 			end2 = System.currentTimeMillis();
 		}
 		
-		if(log.isDebugEnabled())
-			log.debug("searchVomsData end,duration:" + (end2 -s) + "|" + (end1 - s) + "|" + (end2 - end1));
-		
+		sb.append(",returnCode:").append(resultMap.get(RequestConstants.R_CODE));
+		sb.append(",list size:").append(returnList.size()).append(",total:").append(total);
+		sb.append(",duration:" + (end2 -s) + "|" + (end1 - s) + "|" + (end2 - end1));
+		if(log.isInfoEnabled()){
+			log.info(sb.toString());
+		}
 		return SUCCESS;		
 	}
 	/**
@@ -718,6 +748,7 @@ public class RequestAction extends BaseAction {
 	 * @return
 	 */
 	public String searchVoms() {
+		StringBuffer sb = new StringBuffer();
 		String ip = RequestUtil.getIpAddr(this.getRequest());
 		// 获取参数
 		String id = this.getParam("id");
@@ -726,12 +757,14 @@ public class RequestAction extends BaseAction {
 		String labelInfo = this.getParam("labelInfo");
 		String startStr = this.getParam("start");
 		String limitStr = this.getParam("limit");
-		if (log.isDebugEnabled()) {	
-			log.debug("searchVomsData ip:" + ip + "," + id +"|" + type +"|" + prdType +"|" + startStr +"|" + limitStr +"|" + labelInfo);
-		}
+		sb.append("searchVomsData ip:" + ip + "," + id +"|" + type +"|" + prdType +"|" + startStr +"|" + limitStr +"|" + labelInfo);
 		// 校验参数
 		if (StringUtil.isNullStr(labelInfo) || StringUtil.isNullStr(prdType) 
 				|| StringUtil.isNullStr(startStr)  || StringUtil.isNullStr(limitStr) ) {
+			sb.append(",msg:必填参数为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
 			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
@@ -787,11 +820,13 @@ public class RequestAction extends BaseAction {
 			end2 = System.currentTimeMillis();
 		}
 		
-		if(log.isDebugEnabled())
-			log.debug("searchVomsData end,duration:" + (end2 -s) + "|" + (end1 - s) + "|" + (end2 - end1));
-		
+		sb.append(",returnCode:").append(resultMap.get(RequestConstants.R_CODE));
+		sb.append(",list size:").append(returnList.size()).append(",total:").append(total);
+		sb.append(",duration:" + (end2 -s) + "|" + (end1 - s) + "|" + (end2 - end1));
+		if(log.isInfoEnabled()){
+			log.info(sb.toString());
+		}
 		return SUCCESS;
-
 	}
 	/**
 	 * 添加用户标签
@@ -838,14 +873,17 @@ public class RequestAction extends BaseAction {
 	 * @return
 	 */
 	public void queryTag(){
+		StringBuffer sb = new StringBuffer();
 		String ip = RequestUtil.getIpAddr(this.getRequest());
-		if(log.isInfoEnabled())
-			log.info("queryTag Ip:" + ip);
 		String userId = this.getParam("userId");
-		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
-			log.debug("queryTag userId:" + userId);
-		}
+		
+		sb.append("queryTag Ip:" + ip).append(",userId:" + userId);
+		
 		if(StringUtil.isNullStr(userId)){
+			sb.append(",msg:").append("必填参数为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
 			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
@@ -855,7 +893,7 @@ public class RequestAction extends BaseAction {
 		}
 		long start = System.currentTimeMillis();
 		long end = start;
-		UserTag userTag;
+		UserTag userTag = null;
 		try {
 //			userTag = userTagCacheManager.queryById(userId);
 			userTag = userTagCacheManager.queryCutById(userId);
@@ -877,8 +915,16 @@ public class RequestAction extends BaseAction {
 			this.writeTextResponse(JSON.toJSONString(resultMap), "application/json;charset=UTF-8");
 		}
 		end = System.currentTimeMillis();
-		if(log.isDebugEnabled())
-			log.debug("queryTag end,duration:" + (end - start));
+		sb.append(",returnCode:").append(resultMap.get(RequestConstants.R_CODE));
+		if(RequestConstants.V_PRINT_REQUEST_ENABLE){
+			sb.append(",userTag:").append(userTag);
+		}else{
+			sb.append(",userTag:").append(userTag == null ? Boolean.FALSE : Boolean.TRUE);
+		}
+		sb.append(",duration:" + (end - start));
+		if(log.isInfoEnabled()){
+			log.info(sb.toString());
+		}
 		return;
 	}
 	/**
@@ -888,15 +934,19 @@ public class RequestAction extends BaseAction {
 	 * @return
 	 */
 	public String list() {
+		StringBuffer sb = new StringBuffer();
 		String ip = RequestUtil.getIpAddr(this.getRequest());
-		if(log.isInfoEnabled())
-			log.info("list Ip:" + ip);
+		sb.append("list Ip:" + ip);
 		//首先流中获取请求体
 		String reqJson = RequestUtil.receiveReq(this.getRequest());
-		if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
-			log.debug("list reqJson:" + reqJson);
+		if(log.isDebugEnabled() || RequestConstants.V_PRINT_REQUEST_ENABLE){
+			sb.append(",reqJson:" + reqJson);
 		}
 		if(StringUtil.isNullStr(reqJson)){//请求为空，返回错误
+			sb.append(",msg:").append("请求内容为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110001);
 			resultMap.put(RequestConstants.R_MSG, "请求内容为空");
@@ -910,12 +960,20 @@ public class RequestAction extends BaseAction {
 		}
 		//校验请求体
 		if(reqUserTag == null){
+			sb.append(",msg:").append("请求体与要求不符");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110002);
 			resultMap.put(RequestConstants.R_MSG, "请求体与要求不符");
 			return SUCCESS;
 		}
 		if(StringUtil.isNullStr(reqUserTag.getPrdType()) || StringUtil.isNullStr(reqUserTag.getCtVer())){
+			sb.append(",msg:").append("必填参数为空");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_110003);
 			resultMap.put(RequestConstants.R_MSG, "必填参数为空");
@@ -923,6 +981,10 @@ public class RequestAction extends BaseAction {
 		}
 		PrdTypeRelation prdTypeRelation = PrdTypeRelationCache.PRDTYPE_RELATIONS.get(reqUserTag.getPrdType());
 		if(prdTypeRelation == null || StringUtil.isNullStr(prdTypeRelation.getPrdInfoIds())){//搜索引擎需要产品包ID，平台需要产品
+			sb.append(",msg:").append("未找到匹配的产品");
+			if(log.isInfoEnabled()){
+				log.info(sb.toString());
+			}
 			resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 			resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120001);
 			resultMap.put(RequestConstants.R_MSG, "未找到匹配的产品");
@@ -1005,11 +1067,14 @@ public class RequestAction extends BaseAction {
 						}
 						//没有任何标签
 						if (!checkTagsNotNull(reqUserTag)){
+							sb.append(",msg:").append("未找到任何匹配的用户标签");
+							sb.append(",duration:" + (s -end1));
+							if(log.isInfoEnabled()){
+								log.info(sb.toString());
+							}
 							resultMap.put(RequestConstants.R_SUCC, Boolean.FALSE);
 							resultMap.put(RequestConstants.R_CODE, RequestConstants.R_CODE_120002);
 							resultMap.put(RequestConstants.R_MSG, "未找到任何匹配的用户标签");
-							if(log.isDebugEnabled())
-								log.debug("list end,duration:" + (s -end1));
 							return SUCCESS;
 						}
 					}else{
@@ -1293,9 +1358,13 @@ public class RequestAction extends BaseAction {
 		resultMap.put(RequestConstants.R_MSG, "请求成功");
 		resultMap.put(RequestConstants.R_ROOT, pomsContList);
 		resultMap.put(RequestConstants.R_TOTAL, pomsContList.size());
-		if(log.isDebugEnabled())
-			log.debug("list end,duration:" + (end8 -s) + "|" + (end1 - s) + "|" + (end2 - end1) + "|" + (end3 - end2) + "|" + (end4 - end3) + "|" + (end5 - end4)
+		
+		sb.append(",list size:").append(pomsContList.size());
+		sb.append(",duration:" + (end8 -s) + "|" + (end1 - s) + "|" + (end2 - end1) + "|" + (end3 - end2) + "|" + (end4 - end3) + "|" + (end5 - end4)
 				 + "|" + (end6 - end5) + "|" + (end7 - end6) + "|" + (end8 - end7));
+		if(log.isInfoEnabled()){
+			log.info(sb.toString());
+		}
 		return SUCCESS;
 	}
 	/**
