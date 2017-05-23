@@ -2,6 +2,7 @@ package com.wondertek.mobilevideo.recommend.webapp.action;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +25,7 @@ import com.wondertek.mobilevideo.core.recommend.util.CatItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecomdItemSort;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RecommendInfoVoSort;
+import com.wondertek.mobilevideo.core.recommend.util.RecommendUtil;
 import com.wondertek.mobilevideo.core.recommend.util.RequestConstants;
 import com.wondertek.mobilevideo.core.recommend.util.RequestUtil;
 import com.wondertek.mobilevideo.core.recommend.vo.RecommendInfoVo;
@@ -317,7 +319,11 @@ public class RequestAction extends BaseAction {
 								}
 							}
 						}
-						
+						//遇到电影1000、电视剧1001、纪实1002、综艺1005、动漫1007等只搜索内容形态为 "资讯,精编,花絮,预告,改编,片段"
+						if(catInfo.getCatId().equals("1000") || catInfo.getCatId().equals("1001") || catInfo.getCatId().equals("1002")
+								|| catInfo.getCatId().equals("1005") || catInfo.getCatId().equals("1007")){
+							mediaShape = "资讯,精编,花絮,预告,改编,片段";
+						}
 						recomdLabels = null;
 						boolean isSearchCat = false;
 						List<String> fieldList = new ArrayList<String>();//查询字段
@@ -1173,7 +1179,11 @@ public class RequestAction extends BaseAction {
 								}
 							}
 						}
-						
+						//遇到电影1000、电视剧1001、纪实1002、综艺1005、动漫1007等只搜索内容形态为 "资讯,精编,花絮,预告,改编,片段"
+						if(catInfo.getCatId().equals("1000") || catInfo.getCatId().equals("1001") || catInfo.getCatId().equals("1002")
+								|| catInfo.getCatId().equals("1005") || catInfo.getCatId().equals("1007")){
+							mediaShape = "资讯,精编,花絮,预告,改编,片段";
+						}
 						recomdLabels = null;
 						boolean isSearchCat = false;
 						List<String> fieldList = new ArrayList<String>();//查询字段
@@ -1575,17 +1585,25 @@ public class RequestAction extends BaseAction {
 			searchRequest.setPageSize(pageSize);
 			searchRequest.setPageStart(pageStart);
 			searchRequest.setOrder(order);
-			
+			//只搜索一个月之内的节目
+			long startTime = 0;
+			if(RequestConstants.V_DEFAULT_SEARCH_PUBLISHTIME > 0){
+				startTime = RecommendUtil.getYYYYMMDDHHMMFormatForDay(new Date(), RequestConstants.V_DEFAULT_SEARCH_PUBLISHTIME);
+				searchRequest.setPublishTimeStart(startTime+"");
+			}
 			List<SearchResult> searchRsts = searchCacheManager.queryByParam(searchUrl, searchRequest);
 			if(searchRsts != null){
 				if(log.isDebugEnabled() && RequestConstants.V_PRINT_REQUEST_ENABLE){
 					log.debug("list searchRsts:" + searchRsts.size());
 				}
 				for(SearchResult searchRst : searchRsts){
-					if(searchRst.getContentId() != null){
+					if(searchRst.getContentId() != null 
+							&& (startTime == 0 || searchRst.getPublishTime() == null 
+								|| searchRst.getPublishTime() == 0 || searchRst.getPublishTime() > startTime)){
 						RecommendInfoVo vo = new RecommendInfoVo();
 						vo.setPrdContId(StringUtil.nullToCloneLong(searchRst.getContentId()));
 						vo.setContName(searchRst.getContName());
+						vo.setPublishTime(searchRst.getPublishTime());
 						vo.setScore((searchRst.getScore() != null && searchRst.getScore() != 0) ? (score * searchRst.getScore()) : score);
 						returnList.add(vo);
 					}
